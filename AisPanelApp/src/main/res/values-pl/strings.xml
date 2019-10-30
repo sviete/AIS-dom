@@ -1,0 +1,243 @@
+<!--suppress CheckTagEmptyBody, CheckTagEmptyBody -->
+<resources>
+
+    <string-array name="zoom_level_names">
+        <item>"50%"</item>
+        <item>"60%"</item>
+        <item>"70%"</item>
+        <item>"80%"</item>
+        <item>"90%"</item>
+        <item>"100%"</item>
+        <item>"110%"</item>
+        <item>"120%"</item>
+        <item>"130%"</item>
+        <item>"150%"</item>
+        <item>"200%"</item>
+    </string-array>
+    <string-array name="zoom_level_values">
+        <item>0.5</item>
+        <item>0.6</item>
+        <item>0.7</item>
+        <item>0.8</item>
+        <item>0.9</item>
+        <item>1.0</item>
+        <item>1.1</item>
+        <item>1.2</item>
+        <item>1.3</item>
+        <item>1.5</item>
+        <item>2.0</item>
+    </string-array>
+
+    <string-array name="remotecontroller_modes_names">
+        <item>"Sterowanie pilotem bez monitora"</item>
+        <item>"Sterowanie gestami"</item>
+        <item>"Sterowanie na monitorze"</item>
+    </string-array>
+    <string-array name="remotecontroller_modes_values">
+        <item>OFF_DISPLAY</item>
+        <item>BY_GESTURE</item>
+        <item>ON_DISPLAY</item>
+    </string-array>
+
+
+    <string-array name="tts_voice_names">
+        <item>"Jola online"</item>
+        <item>"Jola lokalnie"</item>
+        <item>"Celina"</item>
+        <item>"Anżela"</item>
+        <item>"Asia"</item>
+        <item>"Sebastian"</item>
+        <item>"Bartek"</item>
+        <item>"Andrzej"</item>
+    </string-array>
+    <string-array name="tts_voice_values">
+        <item>"pl-pl-x-oda-network"</item>
+        <item>"pl-pl-x-oda-local"</item>
+        <item>"pl-pl-x-oda#female_1-local"</item>
+        <item>"pl-pl-x-oda#female_2-local"</item>
+        <item>"pl-pl-x-oda#female_3-local"</item>
+        <item>"pl-pl-x-oda#male_1-local"</item>
+        <item>"pl-pl-x-oda#male_2-local"</item>
+        <item>"pl-pl-x-oda#male_3-local"</item>
+    </string-array>
+
+    <string name="app_name">AIS dom</string>
+
+    <string name="aispanel_service_notification_title">Powiedz.co</string>
+    <string name="aispanel_service_notification_message">uruchomiony</string>
+
+    <string name="share_file_chooser_title">Udostępnij dla</string>
+    <string name="grant_permission">Udziel zgody</string>
+    <string name="permission_description">AIS dom:API potrzebuje następujących uprawnień:\n</string>
+
+    <string name="title_activity_settings">USTAWIENIA APLIKACJA</string>
+    <string name="title_activity_other_apps">INTEGRACJE</string>
+    <string name="title_activity_browser">AIS dom</string>
+
+    <string name="title_experimental_settings">EKSPERYMENTALNE</string>
+    <string name="title_ais_dom_list">WYKRYTE BRAMKI (wybierz aby połączyć)</string>
+    <string name="title_ais_dom_connection">AKTYWNE POŁĄCZENIE Z BRAMKĄ</string>
+    <string name="title_ais_dom_connections_history">HISTORIA POŁĄCZEŃ</string>
+
+
+    <string name="key_setting_app_launchurl">setting_app_launchurl</string>
+    <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
+    <string name="default_setting_app_launchurl">http://ais-dom:8180</string>
+    <string name="title_setting_app_launchurl">Adres bramki</string>
+
+    <string name="title_recent_connections">Lista ostatnich połączeń</string>
+    <string name="summary_recent_connections">możesz wybrać pozycję z listy by połączyć ponownie</string>
+
+    <string name="key_setting_app_remotecontrollermode">setting_app_remotemode</string>
+    <string name="title_setting_app_remotecontrollermode">Tryb sterowania w aplikacji</string>
+    <string name="summary_setting_app_remotecontrollermode">wybierz tryb sterowania</string>
+    <string name="default_setting_app_remotecontrollermode">ON_DISPLAY</string>
+
+    <string name="key_setting_app_tts_voice">setting_app_tts_voice</string>
+    <string name="title_setting_app_tts_voice">Głos asystenta</string>
+    <string name="summary_setting_app_tts_voice">Wybierz głos asystenta</string>
+    <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
+
+    <string name="key_setting_app_discovery">setting_app_discovery</string>
+    <string name="title_setting_app_discovery">Wykrywanie odtwarzacza</string>
+    <string name="summary_setting_app_discovery">pozwól na wykrywanie urządzenia jako odtwarzacza w sieci</string>
+    <string name="default_setting_app_discovery">false</string>
+
+    <string name="key_setting_app_beep_on_click">setting_app_beep_on_click</string>
+    <string name="default_setting_app_beep_on_click">true</string>
+    <string name="title_setting_app_beep_on_click">Sygnał dźwiękowy po kliknięciu</string>
+    <string name="summary_setting_app_beep_on_click">Odtwórz sygnał dźwiękowy po kliknięciu przycisku na pilocie w trybie sterowania bez monitora</string>
+
+    <string name="key_setting_android_browsertype">setting_android_browsertype</string>
+    <string name="title_setting_android_browsertype">Silnik przeglądarki</string>
+    <string name="default_setting_android_browsertype">Native</string>
+
+    <string name="key_setting_test_zoomlevel">setting_test_zoomlevel</string>
+    <string name="title_setting_test_zoomlevel">Powiększenie aplikacji</string>
+    <string name="summary_setting_test_zoomlevel">wybierz skalę powiększenia panelu aplikacji</string>
+    <string name="default_setting_test_zoomlevel">1.0</string>
+
+    <string name="key_setting_android_ext_storage_write">setting_android_ext_storage_write</string>
+    <string name="title_setting_android_ext_storage_write">Serwer FTP (port 1024)</string>
+    <string name="default_setting_android_ext_storage_write">false</string>
+
+    <string name="crash_toast_text">Upss, mamy jakiś problem! Zbieramy informację żeby naprawić ten problem.</string>
+    <string name="crash_dialog_title">Aplikacja AIS-dom przestała działać</string>
+    <string name="crash_dialog_text">Wystąpił nieoczekiwany błąd wymuszający
+        zatrzymanie aplikacji. Pomóż nam to naprawić, przesyłając nam dane o problemie,
+        wszystko co musisz zrobić, to kliknąć OK.</string>
+    <string name="crash_dialog_comment_prompt">Proszę dodaj swój komentarz poniżej:</string>
+    <string name="crash_dialog_ok_toast">Dzięki, zajmiemy się tym!</string>
+    <!--TTS-->
+    <string name="action_settings">Ustawienia</string>
+    <string name="speech_prompt">Powiedz.co&#8230;</string>
+    <string name="speech_not_supported">Przepraszamy! Wygląda na to, że urządzenie nie wspiera głosowych komend.</string>
+
+    <string name="application_name">AIS-dom</string>
+    <string name="shared_user_label">Użytkownik</string>
+    <string name="new_session">Nowa sesja</string>
+    <string name="new_session_failsafe">Failsafe</string>
+    <string name="toggle_soft_keyboard">Klawiatura</string>
+    <string name="reset_terminal">Reset</string>
+    <string name="style_terminal">Style</string>
+    <string name="share_transcript_title">Terminal transcript</string>
+    <string name="help">Pomoc</string>
+
+    <string name="bootstrap_installer_body">Instaluję pakiety systemu…</string>
+    <string name="bootstrap_error_title">Problem z instalacją</string>
+    <string name="bootstrap_error_body">Nie można zainstalować pakietów startowych.\n\nSpawdz połączenie z Internetem.</string>
+    <string name="bootstrap_error_abort">Anuluj</string>
+    <string name="bootstrap_error_try_again">Ponów</string>
+    <string name="bootstrap_error_not_primary_user_message">AIS-dom może być zainstalowany tylko na głównym koncie.</string>
+
+    <string name="max_terminals_reached_title">Osiągnięto maksymalną ilość sesji</string>
+    <string name="max_terminals_reached_message">Zamknij istniejącą sesję przed utworzeniem nowej.</string>
+
+    <string name="reset_toast_notification">Terminal reset.</string>
+
+    <string name="select_url">Wybierz URL</string>
+    <string name="select_url_dialog_title">Naciśnij URL żeby skopiować lub nasiśnij długo by przejść</string>
+    <string name="select_all_and_share">Udostępnij transkrypcje</string>
+    <string name="select_url_no_found">Nie znaleziono adresów URL w terminalu.</string>
+    <string name="select_url_copied_to_clipboard">URL skopiowany do schowka</string>
+    <string name="share_transcript_chooser_title">Wyślij text do:</string>
+
+    <string name="kill_process">Zabij proces (%d)</string>
+    <string name="confirm_kill_process">Czy mam naprawdę zabić tą sesję?</string>
+
+    <string name="session_rename_title">Ustaw nazwę sesji</string>
+    <string name="session_rename_positive_button">Ustaw</string>
+    <string name="session_new_named_title">Nowa nazwana sesja</string>
+    <string name="session_new_named_positive_button">Utwórz</string>
+
+    <string name="styling_install">Install</string>
+
+    <string name="notification_action_exit">Zakończ</string>
+    <string name="notification_action_wake_lock">Zablokuj uśpienie</string>
+    <string name="notification_action_wake_unlock">Zwolnij blokadę uśpienia</string>
+    <string name="notification_action_gotoconsole">Konsola</string>
+    <string name="notification_action_gotosettings">Ustawienia</string>
+
+
+    <string name="file_received_title">Zapisz plik w ~/downloads/</string>
+    <string name="file_received_edit_button">Edytuj</string>
+    <string name="file_received_open_folder_button">Otwórz katalog</string>
+
+    <string name="menu_application_panel">Panel aplikacji >></string>
+
+    <string name="enter_name">Komenda:</string>
+    <string name="enter_new_name">Nowa komenda:</string>
+    <string name="save_gesture">Zapisz gest</string>
+    <string name="save">Zapisz</string>
+    <string name="cancel">Anuluj</string>
+    <string name="invalid_name">Podaj poprawną komendę</string>
+    <string name="gesture_saved"> zapisano do : </string>
+    <string name="no_gesture">Proszę narysować najpierw gest!</string>
+    <string name="rename">Zmień komendę</string>
+    <string name="delete">Usuń</string>
+    <string name="add_gesture_button">Dodaj</string>
+    <string name="test_gesture_button">Testuj</string>
+    <string name="cannot_load_library">nie można pobrać biblioteki gestów</string>
+    <string name="test_gesture_activity_label">Testowanie gestów</string>
+    <string name="draw_a_gesture">Narysuj gest, postaram się go rozpoznać!</string>
+    <string name="list_gesture">Lista gestów</string>
+    <string name="summary_list_gesture">możesz zdefiniować gesty i polecenia uruchamiane tymi gestami</string>
+    <string name="back_to_exit">Naciśnij ponownie by wyjść z aplikacji</string>
+    <string name="pref_ais_dom_console_title">Konsola</string>
+    <string name="pref_ais_dom_console_summary">konsola pozwala na dostęp do wszystkich zaawansowanych funkcjonalności systemu</string>
+    <string name="pref_ais_dom_spotify_title">Spotify</string>
+    <string name="pref_ais_dom_spotify_summary">przejdz do Spotify</string>
+    <string name="pref_ais_dom_exit_title">Wyjście</string>
+    <string name="pref_ais_dom_exit_summary">naciśnij by wyjść z aplikacji</string>
+    <string name="pref_ais_about_app">WERSJA APLIKACJI</string>
+
+    <string name="pref_ais_dom_reset_title">Pełny reset aplikacji</string>
+    <string name="pref_ais_dom_reset_summary">Czyści wszystkie bieżące pliki i ustawienia aplikacji. Następnie instaluje najnowsze domyślne pliki i ustawienia.</string>
+    <string name="pref_ais_dom_reset_confirm">Wiem co robię. Wykonaj pełny reset aplikacji.</string>
+    <string name="pref_ais_dom_reset_confirm_info_title">Ostrzeżenie.</string>
+    <string name="pref_ais_dom_reset_confirm_info_message">Wszystkie niestandardowe ustawienia i konfiguracje zostaną usunięte! Pobranie najnowszej wersji domyślnych kodów i ustawień może potrwać kilkadziesiąt minut. Jesteś pewien, że chcesz kontynuować?</string>
+    <string name="pref_ais_dom_reset_download_info">Pobieranie domyślnych kodów i ustawień aplikacji „Asystent domowy”. Poczekaj!</string>
+    <string name="pref_ais_dom_reset_download_error">Błąd pobierania: </string>
+    <string name="pref_ais_dom_reset_download_ok">Domyślne kody pobrane, czyścimy i uruchamiamy aplikacje ponownie.</string>
+    <string name="pref_ais_dom_reset_download_server_answer">Serwer zwrócił HTTP: </string>
+
+    <string name="pref_ais_dom_reset_delete_info">Usuwanie bieżących kodów i konfiguracji aplikacji.\n Za chwilę nastąpi restart urządzenia.</string>
+
+
+    <string name="webview_loading">Wczytuję</string>
+    <string name="list_connection_history">Historia połączeń z bramkami</string>
+    <string name="list_connection_history_click_to_delete">Naciśnij by usunąć</string>
+
+    <string name="accessibility_service_label">Dostęp do klawiatury dla AIS dom</string>
+    <string name="accessibility_service_description">Jeśli chcesz obsługiwać system AIS dom za pomocą pilota zdalnego sterowania to włącz ten dostęp.</string>
+
+    <string name="ais_dom_app_name_server">Serwer AIS</string>
+    <string name="ais_dom_app_name_client">Klient AIS</string>
+
+
+    <string name="ais_dom_button_gesture">Sterowanie gestami</string>
+    <string name="ais_dom_button_mic">Mikrofon</string>
+    <string name="ais_dom_button_settings">Ustawienia aplikacji</string>
+
+
+</resources>

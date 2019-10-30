@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "layers": {
+    "vectorLayer": {
+      "id": "106",
+      "name": "vector",
+      "type": "vector",
+      "width": 40,
+      "height": 40,
+      "children": [
+        {
+          "id": "20",
+          "name": "circle_midle",
+          "type": "path",
+          "pathData": "M 20 5 C 11.716 5 5 11.716 5 20 C 5 28.284 11.716 35 20 35 C 28.284 35 35 28.284 35 20 C 35 11.716 28.284 5 20 5 Z",
+          "fillColor": "#d04400",
+          "fillAlpha": 0.74901962,
+          "strokeColor": "#f7f7f7",
+          "strokeAlpha": 0,
+          "strokeWidth": 1.99999988
+        },
+        {
+          "id": "38",
+          "name": "circle_start",
+          "type": "path",
+          "pathData": "M 20 7 C 12.82 7 7 12.82 7 20 C 7 27.18 12.82 33 20 33 C 27.18 33 33 27.18 33 20 C 33 12.82 27.18 7 20 7 Z",
+          "fillColor": "#d04400",
+          "strokeColor": "#f7f7f7",
+          "strokeAlpha": 0,
+          "strokeWidth": 1.99999988
+        },
+        {
+          "id": "104",
+          "name": "circle_end",
+          "type": "path",
+          "pathData": "M 20 2 C 10.059 2 2 10.059 2 20 C 2 29.941 10.059 38 20 38 C 29.941 38 38 29.941 38 20 C 38 10.059 29.941 2 20 2 Z",
+          "fillColor": "#d04400",
+          "fillAlpha": 0.53589743,
+          "strokeColor": "#f7f7f7",
+          "strokeAlpha": 0,
+          "strokeWidth": 1.99999964
+        },
+        {
+          "id": "86",
+          "name": "mic",
+          "type": "path",
+          "pathData": "M 20 10.5 C 21.657 10.5 23 11.843 23 13.5 L 23 19.5 C 23 21.157 21.657 22.5 20 22.5 C 18.343 22.5 17 21.157 17 19.5 L 17 13.5 C 17 11.843 18.343 10.5 20 10.5 M 27 19.5 C 27 23.03 24.39 25.94 21 26.43 L 21 29.5 L 19 29.5 L 19 26.43 C 15.61 25.94 13 23.03 13 19.5 L 15 19.5 C 15 22.261 17.239 24.5 20 24.5 C 22.761 24.5 25 22.261 25 19.5 Z",
+          "fillColor": "#ffffff",
+          "strokeWidth": 1
+        }
+      ]
+    },
+    "hiddenLayerIds": []
+  },
+  "timeline": {
+    "animation": {
+      "id": "2",
+      "name": "anim",
+      "duration": 900,
+      "blocks": [
+        {
+          "id": "108",
+          "layerId": "104",
+          "propertyName": "pathData",
+          "startTime": 0,
+          "endTime": 502,
+          "interpolator": "FAST_OUT_SLOW_IN",
+          "type": "path",
+          "fromValue": "M 20 7 C 12.82 7 7 12.82 7 20 C 7 27.18 12.82 33 20 33 C 27.18 33 33 27.18 33 20 C 33 12.82 27.18 7 20 7 Z",
+          "toValue": "M 20 2 C 10.059 2 2 10.059 2 20 C 2 29.941 10.059 38 20 38 C 29.941 38 38 29.941 38 20 C 38 10.059 29.941 2 20 2 Z"
+        },
+        {
+          "id": "1798",
+          "layerId": "20",
+          "propertyName": "pathData",
+          "startTime": 502,
+          "endTime": 900,
+          "interpolator": "FAST_OUT_SLOW_IN",
+          "type": "path",
+          "fromValue": "M 20 7 C 12.82 7 7 12.82 7 20 C 7 27.18 12.82 33 20 33 C 27.18 33 33 27.18 33 20 C 33 12.82 27.18 7 20 7 Z",
+          "toValue": "M 20 2 C 10.059 2 2 10.059 2 20 C 2 29.941 10.059 38 20 38 C 29.941 38 38 29.941 38 20 C 38 10.059 29.941 2 20 2 Z"
+        },
+        {
+          "id": "50207",
+          "layerId": "86",
+          "propertyName": "fillAlpha",
+          "startTime": 0,
+          "endTime": 900,
+          "interpolator": "FAST_OUT_SLOW_IN",
+          "type": "number",
+          "fromValue": 1,
+          "toValue": 0
+        }
+      ]
+    }
+  }
+}

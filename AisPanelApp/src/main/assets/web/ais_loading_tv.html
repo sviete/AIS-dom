@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html style="color:#704201; background: #303030;">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="css/sprite_60fps.css"/>
+</head>
+<body>
+    <div class="center">
+        <img src="logo/ais-dom.svg" style="width:55%;"> </img>
+        <p class="loading" style="font-size:1.4em;color:#ff9603"><span>uruchamianie na tv</span><span>.</span><span>.</span><span>.</span></p>
+        <div class="shapeshifter play" style="background-image: url(logo/sprite_60fps.svg)"/>
+    </div>
+
+
+    <footer>
+        <p style="margin-bottom:0px;padding-bottom:0px;color:#a4a4a4">
+        <p style="font-size:80%; color:#a4a4a4;" id="the_url"></p>
+        <p style="color:#a4a4a4">zródła systemu: <a style="color:#a4a4a4" href="https://github.com/sviete">github.com/sviete</a></p>
+        </p>
+    </footer>
+</body>
+<script type="text/javascript">
+        var TheUrl = window.JavascriptHandler.showTheUrl();
+        window.onload = function(){
+            document.getElementById("the_url").innerHTML = TheUrl;
+        }
+        function goToAis() {
+            console.log("go to AIS ...");
+            document.location.href = TheUrl;
+        }
+        setInterval(goToAis, 180000);
+    </script>
+</html>

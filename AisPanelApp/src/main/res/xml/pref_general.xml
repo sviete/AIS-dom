@@ -1,0 +1,104 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="ais_dom_main_pref_screen">
+    <PreferenceCategory
+        android:key="ais_dom_list"
+        android:title="@string/title_ais_dom_list"></PreferenceCategory>
+
+        <PreferenceCategory
+            android:title="@string/title_ais_dom_connection"
+            android:key="ais_dom_con_url">
+            <EditTextPreference
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="@string/title_setting_app_launchurl"
+                android:key="@string/key_setting_app_launchurl"
+                android:icon="@drawable/ic_gate_connection"/>
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:title="@string/title_ais_dom_connections_history"
+            android:key="ais_dom_list_history">
+            <PreferenceScreen android:key="pref_ais_dom_list_history"
+                android:title="@string/title_recent_connections"
+                android:summary="@string/summary_recent_connections"
+                android:icon="@drawable/ic_gate_connection_history">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetPackage="pl.sviete.dom"
+                    android:targetClass="pl.sviete.dom.connhist.AisConnectionsHistoryActivity"
+                    />
+            </PreferenceScreen>
+        </PreferenceCategory>
+
+        <PreferenceCategory
+            android:title="@string/title_activity_settings"
+            android:key="pref_category_app_settings">
+            <SwitchPreference
+                android:defaultValue="@string/default_setting_app_discovery"
+                android:title="@string/title_setting_app_discovery"
+                android:summary="@string/summary_setting_app_discovery"
+                android:key="@string/key_setting_app_discovery"
+                android:icon="@drawable/ic_disco_player_in_network"/>
+            <ListPreference
+                android:defaultValue="@string/default_setting_app_remotecontrollermode"
+                android:entries="@array/remotecontroller_modes_names"
+                android:entryValues="@array/remotecontroller_modes_values"
+                android:title="@string/title_setting_app_remotecontrollermode"
+                android:summary="@string/summary_setting_app_remotecontrollermode"
+                android:key="@string/key_setting_app_remotecontrollermode"
+                android:icon="@drawable/ic_controle_mode"/>
+            <SwitchPreference
+                android:key="@string/key_setting_app_beep_on_click"
+                android:defaultValue="@string/default_setting_app_beep_on_click"
+                android:title="@string/title_setting_app_beep_on_click"
+                android:summary="@string/summary_setting_app_beep_on_click"
+                android:icon="@drawable/ic_beep_on_click"/>
+            <ListPreference
+                android:defaultValue="@string/default_setting_app_tts_voice"
+                android:entries="@array/tts_voice_names"
+                android:entryValues="@array/tts_voice_values"
+                android:title="@string/title_setting_app_tts_voice"
+                android:summary="@string/summary_setting_app_tts_voice"
+                android:key="@string/key_setting_app_tts_voice"
+                android:icon="@drawable/ic_tts_voice"/>
+            <PreferenceScreen android:key="pref_ais_dom_list_gesture"
+                android:title="@string/list_gesture"
+                android:summary="@string/summary_list_gesture"
+                android:icon="@drawable/ic_gesture_icon">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetPackage="pl.sviete.dom"
+                    android:targetClass="pl.sviete.dom.gesture.GestureListActivity"
+                    />
+            </PreferenceScreen>
+            <ListPreference
+                android:defaultValue="@string/default_setting_test_zoomlevel"
+                android:entries="@array/zoom_level_names"
+                android:entryValues="@array/zoom_level_values"
+                android:title="@string/title_setting_test_zoomlevel"
+                android:summary="@string/summary_setting_test_zoomlevel"
+                android:key="@string/key_setting_test_zoomlevel"
+                android:icon="@drawable/ic_zoom_in_browser"/>
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:title="@string/pref_ais_about_app"
+            android:key="pref_category_about">
+            <PreferenceScreen android:key="pref_ais_dom_app_reset"
+                android:title="@string/pref_ais_dom_reset_title"
+                android:summary="@string/pref_ais_dom_reset_summary"
+                android:icon="@drawable/ic_app_restore">
+            </PreferenceScreen>
+            <PreferenceScreen android:key="pref_ais_dom_version"
+                android:summary="1.0"
+                android:title="www.ai-speaker.com"
+                android:icon="@drawable/ic_ais_logo_small_21_29">
+            </PreferenceScreen>
+            <PreferenceScreen android:key="pref_ais_dom_exit"
+                android:title="@string/pref_ais_dom_exit_title"
+                android:summary="@string/pref_ais_dom_exit_summary"
+                android:icon="@drawable/ic_app_exit">
+            </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>
+

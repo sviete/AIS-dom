@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.sa.MainActivity" >
+    <item
+        android:id="@+id/DELETE"
+        android:icon="@drawable/ic_delete_connection_from_history"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="DELETE"/>
+    <item
+        android:id="@+id/Save"
+        android:icon="@drawable/ic_save_icon"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="SAVE"/>
+
+</menu>

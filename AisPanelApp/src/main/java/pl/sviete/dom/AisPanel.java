@@ -1,0 +1,49 @@
+package pl.sviete.dom;
+
+import android.content.Context;
+import android.app.Application;
+import android.provider.Settings;
+import android.util.Log;
+
+import pl.sviete.dom.mdns.NsdController;
+
+public class AisPanel extends Application {
+    public static final String TAG = Context.class.getName();
+    private NsdController mdns = new NsdController();
+    private Config config;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        //
+        Log.i(TAG, "-------------------------------------------");
+        Log.i(TAG, "-------------------------------------------");
+        Log.i(TAG, "-------------------------------------------");
+        Log.i(TAG, "---------AisPanel -> onCreate -------------");
+        Log.i(TAG, "-------------------------------------------");
+        Log.i(TAG, "-------------------------------------------");
+        Log.i(TAG, "-------------------------------------------");
+
+        //
+        config = new Config(this.getApplicationContext());
+        AisCoreUtils.setRemoteControllerMode(config.getAppRemoteControllerMode());
+
+        // set gate ID
+        Log.i(TAG, "set gate ID");
+        AisCoreUtils.AIS_GATE_ID = "dom-" + Settings.Secure.getString(this.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        Log.i(TAG, "AIS_GATE_ID: " + AisCoreUtils.AIS_GATE_ID);
+
+        // mDNS
+        Log.i(TAG, "mdns.Start discover gates in local network");
+        mdns.Start(this);
+    }
+
+    @Override
+    public void onTerminate() {
+        // call the superclass method first
+        super.onTerminate();
+        Log.i(TAG, "mdns.Stop discover gates in local network");
+        mdns.Stop();
+    }
+}

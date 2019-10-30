@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/connections_history_list_rec"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="1dp">
+
+    <LinearLayout
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal"
+        android:layout_alignParentLeft="true" >
+
+        <ImageView
+            android:id="@+id/id_delete_connection_img"
+            android:layout_width="50dp"
+            android:layout_height="70dp"
+            android:layout_gravity="end|center_vertical"
+            android:contentDescription="@string/list_connection_history_click_to_delete"
+            android:onClick="deleteConnection"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:src="@drawable/ic_delete_connection_from_history" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="50dp"
+        android:layout_marginLeft="50dp"
+        android:onClick="useConnection"
+        android:orientation="vertical"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp">
+
+        <TextView
+            android:id="@+id/connection_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textColor="@color/bg_gradient_end"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/connection_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/connection_gate_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true" >
+
+        <ImageView
+            android:id="@+id/id_wwww_connection_img"
+            android:layout_width="50dp"
+            android:layout_height="70dp"
+            android:layout_gravity="end|center_vertical"
+            android:contentDescription="@string/list_connection_history_click_to_delete"
+            android:onClick="useInternetConnection"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:src="@drawable/ic_www_connection_from_history" />
+    </LinearLayout>
+
+</RelativeLayout>
