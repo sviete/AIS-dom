@@ -1,10 +1,6 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="ais_dom_main_pref_screen">
-    <PreferenceCategory
-        android:key="ais_dom_list"
-        android:title="@string/title_ais_dom_list"></PreferenceCategory>
-
         <PreferenceCategory
             android:title="@string/title_ais_dom_connection"
             android:key="ais_dom_con_url">

@@ -17,16 +17,11 @@ public class WelcomeActivity extends AppCompatActivity {
     private final String TAG = WelcomeActivity.class.getName();
     private static boolean startup = true;
     public static final String BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE = "BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE";
-    public static Intent rcloneexplorerLaunchIntent;
-    public static Intent spotifyLaunchIntent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        rcloneexplorerLaunchIntent = getPackageManager().getLaunchIntentForPackage("pl.sviete.dom.rcloneexplorer");
-        spotifyLaunchIntent =  getPackageManager().getLaunchIntentForPackage("com.spotify.music");
-
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction().add(android.R.id.content,

@@ -1,14 +1,10 @@
 package pl.sviete.dom;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,10 +19,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,8 +28,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
-
-import pl.sviete.dom.mdns.NsdController;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -169,62 +159,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onResume();
         }
 
-        private void prepareGateList(){
-            Log.i(TAG, "prepareGateList");
-            try {
-                PreferenceCategory category_ais_dom_list = (PreferenceCategory) findPreference("ais_dom_list");
-                category_ais_dom_list.removeAll();
-                Log.i(TAG, "load gates instances from collection ");
-                JSONArray ja = NsdController.get_gates();
-                for (int i = 0; i < ja.length(); i++) {
-                    JSONObject obj = null;
-                    try {
-                        obj = ja.getJSONObject(i);
-                        String N = obj.getString("name");
-                        String G = obj.getString("host");
-                        String P = obj.getString("port");
-                        String A = obj.getString("address");
-                        Log.i(TAG, "adding gate to preferences: " + N + " " + G + " " + P + " " + A);
-                        Preference pref = new Preference(getActivity());
-                        pref.setKey(A);
-                        pref.setTitle(N);
-                        pref.setSummary(A + " (" + G + ")");
-                        pref.setSelectable(true);
-                        pref.setIcon(R.drawable.ic_ais_logo);
-
-                        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                            public boolean onPreferenceClick(Preference preference) {
-                                Config config = new Config(preference.getContext());
-                                String mUrl = "http://" + preference.getKey() + ":8180";
-                                config.setAppLaunchUrl(mUrl, G);
-                                // go to app
-                                if (AisCoreUtils.onWatch()){
-                                    startActivity(new Intent(preference.getContext(), WatchScreenActivity.class));
-                                    return true;
-                                } else {
-                                    startActivity(new Intent(preference.getContext(), BrowserActivityNative.class));
-                                    return true;
-                                }
-
-                            }
-                        });
-                        category_ais_dom_list.addPreference(pref);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
 
         @Override
         public void onStart() {
             super.onStart();
 
-            prepareGateList();
         }
 
         @Override
@@ -241,7 +180,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             PreferenceCategory prefCategoryAbout = (PreferenceCategory) findPreference("pref_category_about");
             PreferenceCategory prefCategorySettings = (PreferenceCategory) findPreference("pref_category_app_settings");
             PreferenceCategory prefCategoryConnHistory = (PreferenceCategory) findPreference("ais_dom_list_history");
-            PreferenceCategory prefCategoryConnList = (PreferenceCategory) findPreference("ais_dom_list");
             PreferenceCategory prefCategoryConnUrl = (PreferenceCategory) findPreference("ais_dom_con_url");
             //
             Preference preferenceVersion = findPreference("pref_ais_dom_version");
@@ -265,8 +203,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                  preferenceVersion.setSummary(versionName + " (client app)");
                  // remove exit preference
                  prefCategoryAbout.removePreference(preferenceExitApp);
-                 //
-                 prepareGateList();
                  //
                  bindPreferenceSummaryToValue(findPreference(getString(R.string.key_setting_app_launchurl)));
 

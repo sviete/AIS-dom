@@ -83,14 +83,13 @@
     <string name="summary_setting_app_beep_on_click">Play a beep sound on remote button click</string>
 
     <string name="title_experimental_settings">EXPERIMENTAL</string>
-    <string name="title_ais_dom_list">DISCOVERED GATEWAYS (click to connect)</string>
     <string name="title_ais_dom_connection">CONNECTION TO GATEWAY</string>
     <string name="title_ais_dom_connections_history">CONNECTIONS HISTORY</string>
 
     <string name="key_setting_app_launchurl">setting_app_launchurl</string>
     <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
-    <string name="default_setting_app_launchurl">http://ais-dom:8180</string>
-    <string name="title_setting_app_launchurl">Gate address</string>
+    <string name="default_setting_app_launchurl"></string>
+    <string name="title_setting_app_launchurl">Gate (id/url)</string>
 
     <string name="title_recent_connections">Recent connections list</string>
     <string name="summary_recent_connections">you can pick position from list to reconnect</string>

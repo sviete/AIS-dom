@@ -64,7 +64,13 @@ public class AisConnectionsHistoryActivity extends Activity {
                 String url = jo_inside.getString("url");
                 String time = jo_inside.getString("time");
                 String gate = jo_inside.getString("host");
-                mConnectionsList.add(new AisConnectionHistHolder(url, name, time, gate));
+                String icon;
+                if (url.contains("paczka.pro")) {
+                    icon = "www";
+                } else {
+                    icon = "local";
+                }
+                mConnectionsList.add(new AisConnectionHistHolder(url, name, time, gate, icon));
             }
 
         } catch (Exception ex) {

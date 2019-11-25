@@ -163,13 +163,6 @@ public class Config {
 
 
     public void setAppLaunchUrl(String url, String host) {
-//        String url_to_set  = url;
-//        if (host.startsWith("dom-")){
-//            if (!AisCoreUtils.onBox()) {
-//                url_to_set = host;
-//            }
-//        }
-
         SharedPreferences.Editor ed = sharedPreferences.edit();
         ed.putString(myContext.getString(R.string.key_setting_app_launchurl), url);
         ed.apply();

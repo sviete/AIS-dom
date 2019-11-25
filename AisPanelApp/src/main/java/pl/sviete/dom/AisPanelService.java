@@ -137,11 +137,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
 
     @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
-
-    }
-
-    @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
 
     }
@@ -196,10 +191,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     }
 
-    @Override
-    public void onPositionDiscontinuity() {
-
-    }
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
@@ -349,7 +340,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         trackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
         trackSelector = new DefaultTrackSelector(trackSelectionFactory);
         loadControl = new DefaultLoadControl();
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(this, renderersFactory, trackSelector, loadControl);
         exoPlayer.addListener(this);
 
         dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "AisDom");

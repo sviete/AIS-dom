@@ -87,64 +87,6 @@
                 android:nextFocusRight="@+id/btnControlModeGesture"
                 android:nextFocusUp="@+id/btnControlModeGesture"/>
 
-            <!--<LinearLayout-->
-                <!--android:id="@+id/btnControlModeOffScreen"-->
-                <!--android:orientation="vertical"-->
-                <!--android:layout_width="80dp"-->
-                <!--android:layout_height="80dp"-->
-                <!--android:layout_alignParentBottom="true"-->
-                <!--android:layout_alignParentRight="true"-->
-                <!--android:layout_marginRight="140dp"-->
-                <!--android:layout_marginBottom="-10dp"-->
-                <!--android:background="?selectableItemBackgroundBorderless"-->
-                <!--android:gravity="center"-->
-                <!--android:focusable="true"-->
-                <!--android:nextFocusUp="@+id/btnControlModeOnScreen"-->
-                <!--android:nextFocusRight="@+id/btnControlModeOnScreen"-->
-                <!--android:nextFocusLeft="@+id/ais_recognition_view"-->
-                <!--android:nextFocusDown="@+id/ais_recognition_view">-->
-                <!--<com.github.zagum.switchicon.SwitchIconView-->
-                    <!--android:id="@+id/switchControlModeOffScreen"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:padding="8dp"-->
-                    <!--app:si_animation_duration="500"-->
-                    <!--app:si_disabled_alpha=".3"-->
-                    <!--app:si_disabled_color="#b7b7b7"-->
-                    <!--app:si_tint_color="#ff3c00"-->
-                    <!--app:si_enabled="false"-->
-                    <!--app:si_no_dash="false"-->
-                    <!--app:srcCompat="@drawable/ic_remote_controller_bg"/>-->
-            <!--</LinearLayout>-->
-            <!--<LinearLayout-->
-                <!--android:id="@+id/btnControlModeOnScreen"-->
-                <!--android:orientation="vertical"-->
-                <!--android:layout_width="80dp"-->
-                <!--android:layout_height="80dp"-->
-                <!--android:layout_alignParentBottom="true"-->
-                <!--android:layout_alignParentRight="true"-->
-                <!--android:layout_marginRight="70dp"-->
-                <!--android:layout_marginBottom="-10dp"-->
-                <!--android:background="?selectableItemBackgroundBorderless"-->
-                <!--android:gravity="center"-->
-                <!--android:focusable="true"-->
-                <!--android:nextFocusUp="@+id/btnControlModeGesture"-->
-                <!--android:nextFocusRight="@+id/btnControlModeGesture"-->
-                <!--android:nextFocusLeft="@+id/btnControlModeOffScreen"-->
-                <!--android:nextFocusDown="@+id/btnControlModeOffScreen">-->
-                <!--<com.github.zagum.switchicon.SwitchIconView-->
-                    <!--android:id="@+id/switchControlModeOnScreen"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:padding="8dp"-->
-                    <!--app:si_animation_duration="500"-->
-                    <!--app:si_disabled_alpha=".3"-->
-                    <!--app:si_disabled_color="#b7b7b7"-->
-                    <!--app:si_tint_color="#ff3c00"-->
-                    <!--app:si_enabled="false"-->
-                    <!--app:si_no_dash="false"-->
-                    <!--app:srcCompat="@drawable/ic_monitor_control_bg"/>-->
-            <!--</LinearLayout>-->
             <LinearLayout
                 android:id="@+id/btnControlModeGesture"
                 android:orientation="vertical"

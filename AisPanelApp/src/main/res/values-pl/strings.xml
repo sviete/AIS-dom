@@ -75,15 +75,14 @@
     <string name="title_activity_browser">AIS dom</string>
 
     <string name="title_experimental_settings">EKSPERYMENTALNE</string>
-    <string name="title_ais_dom_list">WYKRYTE BRAMKI (wybierz aby połączyć)</string>
     <string name="title_ais_dom_connection">AKTYWNE POŁĄCZENIE Z BRAMKĄ</string>
     <string name="title_ais_dom_connections_history">HISTORIA POŁĄCZEŃ</string>
 
 
     <string name="key_setting_app_launchurl">setting_app_launchurl</string>
     <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
-    <string name="default_setting_app_launchurl">http://ais-dom:8180</string>
-    <string name="title_setting_app_launchurl">Adres bramki</string>
+    <string name="default_setting_app_launchurl"></string>
+    <string name="title_setting_app_launchurl">Branka (id/url)</string>
 
     <string name="title_recent_connections">Lista ostatnich połączeń</string>
     <string name="summary_recent_connections">możesz wybrać pozycję z listy by połączyć ponownie</string>
