@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="70dp"
+    android:padding="1dp">
+
+    <Button
+        android:id="@+id/edit_gate_id_bnutton"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:drawableBottom="@drawable/ic_edit_gate_id_icon"
+        android:onClick="xxx"
+        android:text="@string/button_edit_gate_id"></Button>
+
+    <Button
+        android:id="@+id/scan_gate_id_bnutton"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:drawableBottom="@drawable/ic_scan_gate_id_icon"
+        android:onClick="resetearBD"
+        android:text="@string/button_scan_gate_id">
+
+    </Button>
+</LinearLayout>

@@ -175,7 +175,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // get version info
             String versionName = BuildConfig.VERSION_NAME;
 
-            // hide some options on gate / phone
+            // hide some options on watch / phone
             PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("ais_dom_main_pref_screen");
             PreferenceCategory prefCategoryAbout = (PreferenceCategory) findPreference("pref_category_about");
             PreferenceCategory prefCategorySettings = (PreferenceCategory) findPreference("pref_category_app_settings");
@@ -183,28 +183,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             PreferenceCategory prefCategoryConnUrl = (PreferenceCategory) findPreference("ais_dom_con_url");
             //
             Preference preferenceVersion = findPreference("pref_ais_dom_version");
-            Preference preferenceAppReset = findPreference("pref_ais_dom_app_reset");
-            Preference preferenceGoToSpotify = findPreference("pref_ais_dom_spotify");
-            Preference preferenceExitApp = findPreference("pref_ais_dom_exit");
             Preference preferenceRemote = findPreference("setting_app_remotemode");
             Preference preferenceAppDisco = findPreference("setting_app_discovery");
-            Preference preferenceAppBeepOnClick = findPreference("setting_app_beep_on_click");
             Preference preferenceAppTtsVoice = findPreference("setting_app_tts_voice");
             Preference preferenceAppZoomLevel = findPreference("setting_test_zoomlevel");
             Preference preferenceGesture = findPreference("pref_ais_dom_list_gesture");
 
 
-                 prefCategorySettings.removePreference(preferenceRemote);
-                 // remove beep on click
-                 prefCategorySettings.removePreference(preferenceAppBeepOnClick);
-                 // remove reset preference
-                 prefCategoryAbout.removePreference(preferenceAppReset);
-                 // set info in version
-                 preferenceVersion.setSummary(versionName + " (client app)");
-                 // remove exit preference
-                 prefCategoryAbout.removePreference(preferenceExitApp);
-                 //
-                 bindPreferenceSummaryToValue(findPreference(getString(R.string.key_setting_app_launchurl)));
+            prefCategorySettings.removePreference(preferenceRemote);
+            // set info in version
+            preferenceVersion.setSummary(versionName + " (client app)");
+            //
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.key_setting_app_launchurl)));
 
                  // on watch
                 if (AisCoreUtils.onWatch()){

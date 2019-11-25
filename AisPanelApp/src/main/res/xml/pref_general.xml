@@ -5,11 +5,18 @@
             android:title="@string/title_ais_dom_connection"
             android:key="ais_dom_con_url">
             <EditTextPreference
+                android:dialogIcon="@drawable/ic_ais_logo_small_21_29"
+                android:icon="@drawable/ic_ais_logo_small_21_29"
+                android:key="@string/key_setting_app_launchurl"
                 android:selectAllOnFocus="true"
                 android:singleLine="true"
-                android:title="@string/title_setting_app_launchurl"
-                android:key="@string/key_setting_app_launchurl"
-                android:icon="@drawable/ic_gate_connection"/>
+                android:title="@string/title_setting_app_launchurl" />
+            <Preference
+                android:key="key_setting_app_launchurl_buttons"
+                android:title="@string/title_setting_app_launchurl_info_title"
+                android:summary="@string/title_setting_app_launchurl_info_summary"
+                android:widgetLayout="@layout/pref_scan_button"
+                ></Preference>
         </PreferenceCategory>
         <PreferenceCategory
             android:title="@string/title_ais_dom_connections_history"
@@ -43,12 +50,6 @@
                 android:summary="@string/summary_setting_app_remotecontrollermode"
                 android:key="@string/key_setting_app_remotecontrollermode"
                 android:icon="@drawable/ic_controle_mode"/>
-            <SwitchPreference
-                android:key="@string/key_setting_app_beep_on_click"
-                android:defaultValue="@string/default_setting_app_beep_on_click"
-                android:title="@string/title_setting_app_beep_on_click"
-                android:summary="@string/summary_setting_app_beep_on_click"
-                android:icon="@drawable/ic_beep_on_click"/>
             <ListPreference
                 android:defaultValue="@string/default_setting_app_tts_voice"
                 android:entries="@array/tts_voice_names"
@@ -79,22 +80,11 @@
         <PreferenceCategory
             android:title="@string/pref_ais_about_app"
             android:key="pref_category_about">
-            <PreferenceScreen android:key="pref_ais_dom_app_reset"
-                android:title="@string/pref_ais_dom_reset_title"
-                android:summary="@string/pref_ais_dom_reset_summary"
-                android:icon="@drawable/ic_app_restore">
-            </PreferenceScreen>
             <PreferenceScreen android:key="pref_ais_dom_version"
                 android:summary="1.0"
                 android:title="www.ai-speaker.com"
-                android:icon="@drawable/ic_ais_logo_small_21_29">
-            </PreferenceScreen>
-            <PreferenceScreen android:key="pref_ais_dom_exit"
-                android:title="@string/pref_ais_dom_exit_title"
-                android:summary="@string/pref_ais_dom_exit_summary"
-                android:icon="@drawable/ic_app_exit">
+                android:icon="@drawable/ic_app_info">
             </PreferenceScreen>
     </PreferenceCategory>
-
 </PreferenceScreen>
 

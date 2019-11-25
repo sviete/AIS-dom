@@ -75,15 +75,18 @@
     <string name="title_activity_browser">AIS dom</string>
 
     <string name="title_experimental_settings">EKSPERYMENTALNE</string>
-    <string name="title_ais_dom_connection">AKTYWNE POŁĄCZENIE Z BRAMKĄ</string>
+    <string name="title_ais_dom_connection">POŁĄCZENIE Z BRAMKĄ</string>
     <string name="title_ais_dom_connections_history">HISTORIA POŁĄCZEŃ</string>
 
 
     <string name="key_setting_app_launchurl">setting_app_launchurl</string>
     <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
     <string name="default_setting_app_launchurl"></string>
-    <string name="title_setting_app_launchurl">Branka (id/url)</string>
-
+    <string name="title_setting_app_launchurl">Identyfikator lub url</string>
+    <string name="title_setting_app_launchurl_info_title">identyfikator bramki.</string>
+    <string name="title_setting_app_launchurl_info_summary">Możesz wprowadzić go za pomocą aparatu (skanując kod QR) lub wpisać ręcznie.</string>
+    <string name="button_edit_gate_id">Edytuj</string>
+    <string name="button_scan_gate_id">Skanuj</string>
     <string name="title_recent_connections">Lista ostatnich połączeń</string>
     <string name="summary_recent_connections">możesz wybrać pozycję z listy by połączyć ponownie</string>
 
@@ -102,9 +105,7 @@
     <string name="summary_setting_app_discovery">pozwól na wykrywanie urządzenia jako odtwarzacza w sieci</string>
     <string name="default_setting_app_discovery">false</string>
 
-    <string name="key_setting_app_beep_on_click">setting_app_beep_on_click</string>
     <string name="default_setting_app_beep_on_click">true</string>
-    <string name="title_setting_app_beep_on_click">Sygnał dźwiękowy po kliknięciu</string>
     <string name="summary_setting_app_beep_on_click">Odtwórz sygnał dźwiękowy po kliknięciu przycisku na pilocie w trybie sterowania bez monitora</string>
 
     <string name="key_setting_android_browsertype">setting_android_browsertype</string>
@@ -204,9 +205,7 @@
     <string name="back_to_exit">Naciśnij ponownie by wyjść z aplikacji</string>
     <string name="pref_ais_dom_console_title">Konsola</string>
     <string name="pref_ais_dom_console_summary">konsola pozwala na dostęp do wszystkich zaawansowanych funkcjonalności systemu</string>
-    <string name="pref_ais_dom_spotify_title">Spotify</string>
     <string name="pref_ais_dom_spotify_summary">przejdz do Spotify</string>
-    <string name="pref_ais_dom_exit_title">Wyjście</string>
     <string name="pref_ais_dom_exit_summary">naciśnij by wyjść z aplikacji</string>
     <string name="pref_ais_about_app">WERSJA APLIKACJI</string>
 
@@ -237,6 +236,9 @@
     <string name="ais_dom_button_gesture">Sterowanie gestami</string>
     <string name="ais_dom_button_mic">Mikrofon</string>
     <string name="ais_dom_button_settings">Ustawienia aplikacji</string>
+    <string name="gesture_imge_text">TODO</string>
+    <string name="gesture_menu_item_options">TODO</string>
+    <string name="gesture_id">gesture id</string>
 
 
 </resources>
