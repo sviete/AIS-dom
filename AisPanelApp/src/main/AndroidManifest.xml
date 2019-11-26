@@ -147,7 +147,11 @@
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
-
+        <activity android:name="pl.sviete.dom.ScannerActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
         <activity android:name="pl.sviete.dom.connhist.AisConnectionsHistoryActivity"
             android:label="@string/list_connection_history"
             android:theme="@style/AppThemeActionBar">

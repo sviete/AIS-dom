@@ -87,29 +87,6 @@ public class AisConnectionsHistoryActivity extends Activity {
         onResume();
     }
 
-    public void useInternetConnection(View view){
-        RelativeLayout vwParentRow = (RelativeLayout)view.getParent().getParent();
-        TextView tv = (TextView)vwParentRow.findViewById(R.id.connection_gate_id);
-        String mCurrentGate = tv.getText().toString();
-        TextView tv2 = (TextView)vwParentRow.findViewById(R.id.connection_name);
-        String mCurrentName = tv.getText().toString();
-
-        Config config  = new Config(getApplicationContext());
-
-
-        if (mCurrentGate.startsWith("dom-")){
-            mCurrentName = "https://" + mCurrentGate + ".paczka.pro";
-            config.setAppLaunchUrl(mCurrentName, mCurrentGate);
-        } else{
-            config.setAppLaunchUrl(mCurrentName, mCurrentGate);
-        }
-        // go to app
-        if (AisCoreUtils.onWatch()){
-            startActivity(new Intent(getApplicationContext(), WatchScreenActivity.class));
-        } else {
-            startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
-        }
-    }
 
     public void useConnection(View view){
         TextView tvConnName = (TextView)view.findViewById(R.id.connection_name);
@@ -119,7 +96,7 @@ public class AisConnectionsHistoryActivity extends Activity {
         String mCurrentGate = tvGate.getText().toString();
 
         Config config  = new Config(getApplicationContext());
-        config.setAppLaunchUrl(mCurrentName, mCurrentGate);
+        config.setAppLaunchUrl(mCurrentName, mCurrentGate, "history");
         // go to app
         if (AisCoreUtils.onWatch()){
             startActivity(new Intent(getApplicationContext(), WatchScreenActivity.class));

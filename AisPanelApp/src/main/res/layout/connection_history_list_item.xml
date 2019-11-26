@@ -75,7 +75,7 @@
             android:layout_height="70dp"
             android:layout_gravity="end|center_vertical"
             android:contentDescription="@string/list_connection_history_click_to_delete"
-            android:onClick="useInternetConnection"
+            android:onClick="useConnection"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:src="@drawable/ic_www_connection_from_history" />

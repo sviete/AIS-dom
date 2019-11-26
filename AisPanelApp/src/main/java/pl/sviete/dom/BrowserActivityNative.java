@@ -59,10 +59,11 @@ public class BrowserActivityNative extends BrowserActivity {
         final Config config = new Config(this.getApplicationContext());
         final String appLaunchUrl = config.getAppLaunchUrl();
         // to save/up the connection in history
-        config.setAppLaunchUrl(appLaunchUrl, null);
+        config.setAppLaunchUrl(appLaunchUrl, appLaunchUrl, "browser");
 
-        //
-        AisCoreUtils.mWebView.clearCache(true);
+
+        // TODO check this....
+        // AisCoreUtils.mWebView.clearCache(true);
         //
         Locale current_locale;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){

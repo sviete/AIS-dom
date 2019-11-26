@@ -88,8 +88,8 @@
     <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
     <string name="default_setting_app_launchurl"></string>
     <string name="title_setting_app_launchurl">Gate (id/url)</string>
-    <string name="title_setting_app_launchurl_info_title">Edit your unique Gate ID.</string>
-    <string name="title_setting_app_launchurl_info_summary">You can enter it via qr code scanner or enter manually.</string>
+    <string name="title_setting_app_launchurl_info_title">Scan your unique Gate ID.</string>
+    <string name="title_setting_app_launchurl_info_summary">You can enter it via qr code scanner.</string>
     <string name="button_edit_gate_id">Edit</string>
     <string name="button_scan_gate_id">Scan</string>
 
@@ -126,9 +126,15 @@
         all you have to do is click OK.</string>
     <string name="crash_dialog_comment_prompt">Please add your comment below:</string>
     <string name="crash_dialog_ok_toast">Thanks, we will take care of this issue!</string>
+    <!--CAMERA SCANNER-->
+    <string name="cammera_button_ok">OK</string>
+    <string name="cammera_button_cancel">Cancel</string>
+    <string name="cammera_permissions_dialog_info">You need to allow access permissions</string>
+    <string name="cammera_permissions_denied_title">Permission Denied</string>
+    <string name="cammera_wrong_code_dialog_info">This gate code %1$s is wrong.\n\n Can you try again?</string>
+
     <!--TTS-->
     <string name="action_settings">Settings</string>
-    <string name="speech_prompt">Powiedz.co&#8230;</string>
     <string name="speech_not_supported">Sorry! It looks like the device does not support voice commands.</string>
 
     <string name="application_name">AIS-dom</string>
@@ -159,9 +165,6 @@
     <string name="select_url_no_found">URLs not found in the terminal.</string>
     <string name="select_url_copied_to_clipboard">URL copied to the clipboard</string>
     <string name="share_transcript_chooser_title">Send text to:</string>
-
-    <string name="kill_process">Kill process (%d)</string>
-    <string name="confirm_kill_process">Should I really kill this session?</string>
 
     <string name="session_rename_title">Set the name of the session</string>
     <string name="session_rename_positive_button">Set</string>

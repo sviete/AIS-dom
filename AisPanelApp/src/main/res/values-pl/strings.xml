@@ -83,8 +83,8 @@
     <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
     <string name="default_setting_app_launchurl"></string>
     <string name="title_setting_app_launchurl">Identyfikator lub url</string>
-    <string name="title_setting_app_launchurl_info_title">identyfikator bramki.</string>
-    <string name="title_setting_app_launchurl_info_summary">Możesz wprowadzić go za pomocą aparatu (skanując kod QR) lub wpisać ręcznie.</string>
+    <string name="title_setting_app_launchurl_info_title">Skanowanie identyfikatora.</string>
+    <string name="title_setting_app_launchurl_info_summary">Możesz wprowadzić identyfikator bramki skanując kod QR dostępny w aplikacji Asystent domowy za pomocą aparatu.</string>
     <string name="button_edit_gate_id">Edytuj</string>
     <string name="button_scan_gate_id">Skanuj</string>
     <string name="title_recent_connections">Lista ostatnich połączeń</string>
@@ -128,9 +128,16 @@
         wszystko co musisz zrobić, to kliknąć OK.</string>
     <string name="crash_dialog_comment_prompt">Proszę dodaj swój komentarz poniżej:</string>
     <string name="crash_dialog_ok_toast">Dzięki, zajmiemy się tym!</string>
+
+    <!--CAMMERA SCANNER-->
+    <string name="cammera_button_ok">OK</string>
+    <string name="cammera_button_cancel">Anuluj</string>
+    <string name="cammera_permissions_dialog_info">Żeby można było skanować kod, aplikacja musi mieć dostęp do kamery.</string>
+    <string name="cammera_permissions_denied_title">Brak dostępu do kamery</string>
+    <string name="cammera_wrong_code_dialog_info">Identyfikator bramki %1$s niepoprawny.\n\n Czy chcesz spróbować ponownie?</string>
+
     <!--TTS-->
     <string name="action_settings">Ustawienia</string>
-    <string name="speech_prompt">Powiedz.co&#8230;</string>
     <string name="speech_not_supported">Przepraszamy! Wygląda na to, że urządzenie nie wspiera głosowych komend.</string>
 
     <string name="application_name">AIS-dom</string>
@@ -161,9 +168,6 @@
     <string name="select_url_no_found">Nie znaleziono adresów URL w terminalu.</string>
     <string name="select_url_copied_to_clipboard">URL skopiowany do schowka</string>
     <string name="share_transcript_chooser_title">Wyślij text do:</string>
-
-    <string name="kill_process">Zabij proces (%d)</string>
-    <string name="confirm_kill_process">Czy mam naprawdę zabić tą sesję?</string>
 
     <string name="session_rename_title">Ustaw nazwę sesji</string>
     <string name="session_rename_positive_button">Ustaw</string>

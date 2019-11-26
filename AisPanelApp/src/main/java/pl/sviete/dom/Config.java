@@ -1,6 +1,7 @@
 package pl.sviete.dom;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -9,14 +10,9 @@ import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
 import com.koushikdutta.async.callback.DataCallback;
 import com.koushikdutta.async.future.Future;
-import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.AsyncHttpClient;
-import com.koushikdutta.async.http.AsyncHttpGet;
 import com.koushikdutta.async.http.AsyncHttpResponse;
-import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.async.http.callback.HttpConnectCallback;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import pl.sviete.dom.connhist.AisConnectionHistJSON;
@@ -99,39 +95,89 @@ public class Config {
         try {
             // ask cloud for local IP
             // https://powiedz.co/ords/dom/dom/gate_ip_info?id=dom-abaa0803afcda623
-            String wsUrl = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_full_info?id=" + gateId;
-            // url is the URL to download.
+            String wsUrl = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_info?id=" + gateId;
             AsyncHttpClient client = AsyncHttpClient.getDefaultInstance();
             Future<AsyncHttpResponse> rF = client.execute(wsUrl, new HttpConnectCallback() {
                 // Callback is invoked with any exceptions/errors, and the result, if available.
                 public void onConnectCompleted(Exception e, AsyncHttpResponse resp) {
                     if (e != null) {
-                        Log.e(TAG, e.toString());
+                        tryCloudConnection(gateId);
+                        e.printStackTrace();
                         return;
                     }
+
                     resp.setDataCallback(new DataCallback() {
                         public void onDataAvailable(DataEmitter dataEmitter, ByteBufferList byteBufferList) {
-                            String bb = byteBufferList.readString();
-                            Log.d(TAG, "I got some answer " + bb);
+                            String localIP = byteBufferList.readString();
                             // note that this data has been read
                             byteBufferList.recycle();
-                            // get IP from cloud
-                            String ip = "";
-                            try {
-                                JSONObject jsonAnswer = new JSONObject(bb);
-                                ip = jsonAnswer.getString("ip");
-                                Log.d(TAG, "We have local IP" + bb);
 
-                            } catch (Exception el) {
-                                Log.e(TAG, el.toString());
+                            // save and redirect if not on watch
+                            localIP = localIP.replace("###ais###", "");
+                            localIP = localIP.replace("###dom###", "");
+                            localIP = localIP.trim();
+                            if (localIP.equals("ais-dom")) {
+                                // wrong gate id
+                                tryCloudConnection(gateId);
                             }
+                            tryLocalConnection(localIP, gateId);
                         }
                     });
-                    Log.d(TAG, "I got a response in callback: ");
                 }
             });
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
+        } catch (Exception e)  {
+            tryCloudConnection(gateId);
+            Log.e("getGateIpFromCloud e: ", e.toString());
+        }
+    }
+
+    public void tryCloudConnection(String gateId){
+        String url = "https://" +gateId + ".powiedz.co";
+        pl.sviete.dom.AisCoreUtils.setAisDomUrl(url);
+        if (!pl.sviete.dom.AisCoreUtils.onWatch()){
+            // redirect browser...
+            Intent intent = new Intent(BrowserActivity.BROADCAST_ACTION_LOAD_URL);
+            intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, url);
+            myContext.startActivity(intent);
+        }
+    }
+
+    public void tryLocalConnection(String gateIP, String gateID){
+        try {
+            // check local IP
+            String wsUrl = "http://" + gateIP + ":8122";
+            AsyncHttpClient client = AsyncHttpClient.getDefaultInstance();
+            Future<AsyncHttpResponse> rF = client.execute(wsUrl, new HttpConnectCallback() {
+                // Callback is invoked with any exceptions/errors, and the result, if available.
+                public void onConnectCompleted(Exception e, AsyncHttpResponse resp) {
+                    if (e != null) {
+                        tryCloudConnection(gateID);
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    resp.setDataCallback(new DataCallback() {
+                        public void onDataAvailable(DataEmitter dataEmitter, ByteBufferList byteBufferList) {
+                            String localIP = byteBufferList.readString();
+                            // TODO compare the gate ID with JSON answer from gate "gate_id":"dom-c5fbba736429c4fc"
+                            // note that this data has been read
+                            byteBufferList.recycle();
+                            String url = "http://" +localIP + ":8180";
+                            pl.sviete.dom.AisCoreUtils.setAisDomUrl(url);
+                            if (!pl.sviete.dom.AisCoreUtils.onWatch()){
+                                // redirect browser...
+                                Intent intent = new Intent(BrowserActivity.BROADCAST_ACTION_LOAD_URL);
+                                intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, url);
+                                myContext.startActivity(intent);
+                            }
+
+                        }
+                    });
+                }
+            });
+        } catch (Exception e)  {
+            tryCloudConnection(gateID);
+            Log.e("getGateIpFromCloud e: ", e.toString());
         }
     }
 
@@ -141,13 +187,9 @@ public class Config {
         url = getStringPref(R.string.key_setting_app_launchurl, R.string.default_setting_app_launchurl);
             // if the url is gate id
             if (url.startsWith("dom-")){
-                getGateIpFromCloud(url);
-                // async get
-                url = "https://" + url + ".paczka.pro";
+                // TODO sync get then redirect...
+                // getGateIpFromCloud(url);
             }
-
-
-        //
         pl.sviete.dom.AisCoreUtils.setAisDomUrl(url);
         return url;
     }
@@ -162,27 +204,37 @@ public class Config {
     }
 
 
-    public void setAppLaunchUrl(String url, String host) {
+    public void setAppLaunchUrl(String url, String gate, String source) {
+        Log.w(TAG, "---------------------------------");
+        Log.w(TAG, "---------------------------------");
+        Log.w(TAG, "source " + source);
+        Log.w(TAG, "---------------------------------");
+        Log.w(TAG, "---------------------------------");
+        String launchurl = url;
+        String localUrl = "";
+        if (source.equals("scan")) {
+            launchurl = gate;
+        } else if (source.equals("browser")){
+            launchurl = url;
+        } else if (source.equals("history")){
+            launchurl = url;
+        }
+
         SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putString(myContext.getString(R.string.key_setting_app_launchurl), url);
+        ed.putString(myContext.getString(R.string.key_setting_app_launchurl), launchurl);
         ed.apply();
         //
-        pl.sviete.dom.AisCoreUtils.setAisDomUrl(url);
-
-        //
-        // save in file
-        //
-        try {
-            JSONObject mNewConn = new JSONObject();
-            mNewConn.put("name", url);
-            mNewConn.put("url", url);
-            if (host != null) {
-                mNewConn.put("host", host);
+        if (source.equals("browser")) {
+            // save in file only if we are using browser
+            try {
+                JSONObject mNewConn = new JSONObject();
+                mNewConn.put("name", url);
+                mNewConn.put("url", url);
+                mNewConn.put("host", gate);
+                AisConnectionHistJSON.addConnection(myContext, mNewConn.toString());
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
             }
-            AisConnectionHistJSON.addConnection(myContext, mNewConn.toString());
-        }
-        catch (Exception e) {
-            Log.e(TAG, e.toString());
         }
     }
 

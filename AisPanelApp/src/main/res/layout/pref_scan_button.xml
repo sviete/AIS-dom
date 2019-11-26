@@ -10,8 +10,7 @@
         style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:drawableBottom="@drawable/ic_edit_gate_id_icon"
-        android:onClick="xxx"
+        android:drawableTop="@drawable/ic_edit_gate_id_icon"
         android:text="@string/button_edit_gate_id"></Button>
 
     <Button
@@ -19,8 +18,7 @@
         style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:drawableBottom="@drawable/ic_scan_gate_id_icon"
-        android:onClick="resetearBD"
+        android:drawableTop="@drawable/ic_scan_gate_id_icon"
         android:text="@string/button_scan_gate_id">
 
     </Button>

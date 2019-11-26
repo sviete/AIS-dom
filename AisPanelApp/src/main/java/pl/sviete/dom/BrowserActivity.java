@@ -111,9 +111,9 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         mSwitchIconModeGesture = (SwitchIconView) findViewById(R.id.switchControlModeGesture);
         mButtonModeGesture = findViewById(R.id.btnControlModeGesture);
 
-        mButtonModeGesture.setOnClickListener(new View.OnClickListener() {
+        mButtonModeGesture.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                     gestureOverlayView = (GestureOverlayView) findViewById(R.id.gesturesOverlay);
 
                     if (mSwitchIconModeGesture.isIconEnabled()) {
@@ -133,6 +133,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
                     }
 
+                return true;
             }
         });
 

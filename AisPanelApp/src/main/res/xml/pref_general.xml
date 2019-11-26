@@ -11,12 +11,12 @@
                 android:selectAllOnFocus="true"
                 android:singleLine="true"
                 android:title="@string/title_setting_app_launchurl" />
-            <Preference
-                android:key="key_setting_app_launchurl_buttons"
+            <PreferenceScreen
+                android:icon="@drawable/ic_scan_gate_id_icon"
+                android:key="button_scan_gate_id"
                 android:title="@string/title_setting_app_launchurl_info_title"
-                android:summary="@string/title_setting_app_launchurl_info_summary"
-                android:widgetLayout="@layout/pref_scan_button"
-                ></Preference>
+                android:summary="@string/title_setting_app_launchurl_info_summary">
+            </PreferenceScreen>
         </PreferenceCategory>
         <PreferenceCategory
             android:title="@string/title_ais_dom_connections_history"
