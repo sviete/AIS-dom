@@ -31,9 +31,9 @@ public class AisConnectionHistJSON {
             // add
             String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
             mConn.put("time", timeStamp);
-            JSONArray mConnArray = new JSONArray(AisConnectionHistJSON.getData(context));
+            JSONArray mConnArray = new JSONArray(AisConnectionHistJSON.getHistoryConnectionsData(context));
             mConnArray.put(mConn);
-            saveData(context, mConnArray.toString());
+            saveHistoryConnectionsData(context, mConnArray.toString());
 
 
         }catch (Exception e) {
@@ -43,14 +43,14 @@ public class AisConnectionHistJSON {
 
     public static void delConnection(Context context, String mConUrl){
         try{
-            JSONArray mConnArray = new JSONArray(AisConnectionHistJSON.getData(context));
+            JSONArray mConnArray = new JSONArray(AisConnectionHistJSON.getHistoryConnectionsData(context));
             for (int i = 0; i < mConnArray.length(); i++) {
                 JSONObject mConObj = mConnArray.getJSONObject(i);
                 if (mConObj.getString("url").equals(mConUrl)){
                     mConnArray.remove(i);
                 }
             }
-            saveData(context, mConnArray.toString());
+            saveHistoryConnectionsData(context, mConnArray.toString());
 
 
         }catch (Exception e) {
@@ -58,7 +58,23 @@ public class AisConnectionHistJSON {
         }
     }
 
-    public static void saveData(Context context, String mJsonResponse) {
+    public static String getLocalIpForGate(Context context, String gateId){
+        try{
+            JSONArray mConnArray = new JSONArray(AisConnectionHistJSON.getHistoryConnectionsData(context));
+            for (int i = 0; i < mConnArray.length(); i++) {
+                JSONObject mConObj = mConnArray.getJSONObject(i);
+                if (mConObj.getString("gate").equals(gateId)){
+                    return mConObj.getString("ip");
+                }
+            }
+
+        }catch (Exception e) {
+            Log.e(TAG, "Error in Reading: " + e.toString());
+        }
+        return "";
+    }
+
+    public static void saveHistoryConnectionsData(Context context, String mJsonResponse) {
         try {
             FileWriter file = new FileWriter(context.getFilesDir().getPath() + "/" + fileName);
             file.write(mJsonResponse);
@@ -69,7 +85,7 @@ public class AisConnectionHistJSON {
         }
     }
 
-    public static String getData(Context context) {
+    public static String getHistoryConnectionsData(Context context) {
         String jsonArray = "[]";
         try {
             File f = new File(context.getFilesDir().getPath() + "/" + fileName);

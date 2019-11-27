@@ -14,10 +14,10 @@
     <color name="black">#000000</color>
 
     <!--    Welcome wizard-->
-    <color name="page1">#ff21B8AC</color>
-    <color name="page2">#ff218AB8</color>
-    <color name="page3">#ff21A5B8</color>
-    <color name="page4">#ff1F8B9B</color>
+    <color name="page1">#ffbd77</color>
+    <color name="page2">#f69562</color>
+    <color name="page3">#d04400</color>
+    <color name="page4">#66000000</color>
 
     <color name="rocket">#e55555</color>
     <color name="avatar1">#e1f4f8</color>

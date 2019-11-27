@@ -120,7 +120,7 @@ public class ScannerActivity extends Activity
             Toast.makeText(getApplicationContext(), scan, Toast.LENGTH_SHORT).show();
             // save code and go to browser
             final Config config = new Config(this.getApplicationContext());
-            config.setAppLaunchUrl(scan, scan, "scan");
+            config.setAppLaunchUrl(scan);
             startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
         } else {
             Toast.makeText(getApplicationContext(), getString(R.string.cammera_permissions_denied_title), Toast.LENGTH_SHORT).show();

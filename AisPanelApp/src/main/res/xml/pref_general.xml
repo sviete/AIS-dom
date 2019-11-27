@@ -2,6 +2,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="ais_dom_main_pref_screen">
     <PreferenceCategory
+        android:key="ais_dom_wizard"
+        android:title="@string/title_ais_dom_wizard_section">
+        <PreferenceScreen
+            android:icon="@drawable/ic_run_wizard"
+            android:key="button_run_ais_dom_wizard"
+            android:summary="@string/title_setting_run_wizard_summary"
+            android:title="@string/title_setting_run_wizard_title">
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory
         android:key="ais_dom_con_url"
         android:title="@string/title_ais_dom_connection">
         <EditTextPreference

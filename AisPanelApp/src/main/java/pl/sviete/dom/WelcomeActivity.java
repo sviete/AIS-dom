@@ -11,7 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
 
-import com.redbooth.WelcomeCoordinatorLayout;
+import com.redbooth.wizard.MainActivity;
 
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -48,34 +48,15 @@ public class WelcomeActivity extends AppCompatActivity {
                 AisCoreUtils.AIS_DEVICE_TYPE = "MOB";
             }
 
-
-            // go to correct activity
-            Log.i(TAG, "Redirect to correct screen");
-            redirectToActivity();
-
         }
 
 
         setTitle(getString(R.string.ais_dom_app_name_client));
 
-
-        // TODO if first run...
-        initializeWelcomePages();
-
-
         //
         startup = false;
     }
 
-    private void initializeWelcomePages() {
-        // TODO
-//        final WelcomeCoordinatorLayout coordinatorLayout
-//                = (WelcomeCoordinatorLayout)findViewById(R.id.coordinator);
-//        coordinatorLayout.addPage(R.layout.welcome_page_1,
-//                R.layout.welcome_page_2,
-//                R.layout.welcome_page_3,
-//                R.layout.welcome_page_4);
-    }
 
 
     @Override
@@ -103,6 +84,9 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void redirectToActivity(){
+           // TODO
+           // startWizardActivity();
+
             // on client
             if (AisCoreUtils.onWatch()) {
                 Log.i(TAG, "On client. Go to watch on Startup");
@@ -118,16 +102,15 @@ public class WelcomeActivity extends AppCompatActivity {
         startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
     }
 
-    private void startSplashScreenActivity() {
-        Log.d(TAG, "startSplashScreenActivity Called");
-        startActivity(new Intent(getApplicationContext(), SplashScreenActivity.class));
-    }
-
-
 
     private void startWatchActivity() {
         Log.d(TAG, "startWatchActivity Called");
         startActivity(new Intent(getApplicationContext(), WatchScreenActivity.class));
+    }
+
+    private void startWizardActivity() {
+        Log.d(TAG, "startWizardActivity Called");
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
     }
 
 

@@ -22,17 +22,15 @@
  *
  * Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
  */
-package pl.sviete.dom.welcome.animators;
+package com.redbooth.wizard.animators;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
-import android.view.animation.BounceInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import pl.sviete.dom.R;
-
 
 public class InSyncAnimator {
     private AnimatorSet animator;

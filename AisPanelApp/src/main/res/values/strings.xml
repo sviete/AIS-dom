@@ -80,6 +80,7 @@
     <string name="default_setting_app_beep_on_click">true</string>
     <string name="summary_setting_app_beep_on_click">Play a beep sound on remote button click</string>
 
+    <string name="title_ais_dom_wizard_section">SETTINGS WIZARD</string>
     <string name="title_experimental_settings">EXPERIMENTAL</string>
     <string name="title_ais_dom_connection">CONNECTION TO GATEWAY</string>
     <string name="title_ais_dom_connections_history">CONNECTIONS HISTORY</string>
@@ -92,6 +93,9 @@
     <string name="title_setting_app_launchurl_info_summary">You can enter it via qr code scanner.</string>
     <string name="button_edit_gate_id">Edit</string>
     <string name="button_scan_gate_id">Scan</string>
+
+    <string name="title_setting_run_wizard_title">Run configuration wizard.</string>
+    <string name="title_setting_run_wizard_summary">You can ran configuration wizard to easy set all settings.</string>
 
     <string name="title_recent_connections">Recent connections list</string>
     <string name="summary_recent_connections">you can pick position from list to reconnect</string>
@@ -245,6 +249,15 @@
     <string name="gesture_menu_item_options">TODO</string>
     <string name="gesture_id">gesture id</string>
     <string name="no_barcode_detected">No Barcode Detected</string>
+
+    <string name="wizard_step_1_title">Configuration in 3 steps!</string>
+    <string name="wizard_step_1_info">Set the application parameters easily using the wizard..</string>
+    <string name="wizard_step_2_title">Turn on the microphone</string>
+    <string name="wizard_step_2_info">Access to the microphone is needed to give voice commands to the assistant.</string>
+    <string name="wizard_step_3_title">Gateway ID</string>
+    <string name="wizard_step_3_info">Scan or enter the unique ID of your gateway.</string>
+    <string name="welcome_page_4">Welcome on board :)</string>
+    <string name="todo">TODO</string>
 
 
 </resources>

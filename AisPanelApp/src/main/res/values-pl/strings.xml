@@ -74,6 +74,7 @@
     <string name="title_activity_other_apps">INTEGRACJE</string>
     <string name="title_activity_browser">AIS dom</string>
 
+    <string name="title_ais_dom_wizard_section">KONFIGURATOR USTAWIEŃ</string>
     <string name="title_experimental_settings">EKSPERYMENTALNE</string>
     <string name="title_ais_dom_connection">POŁĄCZENIE Z BRAMKĄ</string>
     <string name="title_ais_dom_connections_history">HISTORIA POŁĄCZEŃ</string>
@@ -89,6 +90,8 @@
     <string name="button_scan_gate_id">Skanuj</string>
     <string name="title_recent_connections">Lista ostatnich połączeń</string>
     <string name="summary_recent_connections">możesz wybrać pozycję z listy by połączyć ponownie</string>
+    <string name="title_setting_run_wizard_title">Uruchom kreator ustawień.</string>
+    <string name="title_setting_run_wizard_summary">Możesz uruchomić kreator i łatwo skonfigurować aplikację.</string>
 
     <string name="key_setting_app_remotecontrollermode">setting_app_remotemode</string>
     <string name="title_setting_app_remotecontrollermode">Tryb sterowania w aplikacji</string>
@@ -245,5 +248,18 @@
     <string name="gesture_id">gesture id</string>
     <string name="no_barcode_detected">No Barcode Detected</string>
 
+
+    <string name="wizard_step_1_title">Konfiguracja w 3 krokach!</string>
+    <string name="wizard_step_1_info">Ustaw parametry aplikacji w łatwy sposób przy pomocy kreatora..</string>
+
+    <string name="wizard_step_2_title">Dostęp do mikrofonu</string>
+    <string name="wizard_step_2_info">Dostęp do mikrofonu jest potrzebny, by wydawać polecania głosowe dla asystenta.</string>
+
+    <string name="wizard_step_3_title">Identyfikator bramki</string>
+    <string name="wizard_step_3_info">Zeskanuj lub podaj unikalny identyfikator swojej bramki.</string>
+
+    <string name="welcome_page_4">Świetenie! \n\n Witamy na pokładzie :)</string>
+
+    <string name="todo">TODO</string>
 
 </resources>

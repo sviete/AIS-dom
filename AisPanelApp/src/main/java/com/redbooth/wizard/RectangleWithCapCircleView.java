@@ -22,7 +22,7 @@
  *
  * Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
  */
-package pl.sviete.dom.welcome;
+package com.redbooth.wizard;
 
 import android.content.Context;
 import android.graphics.Canvas;

@@ -22,7 +22,7 @@
  *
  * Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
  */
-package pl.sviete.dom.welcome.animators;
+package com.redbooth.wizard.animators;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -31,7 +31,6 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 
 import pl.sviete.dom.R;
-
 
 public class ChatAvatarsAnimator {
     private AnimatorSet animator;

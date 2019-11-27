@@ -100,19 +100,6 @@
             android:exported="true"
             android:stopWithTask="false">
         </service>
-        <receiver android:name="pl.sviete.dom.MountReceiver"
-                android:enabled="true"
-                android:exported="true"
-                android:permission="android.permission.WRITE_MEDIA_STORAGE">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_MOUNTED" />
-                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
-                <data android:scheme="file" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.os.storage.action.VOLUME_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
         <service
             android:name="pl.sviete.dom.FloatingViewService"
             android:enabled="true"
@@ -157,7 +144,7 @@
         </activity>
 
         <activity
-            android:name="pl.sviete.dom.SplashScreenActivity"
+            android:name="pl.sviete.dom.WatchScreenActivity"
             android:label="full"
             android:theme="@style/AppThemeFullScreen">
             <intent-filter>
@@ -166,9 +153,7 @@
         </activity>
 
         <activity
-            android:name="pl.sviete.dom.WatchScreenActivity"
-            android:label="full"
-            android:theme="@style/AppThemeFullScreen">
+            android:name="com.redbooth.wizard.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

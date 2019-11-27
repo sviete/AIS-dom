@@ -149,72 +149,7 @@ public class AisCoreUtils {
         }
         return true;
     }
-
-
-    /*
-     * Check if Accessibility Service is enabled.
-     *
-     * @return <code>true</code> if Accessibility Service is ON, otherwise <code>false</code>
-     */
-    public static boolean isAccessibilityEnabled(Context context) {
-
-        AccessibilityManager am = (AccessibilityManager) context
-                .getSystemService(Context.ACCESSIBILITY_SERVICE);
-
-        List<AccessibilityServiceInfo> runningServices = am
-                .getEnabledAccessibilityServiceList(AccessibilityEvent.TYPES_ALL_MASK);
-        for (AccessibilityServiceInfo service : runningServices) {
-            Log.i(TAG, "AccessibilityServiceInfo: " + service.toString());
-            if ("pl.sviete.dom/.DomAccessibilityService".equals(service.getId())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /*
-     * Try to enable the Accessibility Service
-     *
-     */
-    public static void enableAccessibility() {
-
-        // trying to add
-        try {
-            Process p = Runtime.getRuntime().exec(
-                    new String[]{"su","-c", "settings put secure enabled_accessibility_services %accessibility:pl.sviete.dom/pl.sviete.dom.DomAccessibilityService"}
-            );
-            p.waitFor();
-            int exitStatus = p.exitValue();
-            Log.i(TAG, "enabled_accessibility_services " + exitStatus);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // second method
-        try {
-            Process p = Runtime.getRuntime().exec(
-                    new String[]{"su","-c", "settings put secure enabled_accessibility_services pl.sviete.dom/pl.sviete.dom.DomAccessibilityService"}
-            );
-            p.waitFor();
-            int exitStatus = p.exitValue();
-            Log.i(TAG, "enabled_accessibility_services " + exitStatus);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // trying to add
-        try {
-            Process p = Runtime.getRuntime().exec(
-                    new String[]{"su","-c", "settings put secure accessibility_enabled 1"}
-            );
-            p.waitFor();
-            int exitStatus = p.exitValue();
-            Log.i(TAG, "accessibility_enabled 1 " + exitStatus);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    
 
     public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);

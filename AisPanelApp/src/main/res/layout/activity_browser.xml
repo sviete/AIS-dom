@@ -49,6 +49,21 @@
             android:contentDescription="@string/ais_dom_button_settings"
             android:focusable="true"
             android:nextFocusLeft="@+id/btnControlModeGesture"
+            android:nextFocusRight="@+id/btnConnectionType"
+            android:nextFocusUp="@+id/btnConnectionType"
+            android:nextFocusDown="@+id/btnControlModeGesture" />
+
+        <Button
+            android:id="@+id/btnConnectionType"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/ic_local_connection_from_browser"
+            android:contentDescription="@string/ais_dom_button_settings"
+            android:focusable="true"
+            android:layout_marginStart="40dp"
+            android:nextFocusLeft="@+id/btnGoToSettings"
             android:nextFocusRight="@+id/btnSpeak"
             android:nextFocusUp="@+id/btnSpeak"
             android:nextFocusDown="@+id/btnControlModeGesture" />

@@ -24,7 +24,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.os.Bundle;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+
 import java.util.Locale;
 
 
@@ -54,12 +57,6 @@ public class BrowserActivityNative extends BrowserActivity {
         AisCoreUtils.mWebView.setHorizontalScrollBarEnabled(true);
         AisCoreUtils.mWebView.setVerticalScrollBarEnabled(true);
         AisCoreUtils.mWebView.setScrollContainer(true);
-
-        // http://www.qc4blog.com/?p=1186
-        final Config config = new Config(this.getApplicationContext());
-        final String appLaunchUrl = config.getAppLaunchUrl();
-        // to save/up the connection in history
-        config.setAppLaunchUrl(appLaunchUrl, appLaunchUrl, "browser");
 
 
         // TODO check this....
@@ -220,8 +217,14 @@ public class BrowserActivityNative extends BrowserActivity {
     @Override
     protected void loadUrl(final String url) {
         if (zoomLevel != 1.0) { AisCoreUtils.mWebView.setInitialScale((int)(zoomLevel * 100)); }
-        // mWebView.loadUrl(url);
         AisCoreUtils.mWebView.loadUrl(url);
+        Button b = (Button)findViewById(R.id.btnConnectionType);
+
+        if (url.contains("paczka.pro")) {
+            b.setBackgroundResource(R.drawable.ic_www_connection_from_browser);
+        } else {
+            b.setBackgroundResource(R.drawable.ic_local_connection_from_browser);
+        }
     }
 
 
@@ -248,21 +251,6 @@ public class BrowserActivityNative extends BrowserActivity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-
-        // checking if user is trying to change the mode but don't have access to AccessibilityService
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (event.getKeyCode() == KeyEvent.KEYCODE_BUTTON_1 || event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
-                // change the mode
-                if (!AisCoreUtils.isAccessibilityEnabled(getApplicationContext())){
-                    // no access to AccessibilityService - try to add
-                    AisCoreUtils.enableAccessibility();
-                    Intent txtIntent = new Intent(AisPanelService.BROADCAST_READ_THIS_TXT_NOW);
-                    txtIntent.putExtra(AisPanelService.READ_THIS_TXT_MESSAGE_VALUE, "Brak dostępu do klawiatury, sprawdzam uprawnienia aplikacji.");
-                    LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                    bm.sendBroadcast(txtIntent);
-                }
-            }
-        }
 
         if(event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
             // Back in browser

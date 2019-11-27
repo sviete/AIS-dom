@@ -78,7 +78,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     public static GestureOverlayView gestureOverlayView;
     //
     public static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
-
+    public String appLaunchUrl = "";
 
     //
     private SwitchIconView mSwitchIconModeGesture;
@@ -228,9 +228,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         }
 
         decorView.setSystemUiVisibility(uiOptions);
-
-        String url = mConfig.getAppLaunchUrl();
-        loadUrl(url);
+        appLaunchUrl = mConfig.getAppLaunchUrl();
+        loadUrl(appLaunchUrl);
 
         // set the remote control mode on start
         gestureOverlayView = (GestureOverlayView) findViewById(R.id.gesturesOverlay);

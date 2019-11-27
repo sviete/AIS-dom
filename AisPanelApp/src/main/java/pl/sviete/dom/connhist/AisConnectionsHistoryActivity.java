@@ -57,13 +57,14 @@ public class AisConnectionsHistoryActivity extends Activity {
     private void loadConnectionsToList() {
         try {
             mConnectionsList =  new ArrayList<AisConnectionHistHolder>();
-            JSONArray m_jArry = new JSONArray(AisConnectionHistJSON.getData(getApplicationContext()));
+            JSONArray m_jArry = new JSONArray(AisConnectionHistJSON.getHistoryConnectionsData(getApplicationContext()));
             for (int i = m_jArry.length()-1; i>=0; i--) {
                 JSONObject jo_inside = m_jArry.getJSONObject(i);
                 String url = jo_inside.getString("url");
                 String time = jo_inside.getString("time");
                 String gate = jo_inside.getString("gate");
-                mConnectionsList.add(new AisConnectionHistHolder(url, time, gate));
+                String ip = jo_inside.getString("ip");
+                mConnectionsList.add(new AisConnectionHistHolder(url, time, gate, ip));
             }
 
         } catch (Exception ex) {
@@ -89,7 +90,7 @@ public class AisConnectionsHistoryActivity extends Activity {
         String mCurrentGate = tvGate.getText().toString();
 
         Config config  = new Config(getApplicationContext());
-        config.setAppLaunchUrl(mCurrentUrl, mCurrentGate, "history");
+        config.setAppLaunchUrl(mCurrentGate);
         // go to app
         if (AisCoreUtils.onWatch()){
             startActivity(new Intent(getApplicationContext(), WatchScreenActivity.class));

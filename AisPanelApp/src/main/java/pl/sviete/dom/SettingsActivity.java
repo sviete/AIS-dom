@@ -15,8 +15,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 
-
-
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     static final String TAG = SettingsActivity.class.getName();
@@ -168,13 +166,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Log.i(TAG, "test");
                     Intent intent = new Intent(Intent.ACTION_MAIN);
                     intent.setComponent(new ComponentName("pl.sviete.dom","pl.sviete.dom.ScannerActivity"));
                     startActivity(intent);
                     return false;
                 }
             });
+
+
+            PreferenceScreen prefWizard = (PreferenceScreen) findPreference("button_run_ais_dom_wizard");
+            prefWizard.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.setComponent(new ComponentName("pl.sviete.dom","com.redbooth.wizard.MainActivity"));
+                    startActivity(intent);
+                    return false;
+                }
+            });
+
 
         }
 
