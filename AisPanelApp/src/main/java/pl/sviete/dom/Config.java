@@ -211,26 +211,24 @@ public class Config {
         Log.w(TAG, "---------------------------------");
         Log.w(TAG, "---------------------------------");
         String launchurl = url;
-        String localUrl = "";
         if (source.equals("scan")) {
             launchurl = gate;
-        } else if (source.equals("browser")){
-            launchurl = url;
-        } else if (source.equals("history")){
-            launchurl = url;
+        }  else if (source.equals("history")){
+            launchurl = gate;
         }
 
-        SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putString(myContext.getString(R.string.key_setting_app_launchurl), launchurl);
-        ed.apply();
-        //
-        if (source.equals("browser")) {
-            // save in file only if we are using browser
+        if (!source.equals("browser")) {
+            // when the info is from scanner or history we just need to save it in settings
+            SharedPreferences.Editor ed = sharedPreferences.edit();
+            ed.putString(myContext.getString(R.string.key_setting_app_launchurl), launchurl);
+            ed.apply();
+        } else {
+            // if the connection info is from browser we are going to save it in history too
             try {
                 JSONObject mNewConn = new JSONObject();
                 mNewConn.put("name", url);
                 mNewConn.put("url", url);
-                mNewConn.put("host", gate);
+                mNewConn.put("gate", gate);
                 AisConnectionHistJSON.addConnection(myContext, mNewConn.toString());
             } catch (Exception e) {
                 Log.e(TAG, e.toString());

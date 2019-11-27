@@ -14,7 +14,6 @@ import pl.sviete.dom.R;
 
 public class AisConnectionHistAdapter extends ArrayAdapter<AisConnectionHistHolder> {
     Context context;
-    int layoutResourceId;
     AisConnectionHistHolder data[] = null;
 
     public AisConnectionHistAdapter(Context context, ArrayList<AisConnectionHistHolder> connectionHistHolders) {
@@ -31,16 +30,16 @@ public class AisConnectionHistAdapter extends ArrayAdapter<AisConnectionHistHold
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.connection_history_list_item, parent, false);
         }
         // Lookup view for data population
-        TextView connection_name = (TextView) convertView.findViewById(R.id.connection_name);
+        TextView connection_url = (TextView) convertView.findViewById(R.id.connection_url);
         TextView connection_time = (TextView) convertView.findViewById(R.id.connection_time);
         TextView connection_gate_id = (TextView) convertView.findViewById(R.id.connection_gate_id);
         ImageView connection_icon = (ImageView) convertView.findViewById(R.id.id_connection_icon);
         // Populate the data into the template view using the data object
-        connection_name.setText(holder.connName);
+        connection_url.setText(holder.connUrl);
         connection_time.setText(holder.connTime);
         connection_gate_id.setText(holder.gateID);
 
-        if (holder.connIcon.equals("www")) {
+        if (holder.connUrl.contains("paczka.pro")) {
             connection_icon.setImageResource(R.drawable.ic_www_connection_from_history);
         } else {
             connection_icon.setImageResource(R.drawable.ic_local_connection_from_history);

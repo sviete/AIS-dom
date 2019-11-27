@@ -1,37 +1,33 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="ais_dom_main_pref_screen">
-        <PreferenceCategory
-            android:title="@string/title_ais_dom_connection"
-            android:key="ais_dom_con_url">
-            <EditTextPreference
-                android:dialogIcon="@drawable/ic_ais_logo_small_21_29"
-                android:icon="@drawable/ic_ais_logo_small_21_29"
-                android:key="@string/key_setting_app_launchurl"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                android:title="@string/title_setting_app_launchurl" />
-            <PreferenceScreen
-                android:icon="@drawable/ic_scan_gate_id_icon"
-                android:key="button_scan_gate_id"
-                android:title="@string/title_setting_app_launchurl_info_title"
-                android:summary="@string/title_setting_app_launchurl_info_summary">
-            </PreferenceScreen>
-        </PreferenceCategory>
-        <PreferenceCategory
-            android:title="@string/title_ais_dom_connections_history"
-            android:key="ais_dom_list_history">
-            <PreferenceScreen android:key="pref_ais_dom_list_history"
-                android:title="@string/title_recent_connections"
-                android:summary="@string/summary_recent_connections"
-                android:icon="@drawable/ic_gate_connection_history">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetPackage="pl.sviete.dom"
-                    android:targetClass="pl.sviete.dom.connhist.AisConnectionsHistoryActivity"
-                    />
-            </PreferenceScreen>
-        </PreferenceCategory>
+    <PreferenceCategory
+        android:key="ais_dom_con_url"
+        android:title="@string/title_ais_dom_connection">
+        <EditTextPreference
+            android:dialogIcon="@drawable/ic_ais_logo_small_21_29"
+            android:icon="@drawable/ic_ais_logo_small_21_29"
+            android:key="@string/key_setting_app_launchurl"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/title_setting_app_launchurl" />
+        <PreferenceScreen
+            android:icon="@drawable/ic_scan_gate_id_icon"
+            android:key="button_scan_gate_id"
+            android:summary="@string/title_setting_app_launchurl_info_summary"
+            android:title="@string/title_setting_app_launchurl_info_title">
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:icon="@drawable/ic_gate_connection_history"
+            android:key="pref_ais_dom_list_history"
+            android:summary="@string/summary_recent_connections"
+            android:title="@string/title_recent_connections">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="pl.sviete.dom.connhist.AisConnectionsHistoryActivity"
+                android:targetPackage="pl.sviete.dom" />
+        </PreferenceScreen>
+    </PreferenceCategory>
 
         <PreferenceCategory
             android:title="@string/title_activity_settings"

@@ -35,7 +35,6 @@ public class GestureListActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gestures_list);
-        Log.d(TAG, getApplicationInfo().dataDir);
 
         openOptionsMenu();
 

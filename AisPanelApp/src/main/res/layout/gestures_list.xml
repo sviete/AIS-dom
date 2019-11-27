@@ -30,6 +30,7 @@
             android:onClick="addButtonClick"
             android:text="@string/add_gesture_button"
             android:textAllCaps="true"
+            android:textColor="#FF3D00"
             android:textSize="18sp" />
 
         <Button
@@ -42,6 +43,7 @@
             android:onClick="testButtonClick"
             android:text="@string/test_gesture_button"
             android:textAllCaps="true"
+            android:textColor="#FF3D00"
             android:textSize="18sp" />
     </LinearLayout>
 </LinearLayout>

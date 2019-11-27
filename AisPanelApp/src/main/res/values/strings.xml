@@ -244,6 +244,7 @@
     <string name="gesture_imge_text">TODO</string>
     <string name="gesture_menu_item_options">TODO</string>
     <string name="gesture_id">gesture id</string>
+    <string name="no_barcode_detected">No Barcode Detected</string>
 
 
 </resources>
