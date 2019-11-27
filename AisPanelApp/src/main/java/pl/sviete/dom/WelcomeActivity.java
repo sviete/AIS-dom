@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
 
+import com.redbooth.WelcomeCoordinatorLayout;
+
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -57,8 +59,22 @@ public class WelcomeActivity extends AppCompatActivity {
         setTitle(getString(R.string.ais_dom_app_name_client));
 
 
+        // TODO if first run...
+        initializeWelcomePages();
+
+
         //
         startup = false;
+    }
+
+    private void initializeWelcomePages() {
+        // TODO
+//        final WelcomeCoordinatorLayout coordinatorLayout
+//                = (WelcomeCoordinatorLayout)findViewById(R.id.coordinator);
+//        coordinatorLayout.addPage(R.layout.welcome_page_1,
+//                R.layout.welcome_page_2,
+//                R.layout.welcome_page_3,
+//                R.layout.welcome_page_4);
     }
 
 

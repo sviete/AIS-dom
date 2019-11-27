@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright Txus Ballesteros 2016 (@txusballesteros)
+This file is part of some open source application.
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
+-->
+<com.redbooth.WelcomePageLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/welcome_page"
+    tools:background="@color/page1">
+
+        <com.redbooth.demo.RectangleWithCapCircleView
+            android:id="@+id/semicircle_page4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:view_behavior=".AnimationFillWithColor" />
+
+        <ImageView
+            android:id="@+id/rocket_page4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_rocket_144dp"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/android_spin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="80dp"
+            android:textSize="30dp"
+            android:text="Welcome Page 4" />
+
+</com.redbooth.WelcomePageLayout>
