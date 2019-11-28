@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="16dp"
+        android:paddingTop="6dp"
         app:view_behavior="com.redbooth.wizard.AnimationLaunch"
         android:clipToPadding="false">
 
@@ -40,15 +40,15 @@
 
         <ImageView
             android:id="@+id/avatar4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_below="@+id/avatar3"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="-8dp"
+            android:background="@drawable/avatar_mic"
+            android:contentDescription="@string/todo"
             android:scaleX="0"
-            android:scaleY="0"
-            android:background="@drawable/avatar_maggie"
-            android:contentDescription="@string/todo" />
+            android:scaleY="0" />
 
         <ImageView
             android:id="@+id/avatar3"
@@ -59,7 +59,7 @@
             android:layout_marginTop="-8dp"
             android:scaleX="0"
             android:scaleY="0"
-            android:background="@drawable/avatar_maggie"
+            android:background="@drawable/avatar_cam"
             android:contentDescription="@string/todo" />
 
         <ImageView
@@ -67,38 +67,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/avatar1"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="60dp"
             android:scaleX="0"
             android:scaleY="0"
-            android:background="@drawable/avatar_lucy"
-            android:contentDescription="@string/todo" />
-
-        <ImageView
-            android:id="@+id/avatar1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:scaleX="0"
-            android:scaleY="0"
-            android:background="@drawable/ic_ais_logo_small_21_29"
+            android:background="@drawable/avatar_voice"
             android:contentDescription="@string/todo" />
 
     </RelativeLayout>
 
     <TextView
-        style="@style/text_title"
         android:id="@+id/title"
-        android:layout_above="@+id/subtitle"
-        android:text="@string/wizard_step_1_title"
-        app:view_behavior="com.redbooth.wizard.ParallaxTitleBehaviour" />
+        style="@style/text_title"
+        android:layout_above="@+id/avatar_ais_logo"
+        android:layout_marginBottom="9dp"
+        android:text="@string/wizard_step_1_title"/>
 
-    <TextView
-        style="@style/text_subtitle"
-        android:id="@+id/subtitle"
+
+    <ImageView
+        android:id="@+id/avatar_ais_logo"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:text="@string/wizard_step_1_info"
-        app:view_behavior="com.redbooth.wizard.ParallaxSubtitleBehaviour" />
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ic_ais_logo_small_white"
+        android:contentDescription="@string/todo"
+        android:scaleX="0"
+        android:scaleY="0" />
 
 </com.redbooth.WelcomePageLayout>

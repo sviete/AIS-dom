@@ -29,6 +29,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 
 import pl.sviete.dom.R;
 
@@ -44,12 +45,25 @@ public class RocketFlightAwayAnimator {
 
     private void initializeAnimator() {
         final View rocket = rootView.findViewById(R.id.rocket_page4);
+        final View aisLogo = rootView.findViewById(R.id.ais_logo_page4);
         Animator rocketScaleAnimator = getScaleAndVisibilityAnimator(rocket);
         Animator rocketRotationAnimator = getRotationAnimator(rocket);
         Animator rocketTranslationAnimator = getTranslationAnimator(rocket);
+        Animator aisLogoScaleAnimator = getScaleAnimator(aisLogo);
         animator = new AnimatorSet();
         animator.setStartDelay(600);
+        animator.play(aisLogoScaleAnimator).after(rocketTranslationAnimator);
         animator.playTogether(rocketScaleAnimator, rocketRotationAnimator, rocketTranslationAnimator);
+    }
+
+    private AnimatorSet getScaleAnimator(final View targetView) {
+        AnimatorSet animator = new AnimatorSet();
+        animator.setDuration(300);
+        animator.setInterpolator(new OvershootInterpolator());
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(targetView, View.SCALE_X, 1f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(targetView, View.SCALE_Y, 1f);
+        animator.playTogether(scaleXAnimator, scaleYAnimator);
+        return animator;
     }
 
     private AnimatorSet getScaleAndVisibilityAnimator(final View targetView) {

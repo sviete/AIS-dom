@@ -52,12 +52,11 @@ Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
         android:textSize="30sp" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/ais_logo_page4"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_alignTop="@+id/android_spin"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="270dp"
         android:contentDescription="@string/todo"
         app:srcCompat="@mipmap/ais_icon" />
 

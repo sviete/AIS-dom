@@ -1,27 +1,3 @@
-/*
- * Copyright Txus Ballesteros 2016 (@txusballesteros)
- *
- * This file is part of some open source application.
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
- * Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
- */
 package com.redbooth.wizard;
 
 import android.animation.ArgbEvaluator;
@@ -31,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 
 import com.redbooth.WelcomeCoordinatorLayout;
 import com.redbooth.wizard.animators.ChatAvatarsAnimator;
@@ -40,9 +17,6 @@ import com.redbooth.wizard.animators.RocketFlightAwayAnimator;
 
 import pl.sviete.dom.R;
 
-//import butterknife.Bind;
-//import butterknife.ButterKnife;
-//import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
     private boolean animationReady = false;
@@ -51,18 +25,17 @@ public class MainActivity extends AppCompatActivity {
     private ChatAvatarsAnimator chatAvatarsAnimator;
     private RocketFlightAwayAnimator rocketFlightAwayAnimator;
     private InSyncAnimator inSyncAnimator;
-    private  WelcomeCoordinatorLayout coordinatorLayout;
-    // @Bind(R.id.coordinator) WelcomeCoordinatorLayout coordinatorLayout;
+    private WelcomeCoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // ButterKnife.bind(this);
         coordinatorLayout = (WelcomeCoordinatorLayout)findViewById(R.id.coordinator);
         initializeListeners();
         initializePages();
         initializeBackgroundTransitions();
+        initializeButtons();
     }
 
     private void initializePages() {
@@ -134,8 +107,14 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-//    @OnClick(R.id.skip)
-//    void skip() {
-//        coordinatorLayout.setCurrentPage(coordinatorLayout.getNumOfPages() - 1, true);
-//    }
+    private void initializeButtons() {
+        Button bSkip = (Button) findViewById(R.id.skip);
+        bSkip.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                coordinatorLayout.setCurrentPage(coordinatorLayout.getPageSelected() + 1, true);
+            }
+        });
+
+    }
+
 }

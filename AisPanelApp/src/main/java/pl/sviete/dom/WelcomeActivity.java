@@ -85,16 +85,16 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void redirectToActivity(){
            // TODO
-           // startWizardActivity();
+           startWizardActivity();
 
             // on client
-            if (AisCoreUtils.onWatch()) {
-                Log.i(TAG, "On client. Go to watch on Startup");
-                startWatchActivity();
-            } else {
-                Log.i(TAG, "On client. Go to browser on Startup");
-                startBrowserActivity();
-            }
+//            if (AisCoreUtils.onWatch()) {
+//                Log.i(TAG, "On client. Go to watch on Startup");
+//                startWatchActivity();
+//            } else {
+//                Log.i(TAG, "On client. Go to browser on Startup");
+//                startBrowserActivity();
+//            }
     }
 
     private void startBrowserActivity() {

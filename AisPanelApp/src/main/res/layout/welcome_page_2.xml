@@ -147,15 +147,28 @@ Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
     <TextView
         style="@style/text_title"
         android:id="@+id/title"
-        android:layout_above="@+id/subtitle"
         android:text="@string/wizard_step_2_title"
-        app:view_behavior="com.redbooth.wizard.ParallaxTitleBehaviour" />
+        android:layout_above="@+id/avatar_ais_logo_page2"/>
 
     <TextView
+        android:id="@+id/wizard_next"
         style="@style/text_subtitle"
-        android:id="@+id/subtitle"
+        android:text="@string/wizard_next"
         android:layout_alignParentBottom="true"
-        android:text="@string/wizard_step_2_info"
-        app:view_behavior="com.redbooth.wizard.ParallaxSubtitleBehaviour" />
+        android:layout_marginBottom="10dp"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+    <ImageView
+        android:id="@+id/avatar_ais_logo_page2"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/ic_ais_logo_small_white"
+        android:contentDescription="@string/todo"
+        android:scaleX="0"
+        android:scaleY="0" />
+
 
 </com.redbooth.WelcomePageLayout>

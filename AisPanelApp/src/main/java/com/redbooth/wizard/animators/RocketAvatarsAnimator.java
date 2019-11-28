@@ -47,7 +47,7 @@ public class RocketAvatarsAnimator {
 
     private void initializeAnimator() {
         final View rocketFlame = rootView.findViewById(R.id.rocket_flame);
-        final View avatar1 = rootView.findViewById(R.id.avatar1);
+        final View avatar1 = rootView.findViewById(R.id.avatar_ais_logo);
         final View avatar2 = rootView.findViewById(R.id.avatar2);
         final View avatar3 = rootView.findViewById(R.id.avatar3);
         final View avatar4 = rootView.findViewById(R.id.avatar4);
