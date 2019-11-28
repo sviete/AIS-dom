@@ -37,42 +37,6 @@
             android:background="@drawable/rocket_large"
             android:contentDescription="@string/todo" />
 
-
-        <ImageView
-            android:id="@+id/avatar4"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_below="@+id/avatar3"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="-8dp"
-            android:background="@drawable/avatar_mic"
-            android:contentDescription="@string/todo"
-            android:scaleX="0"
-            android:scaleY="0" />
-
-        <ImageView
-            android:id="@+id/avatar3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/avatar2"
-            android:layout_marginTop="-8dp"
-            android:scaleX="0"
-            android:scaleY="0"
-            android:background="@drawable/avatar_cam"
-            android:contentDescription="@string/todo" />
-
-        <ImageView
-            android:id="@+id/avatar2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp"
-            android:scaleX="0"
-            android:scaleY="0"
-            android:background="@drawable/avatar_voice"
-            android:contentDescription="@string/todo" />
-
     </RelativeLayout>
 
     <TextView

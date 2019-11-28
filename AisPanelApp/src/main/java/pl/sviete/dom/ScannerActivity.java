@@ -22,13 +22,14 @@ public class ScannerActivity extends Activity
     private ZBarScannerView mScannerView;
     static final String TAG = ScannerActivity.class.getName();
     private static final int PERMISSION_REQUEST_CODE = 200;
-
+    public static String BACK_TO_WIZARD = "BACK_TO_WIZARD";
+    private boolean backToWizard = false;
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
         if (checkPermission()) {
-            mScannerView = new ZBarScannerView(this);    // Programmatically initialize the scanner view
-            setContentView(mScannerView);                // Set the scanner view as the content view
+            mScannerView = new ZBarScannerView(this);
+            setContentView(mScannerView);
 
         } else {
             requestPermission();
@@ -95,6 +96,8 @@ public class ScannerActivity extends Activity
     @Override
     public void onResume() {
         super.onResume();
+        Intent callingintent = getIntent();
+        backToWizard = callingintent.getBooleanExtra(BACK_TO_WIZARD, false);
         if (checkPermission()) {
             mScannerView.setResultHandler(this);
             mScannerView.startCamera();
@@ -118,10 +121,14 @@ public class ScannerActivity extends Activity
         // gate id
         if (scan.startsWith("dom-")) {
             Toast.makeText(getApplicationContext(), scan, Toast.LENGTH_SHORT).show();
-            // save code and go to browser
+            // save code and go to browser or wizard
             final Config config = new Config(this.getApplicationContext());
             config.setAppLaunchUrl(scan);
-            startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
+            if (backToWizard){
+                this.finish();
+            } else {
+                startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
+            }
         } else {
             Toast.makeText(getApplicationContext(), getString(R.string.cammera_permissions_denied_title), Toast.LENGTH_SHORT).show();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

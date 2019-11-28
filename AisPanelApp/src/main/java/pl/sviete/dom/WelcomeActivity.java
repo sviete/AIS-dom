@@ -84,17 +84,21 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void redirectToActivity(){
-           // TODO
-           startWizardActivity();
+        if (AisCoreUtils.onWatch()) {
+            Log.i(TAG, "On client. Go to watch on Startup");
+            startWatchActivity();
+        } else {
+            Log.i(TAG, "On client. Go to browser on Startup");
+            Config config = new Config(this.getApplicationContext());
+            String appLaunchUrl = config.getAppLaunchUrl();
+            if (!appLaunchUrl.equals("")){
+                startBrowserActivity();
+            } else {
+                startWizardActivity();
 
-            // on client
-//            if (AisCoreUtils.onWatch()) {
-//                Log.i(TAG, "On client. Go to watch on Startup");
-//                startWatchActivity();
-//            } else {
-//                Log.i(TAG, "On client. Go to browser on Startup");
-//                startBrowserActivity();
-//            }
+            }
+        }
+
     }
 
     private void startBrowserActivity() {

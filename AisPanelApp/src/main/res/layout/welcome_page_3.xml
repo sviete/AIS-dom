@@ -1,29 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-Copyright Txus Ballesteros 2016 (@txusballesteros)
-This file is part of some open source application.
-Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements.  See the NOTICE file
-distributed with this work for additional information
-regarding copyright ownership.  The ASF licenses this file
-to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
-  http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations
-under the License.
-Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
--->
 <com.redbooth.WelcomePageLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/welcome_page"
-    tools:background="@color/page3">
+    tools:background="@color/page2">
 
     <View
         android:id="@+id/android_destiny"
@@ -31,50 +12,26 @@ Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
         android:layout_height="60dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         android:layout_marginEnd="40dp"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp">
+        android:layout_marginTop="40dp">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/easel"
+            android:src="@drawable/tablet_face"
             android:contentDescription="@string/todo" />
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp"
-            android:layout_marginStart="10dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:contentDescription="@string/todo"
-                android:src="@drawable/arrow_chart" />
-
-            <View
-                android:id="@+id/arrow_chart_mask"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:transformPivotX="150dp"
-                android:background="@color/white"/>
-
-        </FrameLayout>
 
         <ImageView
             android:id="@+id/avatar5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginStart="10dp"
+            android:layout_alignParentTop="true"
             android:scaleX="0"
             android:scaleY="0"
             android:src="@drawable/ic_ais_logo_small_21_29"
@@ -84,9 +41,27 @@ Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
 
     <TextView
         style="@style/text_title"
-        android:id="@+id/title"
-        android:layout_above="@+id/avatar_ais_logo_page3"
+        android:id="@+id/wizard_step_3_title"
+        android:layout_above="@+id/wizard_desc_page3"
         android:text="@string/wizard_step_3_title" />
+
+    <TextView
+        android:id="@+id/wizard_desc_page3"
+        style="@style/text_subtitle"
+        android:text="@string/wizard_step_3_info"
+        android:layout_above="@+id/avatar_ais_logo_page3"
+        android:textSize="12sp"
+        android:textStyle="bold"/>
+
+
+    <TextView
+        android:id="@+id/wizard_info_page3"
+        style="@style/text_subtitle"
+        android:text="@string/wizard_checking"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="6dp"
+        android:textSize="12sp"
+        android:textStyle="bold"/>
 
     <ImageView
         android:id="@+id/avatar_ais_logo_page3"
@@ -95,7 +70,6 @@ Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="15dp"
-        android:background="@drawable/ic_ais_logo_small_white"
         android:contentDescription="@string/todo"
         android:scaleX="0"
         android:scaleY="0" />

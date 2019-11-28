@@ -4,38 +4,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/welcome_page"
-    tools:background="@color/black_overlay">
+    tools:background="@color/color1">
 
     <RelativeLayout
         android:id="@+id/semicircle_page4"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:view_behavior="com.redbooth.wizard.AnimationFillWithColor">
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/avatar5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="10dp"
-        android:scaleX="0"
-        android:scaleY="0"
-        android:src="@drawable/ic_ais_logo_small_21_29"
-        android:contentDescription="@string/todo" />
+        <TextView
+            style="@style/text_title"
+            android:id="@+id/gate_id_from_qr_code"
+            android:text="@string/wizard_step_4_title"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/gate_id_from_qr_code"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/easel"
+            android:contentDescription="@string/todo" />
     </RelativeLayout>
 
     <TextView
         style="@style/text_title"
         android:id="@+id/title"
         android:text="@string/wizard_step_4_title"
-        android:layout_above="@+id/avatar_ais_logo_page4"/>
+        android:layout_above="@+id/wizard_desc_page4"/>
 
     <TextView
-        android:id="@+id/wizard_next"
+        android:id="@+id/wizard_desc_page4"
         style="@style/text_subtitle"
-        android:text="@string/wizard_next"
+        android:text="@string/wizard_step_4_info"
+        android:layout_above="@+id/avatar_ais_logo_page4"
+        android:textSize="12sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/wizard_info_page4"
+        style="@style/text_subtitle"
+        android:text="@string/wizard_checking"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="0dp"
         android:textSize="12sp"
         android:textStyle="bold" />
     <ImageView
@@ -44,11 +54,9 @@
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
-        android:background="@drawable/ic_ais_logo_small_white"
+        android:layout_marginBottom="25dp"
         android:contentDescription="@string/todo"
         android:scaleX="0"
         android:scaleY="0" />
-
 
 </com.redbooth.WelcomePageLayout>

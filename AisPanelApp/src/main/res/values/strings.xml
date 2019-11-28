@@ -252,15 +252,23 @@
 
     <string name="wizard_step_1_title">Configuration in 3 steps!</string>
     <string name="wizard_step_1_info">Set the application parameters easily using the wizard..</string>
-    <string name="wizard_step_2_title">Turn on the microphone</string>
+    <string name="wizard_step_2_title">1. Turn on the microphone</string>
     <string name="wizard_step_2_info">Access to the microphone is needed to give voice commands to the assistant.</string>
-    <string name="wizard_step_3_title">Gateway ID</string>
+    <string name="wizard_step_3_title">2. Turn on the camera</string>
     <string name="wizard_step_3_info">Scan or enter the unique ID of your gateway.</string>
-    <string name="wizard_step_4_title">Select voice</string>
-    <string name="welcome_page_5">Welcome on board :)</string>
+    <string name="wizard_step_4_title">3. Access to the microphone is needed to scan the gate id</string>
+    <string name="wizard_step_4_info">Scan the unique ID of your gateway.</string>
+
+    <string name="welcome_page_5">Welcome on board\nAI-Speaker.com</string>
     <string name="todo">TODO</string>
     <string name="wizard_skip">NEXT</string>
-    <string name="wizard_next">NEXT</string>
+    <string name="wizard_checking">checking</string>
+    <string name="wizzard_mic_on_info">microphone available</string>
+    <string name="wizzard_mic_off_info">press to turn on</string>
+    <string name="wizzard_cam_on_info">camera available</string>
+    <string name="wizzard_cam_off_info">press to turn on</string>
+    <string name="wizzard_qr_on_info">gate id available\n press to scan again</string>
+    <string name="wizzard_qr_off_info">press to scan gate id</string>
 
 
 </resources>

@@ -44,7 +44,7 @@ public class InSyncAnimator {
 
     private void initializeAnimator() {
         final View avatarView = rootView.findViewById(R.id.avatar5);
-        final View arrowChartMaskView = rootView.findViewById(R.id.arrow_chart_mask);
+        //final View arrowChartMaskView = rootView.findViewById(R.id.arrow_chart_mask);
         final ObjectAnimator scaleXAnimator = ObjectAnimator
                 .ofFloat(avatarView, View.SCALE_X, 0f, 1f);
         scaleXAnimator.setDuration(300);
@@ -53,17 +53,20 @@ public class InSyncAnimator {
                 .ofFloat(avatarView, View.SCALE_Y, 0f, 1f);
         scaleYAnimator.setDuration(300);
         scaleYAnimator.setInterpolator(new OvershootInterpolator());
-        final ObjectAnimator maskScaleXAnimator = ObjectAnimator
-                .ofFloat(arrowChartMaskView, View.SCALE_X, 1f, 0f);
-        maskScaleXAnimator.setDuration(500);
-        maskScaleXAnimator.setInterpolator(new LinearInterpolator());
+        //final ObjectAnimator maskScaleXAnimator = ObjectAnimator
+        //        .ofFloat(arrowChartMaskView, View.SCALE_X, 1f, 0f);
+        //maskScaleXAnimator.setDuration(500);
+        //maskScaleXAnimator.setInterpolator(new LinearInterpolator());
 
         final View aisLogoView = rootView.findViewById(R.id.avatar_ais_logo_page3);
         Animator aisLogoAnimator = getAnimator(aisLogoView);
+        final View info_ais = rootView.findViewById(R.id.wizard_info_page3);
+        Animator info3AisAnimator = getAnimator(info_ais);
 
         animator = new AnimatorSet();
-        animator.play(aisLogoAnimator).after(maskScaleXAnimator);
-        animator.play(scaleXAnimator).with(scaleYAnimator).before(maskScaleXAnimator);
+        animator.play(info3AisAnimator).after(aisLogoAnimator);
+        animator.play(aisLogoAnimator).after(scaleXAnimator);
+        animator.play(scaleXAnimator).with(scaleYAnimator); //w.before(maskScaleXAnimator);
     }
 
     public void play() {

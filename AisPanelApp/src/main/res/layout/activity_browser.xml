@@ -62,7 +62,7 @@
             android:background="@drawable/ic_local_connection_from_browser"
             android:contentDescription="@string/ais_dom_button_settings"
             android:focusable="true"
-            android:layout_marginStart="40dp"
+            android:layout_marginStart="70dp"
             android:nextFocusLeft="@+id/btnGoToSettings"
             android:nextFocusRight="@+id/btnSpeak"
             android:nextFocusUp="@+id/btnSpeak"

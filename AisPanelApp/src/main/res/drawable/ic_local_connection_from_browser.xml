@@ -3,5 +3,5 @@
     android:width="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="@color/color3" android:pathData="M15 13L11 9V12H2V14H11V17M21.9 12H20V21H4V16H6V19H18V10.9L12 4.9L6.9 10H4.1L12 2.1L21.9 12Z" />
+    <path android:fillColor="@color/cardview_shadow_start_color" android:pathData="M15 13L11 9V12H2V14H11V17M21.9 12H20V21H4V16H6V19H18V10.9L12 4.9L6.9 10H4.1L12 2.1L21.9 12Z" />
 </vector>

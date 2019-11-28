@@ -49,19 +49,19 @@ public class RocketAvatarsAnimator {
     private void initializeAnimator() {
         final View rocketFlame = rootView.findViewById(R.id.rocket_flame);
         final View avatar1 = rootView.findViewById(R.id.avatar_ais_logo_page1);
-        final View avatar2 = rootView.findViewById(R.id.avatar2);
-        final View avatar3 = rootView.findViewById(R.id.avatar3);
-        final View avatar4 = rootView.findViewById(R.id.avatar4);
+        //final View avatar2 = rootView.findViewById(R.id.avatar2);
+        //final View avatar3 = rootView.findViewById(R.id.avatar3);
+        //final View avatar4 = rootView.findViewById(R.id.avatar4);
         Animator avatar1Animator = getAnimator(avatar1);
-        Animator avatar2Animator = getAnimator(avatar2);
-        Animator avatar3Animator = getAnimator(avatar3);
-        Animator avatar4Animator = getAnimator(avatar4);
+        //Animator avatar2Animator = getAnimator(avatar2);
+        //Animator avatar3Animator = getAnimator(avatar3);
+        //Animator avatar4Animator = getAnimator(avatar4);
         rocketFlameAnimator = getFlameAnimator(rocketFlame);
         animator = new AnimatorSet();
         animator.setStartDelay(500);
-        animator.play(avatar3Animator).after(avatar4Animator);
-        animator.play(avatar2Animator).after(avatar3Animator);
-        animator.play(avatar1Animator).after(avatar2Animator);
+        //animator.play(avatar3Animator).after(avatar4Animator);
+        //animator.play(avatar2Animator).after(avatar3Animator);
+        animator.play(avatar1Animator);
 
     }
 

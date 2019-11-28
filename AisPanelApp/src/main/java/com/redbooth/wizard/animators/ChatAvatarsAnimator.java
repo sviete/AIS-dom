@@ -30,14 +30,13 @@ import android.animation.ObjectAnimator;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 
-import com.redbooth.wizard.SettingsWizardUtils;
+import com.redbooth.wizard.MainWizardActivity;
 
 import pl.sviete.dom.R;
 
 public class ChatAvatarsAnimator {
     private AnimatorSet animator;
     private final View rootView;
-    private SettingsWizardUtils settingsWizardUtils = new SettingsWizardUtils();
 
     public ChatAvatarsAnimator(View rootView) {
         this.rootView = rootView;
@@ -51,28 +50,22 @@ public class ChatAvatarsAnimator {
         final View card2 = rootView.findViewById(R.id.card2_page2);
         final View star = rootView.findViewById(R.id.star);
         final View logo_ais = rootView.findViewById(R.id.avatar_ais_logo_page2);
+        final View info_ais = rootView.findViewById(R.id.wizard_info_page2);
         Animator avatar1Animator = getScaleAnimator(avatar1);
         Animator card1Animator = getFlightFromLeft(card1);
         Animator avatar2Animator = getScaleAnimator(avatar2);
         Animator card2Animator = getFlightFromRight(card2);
-        Animator logo2AisAnimator = getScaleAndVisibilityAnimator(logo_ais);
         Animator starAnimator = getScaleAndVisibilityAnimator(star);
+        Animator logo2AisAnimator = getScaleAndVisibilityAnimator(logo_ais);
+        Animator info2AisAnimator = getScaleAndVisibilityAnimator(info_ais);
+
         animator = new AnimatorSet();
+        animator.play(info2AisAnimator).after(logo2AisAnimator);
         animator.play(logo2AisAnimator).after(starAnimator);
         animator.play(starAnimator).after(card2Animator);
         animator.play(card2Animator).after(avatar2Animator);
         animator.play(avatar2Animator).after(card1Animator);
         animator.play(card1Animator).after(avatar1Animator);
-
-        checkMicIsOn(logo_ais);
-    }
-
-    private void checkMicIsOn(View v){
-        if (settingsWizardUtils.isMicOn()){
-            v.setVisibility(View.GONE);
-        } else {
-            v.setVisibility(View.GONE);
-        }
     }
 
     private AnimatorSet getScaleAnimator(final View targetView) {

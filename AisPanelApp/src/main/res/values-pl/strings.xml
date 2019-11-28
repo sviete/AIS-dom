@@ -255,13 +255,22 @@
     <string name="wizard_step_2_title">Dostęp do mikrofonu</string>
     <string name="wizard_step_2_info">Dostęp do mikrofonu jest potrzebny, by wydawać polecania głosowe dla asystenta.</string>
 
-    <string name="wizard_step_3_title">Identyfikator bramki</string>
-    <string name="wizard_step_3_info">Zeskanuj lub podaj unikalny identyfikator swojej bramki.</string>
-    <string name="wizard_step_4_title">Wybierz głos asystenta</string>
-    <string name="welcome_page_5">Świetnie! \n\n Witamy na pokładzie :)</string>
+    <string name="wizard_step_3_title">Dostęp do kamery</string>
+    <string name="wizard_step_3_info">Dostęp do kamery jest potrzebny, by skanować identyfikator urządzenia.</string>
+
+    <string name="wizard_step_4_title">Unikalny Identyfikator</string>
+    <string name="wizard_step_4_info">Zeskanuj unikalny identyfikator swojego urządzenia.</string>
+
+    <string name="welcome_page_5">Witamy na pokładzie\nAI-Speaker.com</string>
 
     <string name="todo">TODO</string>
     <string name="wizard_skip">DALEJ</string>
-    <string name="wizard_next">DALEJ</string>
+    <string name="wizard_checking">sprawdzam</string>
+    <string name="wizzard_mic_on_info">mikrofon dostępny</string>
+    <string name="wizzard_mic_off_info">naciśnij by włączyć</string>
+    <string name="wizzard_cam_on_info">kamera dostępna</string>
+    <string name="wizzard_cam_off_info">naciśnij by włączyć</string>
+    <string name="wizzard_qr_on_info">identyfikator bramki dostępny\n naciśnij by zeskanować ponownie</string>
+    <string name="wizzard_qr_off_info">naciśnij by zeskanować\n identyfikator bramki</string>
 
 </resources>
