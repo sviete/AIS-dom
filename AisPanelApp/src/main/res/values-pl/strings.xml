@@ -257,8 +257,8 @@
 
     <string name="wizard_step_3_title">Identyfikator bramki</string>
     <string name="wizard_step_3_info">Zeskanuj lub podaj unikalny identyfikator swojej bramki.</string>
-
-    <string name="welcome_page_4">Świetnie! \n\n Witamy na pokładzie :)</string>
+    <string name="wizard_step_4_title">Wybierz głos asystenta</string>
+    <string name="welcome_page_5">Świetnie! \n\n Witamy na pokładzie :)</string>
 
     <string name="todo">TODO</string>
     <string name="wizard_skip">DALEJ</string>

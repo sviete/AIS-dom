@@ -180,7 +180,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.setComponent(new ComponentName("pl.sviete.dom","com.redbooth.wizard.MainActivity"));
+                    intent.setComponent(new ComponentName("pl.sviete.dom","com.redbooth.wizard.MainWizardActivity"));
                     startActivity(intent);
                     return false;
                 }

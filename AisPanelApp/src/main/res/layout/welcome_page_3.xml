@@ -50,7 +50,8 @@ Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp">
+            android:layout_marginTop="60dp"
+            android:layout_marginStart="10dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -84,13 +85,19 @@ Contact: Txus Ballesteros <txus.ballesteros@gmail.com>
     <TextView
         style="@style/text_title"
         android:id="@+id/title"
-        android:layout_above="@+id/subtitle"
+        android:layout_above="@+id/avatar_ais_logo_page3"
         android:text="@string/wizard_step_3_title" />
 
-    <TextView
-        style="@style/text_subtitle"
-        android:id="@+id/subtitle"
+    <ImageView
+        android:id="@+id/avatar_ais_logo_page3"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:text="@string/wizard_step_3_info" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/ic_ais_logo_small_white"
+        android:contentDescription="@string/todo"
+        android:scaleX="0"
+        android:scaleY="0" />
 
 </com.redbooth.WelcomePageLayout>

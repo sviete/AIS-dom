@@ -44,16 +44,32 @@ public class RocketFlightAwayAnimator {
     }
 
     private void initializeAnimator() {
-        final View rocket = rootView.findViewById(R.id.rocket_page4);
-        final View aisLogo = rootView.findViewById(R.id.ais_logo_page4);
+        final View rocket = rootView.findViewById(R.id.rocket_page5);
         Animator rocketScaleAnimator = getScaleAndVisibilityAnimator(rocket);
         Animator rocketRotationAnimator = getRotationAnimator(rocket);
         Animator rocketTranslationAnimator = getTranslationAnimator(rocket);
-        Animator aisLogoScaleAnimator = getScaleAnimator(aisLogo);
+
+        final View aisLogo = rootView.findViewById(R.id.avatar_ais_logo_page5);
+        Animator aisLogoAnimator = getLogoAnimator(aisLogo);
+
         animator = new AnimatorSet();
         animator.setStartDelay(600);
-        animator.play(aisLogoScaleAnimator).after(rocketTranslationAnimator);
-        animator.playTogether(rocketScaleAnimator, rocketRotationAnimator, rocketTranslationAnimator);
+        animator.playTogether(rocketScaleAnimator, rocketRotationAnimator, rocketTranslationAnimator, aisLogoAnimator);
+    }
+
+    private Animator getLogoAnimator(View targetView) {
+        AnimatorSet animator = new AnimatorSet();
+        animator.setDuration(1000);
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(targetView, View.SCALE_X, 0f, 1f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(targetView, View.SCALE_Y, 0f, 1f);
+        animator.playTogether(scaleXAnimator, scaleYAnimator);
+        animator.addListener(new AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                targetView.setVisibility(View.VISIBLE);
+            }
+        });
+        return animator;
     }
 
     private AnimatorSet getScaleAnimator(final View targetView) {

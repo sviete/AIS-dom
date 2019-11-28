@@ -30,11 +30,14 @@ import android.animation.ObjectAnimator;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 
+import com.redbooth.wizard.SettingsWizardUtils;
+
 import pl.sviete.dom.R;
 
 public class ChatAvatarsAnimator {
     private AnimatorSet animator;
     private final View rootView;
+    private SettingsWizardUtils settingsWizardUtils = new SettingsWizardUtils();
 
     public ChatAvatarsAnimator(View rootView) {
         this.rootView = rootView;
@@ -61,7 +64,15 @@ public class ChatAvatarsAnimator {
         animator.play(avatar2Animator).after(card1Animator);
         animator.play(card1Animator).after(avatar1Animator);
 
+        checkMicIsOn(logo_ais);
+    }
 
+    private void checkMicIsOn(View v){
+        if (settingsWizardUtils.isMicOn()){
+            v.setVisibility(View.GONE);
+        } else {
+            v.setVisibility(View.GONE);
+        }
     }
 
     private AnimatorSet getScaleAnimator(final View targetView) {

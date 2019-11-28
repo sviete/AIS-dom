@@ -256,7 +256,8 @@
     <string name="wizard_step_2_info">Access to the microphone is needed to give voice commands to the assistant.</string>
     <string name="wizard_step_3_title">Gateway ID</string>
     <string name="wizard_step_3_info">Scan or enter the unique ID of your gateway.</string>
-    <string name="welcome_page_4">Welcome on board :)</string>
+    <string name="wizard_step_4_title">Select voice</string>
+    <string name="welcome_page_5">Welcome on board :)</string>
     <string name="todo">TODO</string>
     <string name="wizard_skip">NEXT</string>
     <string name="wizard_next">NEXT</string>

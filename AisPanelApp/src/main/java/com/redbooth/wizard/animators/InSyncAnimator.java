@@ -24,6 +24,7 @@
  */
 package com.redbooth.wizard.animators;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
@@ -56,11 +57,27 @@ public class InSyncAnimator {
                 .ofFloat(arrowChartMaskView, View.SCALE_X, 1f, 0f);
         maskScaleXAnimator.setDuration(500);
         maskScaleXAnimator.setInterpolator(new LinearInterpolator());
+
+        final View aisLogoView = rootView.findViewById(R.id.avatar_ais_logo_page3);
+        Animator aisLogoAnimator = getAnimator(aisLogoView);
+
         animator = new AnimatorSet();
+        animator.play(aisLogoAnimator).after(maskScaleXAnimator);
         animator.play(scaleXAnimator).with(scaleYAnimator).before(maskScaleXAnimator);
     }
 
     public void play() {
         animator.start();
+    }
+
+
+    private Animator getAnimator(View targetView) {
+        AnimatorSet animator = new AnimatorSet();
+        animator.setDuration(300);
+        animator.setInterpolator(new OvershootInterpolator());
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(targetView, View.SCALE_X, 1f);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(targetView, View.SCALE_Y, 1f);
+        animator.playTogether(scaleXAnimator, scaleYAnimator);
+        return animator;
     }
 }

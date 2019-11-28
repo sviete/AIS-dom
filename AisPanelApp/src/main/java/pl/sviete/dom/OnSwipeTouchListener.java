@@ -12,7 +12,7 @@ Usage:
   myView.setOnTouchListener(new OnSwipeTouchListener(this) {
     @Override
     public void onSwipeDown() {
-      Toast.makeText(MainActivity.this, "Down", Toast.LENGTH_SHORT).show();
+      Toast.makeText(MainWizardActivity.this, "Down", Toast.LENGTH_SHORT).show();
     }
   }
 

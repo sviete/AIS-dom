@@ -11,7 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
 
-import com.redbooth.wizard.MainActivity;
+import com.redbooth.wizard.MainWizardActivity;
 
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -110,7 +110,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void startWizardActivity() {
         Log.d(TAG, "startWizardActivity Called");
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        startActivity(new Intent(getApplicationContext(), MainWizardActivity.class));
     }
 
 
