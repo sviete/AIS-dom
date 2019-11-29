@@ -297,7 +297,8 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         Log.e(TAG, "onCreate Called");
 
         mConfig = new Config(getApplicationContext());
-        currentUrl = mConfig.getAppLaunchUrl();
+        // get current url without discovery
+        currentUrl = mConfig.getAppLaunchUrl(false);
         // prepare the lock types we may use
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         fullWakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
@@ -756,14 +757,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private void publishSpeechStatus(String status) {
         Log.d(TAG, "publishSpeechStatus: " + status);
         DomWebInterface.publishMessage(status, "speech_status");
-    }
-
-    private void browseUrl(String url) {
-        Log.d(TAG, "browseUrl Called");
-        Intent intent = new Intent(BrowserActivity.BROADCAST_ACTION_LOAD_URL);
-        intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, url);
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-        bm.sendBroadcast(intent);
     }
 
     // AUDIO

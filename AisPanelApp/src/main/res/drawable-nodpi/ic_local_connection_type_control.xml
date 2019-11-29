@@ -1,0 +1,4 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:drawable="@drawable/ic_local_connection_control_focused" />
+    <item android:drawable="@drawable/ic_local_connection_control_on" />
+</selector>

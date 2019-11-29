@@ -108,6 +108,7 @@
     <string name="summary_setting_app_discovery">pozwól na wykrywanie urządzenia jako odtwarzacza w sieci</string>
     <string name="default_setting_app_discovery">false</string>
 
+
     <string name="default_setting_app_beep_on_click">true</string>
     <string name="summary_setting_app_beep_on_click">Odtwórz sygnał dźwiękowy po kliknięciu przycisku na pilocie w trybie sterowania bez monitora</string>
 
@@ -241,6 +242,7 @@
 
 
     <string name="ais_dom_button_gesture">Sterowanie gestami</string>
+    <string name="ais_dom_button_connection">Połączenie z Asystentem</string>
     <string name="ais_dom_button_mic">Mikrofon</string>
     <string name="ais_dom_button_settings">Ustawienia aplikacji</string>
     <string name="gesture_imge_text">TODO</string>
@@ -249,6 +251,8 @@
     <string name="no_barcode_detected">No Barcode Detected</string>
 
 
+    <string name="key_setting_app_wizard_done">setting_app_wizard_done</string>
+    <string name="default_setting_app_wizard_done">false</string>
     <string name="wizard_step_1_title">Konfiguracja w 3 krokach!</string>
     <string name="wizard_step_1_info">Ustaw parametry aplikacji w łatwy sposób przy pomocy kreatora..</string>
 
@@ -272,5 +276,7 @@
     <string name="wizzard_cam_off_info">naciśnij by włączyć</string>
     <string name="wizzard_qr_on_info">identyfikator bramki dostępny\n naciśnij by zeskanować ponownie</string>
     <string name="wizzard_qr_off_info">naciśnij by zeskanować\n identyfikator bramki</string>
+
+    <string name="long_click_to_execute">Aby uruchomić, przytrzymaj dłużej.</string>
 
 </resources>

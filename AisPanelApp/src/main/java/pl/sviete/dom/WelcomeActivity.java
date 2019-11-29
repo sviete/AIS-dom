@@ -90,8 +90,7 @@ public class WelcomeActivity extends AppCompatActivity {
         } else {
             Log.i(TAG, "On client. Go to browser on Startup");
             Config config = new Config(this.getApplicationContext());
-            String appLaunchUrl = config.getAppLaunchUrl();
-            if (!appLaunchUrl.equals("")){
+            if (config.getAppWizardDone()){
                 startBrowserActivity();
             } else {
                 startWizardActivity();

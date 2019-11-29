@@ -49,25 +49,43 @@
             android:contentDescription="@string/ais_dom_button_settings"
             android:focusable="true"
             android:nextFocusLeft="@+id/btnControlModeGesture"
-            android:nextFocusRight="@+id/btnConnectionType"
-            android:nextFocusUp="@+id/btnConnectionType"
+            android:nextFocusRight="@+id/switchControlModeConnection"
+            android:nextFocusUp="@+id/switchControlModeConnection"
             android:nextFocusDown="@+id/btnControlModeGesture" />
 
-        <Button
-            android:id="@+id/btnConnectionType"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+        <LinearLayout
+            android:id="@+id/btnControlModeConnection"
+            android:layout_width="80dp"
+            android:layout_height="36dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/ic_local_connection_from_browser"
-            android:contentDescription="@string/ais_dom_button_settings"
-            android:focusable="true"
             android:layout_marginStart="70dp"
-            android:nextFocusLeft="@+id/btnGoToSettings"
-            android:nextFocusRight="@+id/btnSpeak"
-            android:nextFocusUp="@+id/btnSpeak"
-            android:nextFocusDown="@+id/btnControlModeGesture" />
+            android:layout_marginBottom="10dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:focusable="true"
+            android:gravity="center"
+            android:nextFocusLeft="@+id/ais_recognition_view"
+            android:nextFocusRight="@+id/btnGoToSettings"
+            android:nextFocusUp="@+id/btnGoToSettings"
+            android:nextFocusDown="@+id/ais_recognition_view"
+            android:orientation="vertical">
 
+            <com.github.zagum.switchicon.SwitchIconView
+                android:id="@+id/switchControlModeConnection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/ais_dom_button_connection"
+                android:nextFocusLeft="@+id/btnGoToSettings"
+                android:nextFocusRight="@+id/btnSpeak"
+                android:nextFocusUp="@+id/btnSpeak"
+                android:nextFocusDown="@+id/btnControlModeGesture"
+                android:padding="14dp"
+                app:si_animation_duration="500"
+                app:si_disabled_alpha=".3"
+                app:si_disabled_color="#b7b7b7"
+                app:si_enabled="true"
+                app:si_no_dash="true"
+                app:si_tint_color="#b7b7b7"/>
+        </LinearLayout>
         <ToggleButton
             android:id="@+id/btnSpeak"
             style="@style/toggleButton"

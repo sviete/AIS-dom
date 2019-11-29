@@ -101,7 +101,7 @@ public class Config {
     public boolean canUseLocalConnection(String localIP, String gateId) {
         // check local IP
         String url = "http://" + localIP + ":8122";
-        String severAnswer = getResponseFromServer(url, 1000);
+        String severAnswer = getResponseFromServer(url, 4000);
         if (!severAnswer.equals("")) {
             try {
                 JSONObject jsonAnswer = new JSONObject(severAnswer);
@@ -205,12 +205,12 @@ public class Config {
         }
     }
 
-    public String getAppLaunchUrl() {
+    public String getAppLaunchUrl(boolean disco) {
         String url;
 
         url = getStringPref(R.string.key_setting_app_launchurl, R.string.default_setting_app_launchurl);
 
-        if (url.startsWith("dom-")) {
+        if (url.startsWith("dom-") && disco) {
             String gateID = url;
             String localIpHist = AisConnectionHistJSON.getLocalIpForGate(myContext, gateID);
             checkConnectionUrlJob checkConnectionUrlJob = new checkConnectionUrlJob();
@@ -228,6 +228,16 @@ public class Config {
         return getBoolPref(R.string.key_setting_app_discovery, R.string.default_setting_app_discovery);
     }
 
+
+    public Boolean getAppWizardDone() {
+        return getBoolPref(R.string.default_setting_app_wizard_done, R.string.default_setting_app_wizard_done);
+    }
+
+    public void setAppWizardDone(Boolean done) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putBoolean(myContext.getString(R.string.default_setting_app_wizard_done), done);
+        ed.apply();
+    }
 
     public void setAppLaunchUrl(String gate) {
         // this is executed from QR code scan or Gate history only

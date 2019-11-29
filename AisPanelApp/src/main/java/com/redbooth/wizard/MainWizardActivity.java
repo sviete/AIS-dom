@@ -58,6 +58,12 @@ public class MainWizardActivity extends AppCompatActivity {
         initializeButtons();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkGateExists();
+    }
+
     private void initializePages() {
         coordinatorLayout.addPage(
                 R.layout.welcome_page_1,
@@ -150,7 +156,7 @@ public class MainWizardActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int page = coordinatorLayout.getPageSelected();
                 if (page == 4) {
-                    startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
+                    go_to_browser();
                 } else {
                     coordinatorLayout.setCurrentPage(page + 1, true);
                 }
@@ -182,10 +188,9 @@ public class MainWizardActivity extends AppCompatActivity {
         ImageView bAisNext5 = (ImageView) findViewById(R.id.avatar_ais_logo_page5);
         bAisNext5.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
+                go_to_browser();
             }
         });
-
 
     }
 
@@ -271,7 +276,8 @@ public class MainWizardActivity extends AppCompatActivity {
 
     private void checkGateExists(){
         Config config = new Config(this.getApplicationContext());
-        String appLaunchUrl = config.getAppLaunchUrl();
+        // get app url without discovery
+        String appLaunchUrl = config.getAppLaunchUrl(false);
         if (appLaunchUrl.startsWith("dom-")){
             setGateIsON(appLaunchUrl);
         } else {
@@ -329,6 +335,13 @@ public class MainWizardActivity extends AppCompatActivity {
                     setCamIsOFF();
                 }
         }
+    }
+
+    private void go_to_browser() {
+        // set info that the qwizard is done
+        Config config = new Config(this.getApplicationContext());
+        config.setAppWizardDone(true);
+        startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
     }
 
 

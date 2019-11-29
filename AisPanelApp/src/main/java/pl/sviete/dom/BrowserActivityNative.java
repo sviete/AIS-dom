@@ -28,6 +28,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.github.zagum.switchicon.SwitchIconView;
+
 import java.util.Locale;
 
 
@@ -218,13 +220,14 @@ public class BrowserActivityNative extends BrowserActivity {
     protected void loadUrl(final String url) {
         if (zoomLevel != 1.0) { AisCoreUtils.mWebView.setInitialScale((int)(zoomLevel * 100)); }
         AisCoreUtils.mWebView.loadUrl(url);
-        Button b = (Button)findViewById(R.id.btnConnectionType);
-
+        SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
+        // TODO check if the url was changed...
         if (url.contains("paczka.pro")) {
-            b.setBackgroundResource(R.drawable.ic_www_connection_from_browser);
+            mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_cloud_connection_control_bg);
         } else {
-            b.setBackgroundResource(R.drawable.ic_local_connection_from_browser);
+            mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_local_connection_control_bg);
         }
+
     }
 
 

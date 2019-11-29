@@ -144,7 +144,8 @@ public class WatchScreenActivity extends AppCompatActivity {
     protected void onStart() {
         // to check the url from settings
         mConfig = new Config(getApplicationContext());
-        Log.i(TAG, mConfig.getAppLaunchUrl());
+        // get app url with discovery
+        Log.i(TAG, mConfig.getAppLaunchUrl(true));
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);

@@ -83,6 +83,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     //
     private SwitchIconView mSwitchIconModeGesture;
     private View mButtonModeGesture;
+    private SwitchIconView mSwitchIconModeConnection;
+    private View mButtonModeConnection;
 
     // browser speech
     private TextToSpeech mBrowserTts;
@@ -108,9 +110,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         //btnSpeak.requestFocus();
 
         //
-        mSwitchIconModeGesture = (SwitchIconView) findViewById(R.id.switchControlModeGesture);
+        mSwitchIconModeGesture = findViewById(R.id.switchControlModeGesture);
         mButtonModeGesture = findViewById(R.id.btnControlModeGesture);
-
         mButtonModeGesture.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -136,6 +137,36 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 return true;
             }
         });
+
+        mButtonModeGesture.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+        // buton check connection
+        mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
+        mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
+        mButtonModeConnection.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // sprawdzam połączenie
+                speakOutFromBrowser("Sprawdzam połączenie.");
+                // mSwitchIconModeConnection.setIconEnabled(false, true);
+                mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                appLaunchUrl = mConfig.getAppLaunchUrl(true);
+                return true;
+            }
+        });
+
+        mButtonModeConnection.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute), Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         // this is done onResume
         // createRecognitionView();
@@ -228,7 +259,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         }
 
         decorView.setSystemUiVisibility(uiOptions);
-        appLaunchUrl = mConfig.getAppLaunchUrl();
+        // get app url with discovery
+        appLaunchUrl = mConfig.getAppLaunchUrl(true);
         loadUrl(appLaunchUrl);
 
         // set the remote control mode on start

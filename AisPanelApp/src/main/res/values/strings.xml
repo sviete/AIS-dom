@@ -243,6 +243,7 @@
 
 
     <string name="ais_dom_button_gesture">Gesture button</string>
+    <string name="ais_dom_button_connection">Connection button</string>
     <string name="ais_dom_button_mic">Microphone</string>
     <string name="ais_dom_button_settings">Settings</string>
     <string name="gesture_imge_text">TODO</string>
@@ -250,6 +251,8 @@
     <string name="gesture_id">gesture id</string>
     <string name="no_barcode_detected">No Barcode Detected</string>
 
+    <string name="key_setting_app_wizard_done">setting_app_wizard_done</string>
+    <string name="default_setting_app_wizard_done">false</string>
     <string name="wizard_step_1_title">Configuration in 3 steps!</string>
     <string name="wizard_step_1_info">Set the application parameters easily using the wizard..</string>
     <string name="wizard_step_2_title">1. Turn on the microphone</string>
@@ -269,6 +272,8 @@
     <string name="wizzard_cam_off_info">press to turn on</string>
     <string name="wizzard_qr_on_info">gate id available\n press to scan again</string>
     <string name="wizzard_qr_off_info">press to scan gate id</string>
+
+    <string name="long_click_to_execute">To execute, press and hold longer.</string>
 
 
 </resources>
