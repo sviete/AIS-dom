@@ -83,7 +83,7 @@
     <string name="key_setting_app_launchurl">setting_app_launchurl</string>
     <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
     <string name="default_setting_app_launchurl"></string>
-    <string name="title_setting_app_launchurl">Identyfikator lub url</string>
+    <string name="title_setting_app_launchurl">Identyfikator lub URL</string>
     <string name="title_setting_app_launchurl_info_title">Skanowanie identyfikatora.</string>
     <string name="title_setting_app_launchurl_info_summary">Możesz wprowadzić identyfikator bramki skanując kod QR dostępny w aplikacji Asystent domowy za pomocą aparatu.</string>
     <string name="button_edit_gate_id">Edytuj</string>
@@ -277,6 +277,7 @@
     <string name="wizzard_qr_on_info">identyfikator bramki dostępny\n naciśnij by zeskanować ponownie</string>
     <string name="wizzard_qr_off_info">naciśnij by zeskanować\n identyfikator bramki</string>
 
-    <string name="long_click_to_execute">Aby uruchomić, przytrzymaj dłużej.</string>
+    <string name="long_click_to_execute_gesture">Przytrzymaj dłużej, aby uruchomić sterowanie gestami.</string>
+    <string name="long_click_to_execute_connection">Przytrzymaj dłużej, aby uruchomić sprawdzenie połączenia.</string>
 
 </resources>

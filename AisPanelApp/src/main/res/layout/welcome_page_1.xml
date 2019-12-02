@@ -6,12 +6,13 @@
     style="@style/welcome_page"
     tools:background="@color/page1">
 
+
     <RelativeLayout
         android:id="@+id/rocket"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="6dp"
+        android:paddingTop="0dp"
         app:view_behavior="com.redbooth.wizard.AnimationLaunch"
         android:clipToPadding="false">
 

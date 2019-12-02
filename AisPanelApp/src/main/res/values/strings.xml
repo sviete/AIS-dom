@@ -88,7 +88,7 @@
     <string name="key_setting_app_launchurl">setting_app_launchurl</string>
     <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
     <string name="default_setting_app_launchurl"></string>
-    <string name="title_setting_app_launchurl">Gate (id/url)</string>
+    <string name="title_setting_app_launchurl">Gate ID or URL</string>
     <string name="title_setting_app_launchurl_info_title">Scan your unique Gate ID.</string>
     <string name="title_setting_app_launchurl_info_summary">You can enter it via qr code scanner.</string>
     <string name="button_edit_gate_id">Edit</string>
@@ -273,7 +273,8 @@
     <string name="wizzard_qr_on_info">gate id available\n press to scan again</string>
     <string name="wizzard_qr_off_info">press to scan gate id</string>
 
-    <string name="long_click_to_execute">To execute, press and hold longer.</string>
+    <string name="long_click_to_execute_gesture">Hold longer to activate gesture control.</string>
+    <string name="long_click_to_execute_connection">Hold longer to run the connection check.</string>
 
 
 </resources>

@@ -219,7 +219,18 @@ public class BrowserActivityNative extends BrowserActivity {
     @Override
     protected void loadUrl(final String url) {
         if (zoomLevel != 1.0) { AisCoreUtils.mWebView.setInitialScale((int)(zoomLevel * 100)); }
-        AisCoreUtils.mWebView.loadUrl(url);
+        if (url.equals("")) {
+            // go to settings
+            Intent intent = new Intent(BrowserActivityNative.this, WelcomeActivity.class);
+            intent.putExtra(WelcomeActivity.BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE, true);
+            startActivity(intent);
+            return;
+        }
+        if (url.startsWith("dom-")) {
+            AisCoreUtils.mWebView.loadUrl("file:///android_asset/web/ais_loading.html");
+        } else {
+            AisCoreUtils.mWebView.loadUrl(url);
+        }
         SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
         // TODO check if the url was changed...
         if (url.contains("paczka.pro")) {
@@ -257,7 +268,6 @@ public class BrowserActivityNative extends BrowserActivity {
 
         if(event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
             // Back in browser
-            if (AisCoreUtils.getRemoteControllerMode().equals(AisCoreUtils.mOnDisplay)) {
                 if (event.getAction() == KeyEvent.ACTION_UP){
                     Log.i(TAG, "Back button pressed in on display mode");
                     String historyUrl="";
@@ -295,7 +305,6 @@ public class BrowserActivityNative extends BrowserActivity {
 //                            }
                     }
                 }
-            }
         }
 
         else if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_DOWN || event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP){

@@ -140,7 +140,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
         mButtonModeGesture.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute), Toast.LENGTH_SHORT).show();
+                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_gesture), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -163,7 +163,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
         mButtonModeConnection.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute), Toast.LENGTH_SHORT).show();
+                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_connection), Toast.LENGTH_SHORT).show();
             }
         });
 

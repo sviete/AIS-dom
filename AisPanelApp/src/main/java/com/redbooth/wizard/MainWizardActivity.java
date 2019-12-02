@@ -5,6 +5,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.redbooth.wizard.animators.InSyncAnimatorPage4;
 import com.redbooth.wizard.animators.RocketAvatarsAnimator;
 import com.redbooth.wizard.animators.RocketFlightAwayAnimator;
 
+import pl.sviete.dom.AisCoreUtils;
 import pl.sviete.dom.BrowserActivityNative;
 import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
@@ -56,6 +58,11 @@ public class MainWizardActivity extends AppCompatActivity {
         initializePages();
         initializeBackgroundTransitions();
         initializeButtons();
+        if (AisCoreUtils.onTv()){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 
     @Override
@@ -304,7 +311,11 @@ public class MainWizardActivity extends AppCompatActivity {
         infoButton.setOnClickListener(v -> skanGateId());
 
         TextView qrText = findViewById(R.id.gate_id_from_qr_code);
-        qrText.setText(appLaunchUrl);
+        if (!appLaunchUrl.equals("")) {
+            qrText.setText(appLaunchUrl);
+        } else {
+            qrText.setText(getString(R.string.wizard_step_4_title));
+        }
     }
 
     private void skanGateId(){

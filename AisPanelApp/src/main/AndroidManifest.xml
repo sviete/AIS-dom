@@ -153,8 +153,7 @@
         </activity>
 
         <activity
-            android:name="com.redbooth.wizard.MainWizardActivity"
-            android:screenOrientation="portrait">
+            android:name="com.redbooth.wizard.MainWizardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
