@@ -74,31 +74,31 @@ public class BrowserActivityNative extends BrowserActivity {
         Locale.setDefault(Locale.forLanguageTag(current_locale.getLanguage()));
 
         // Force links and redirects to open in the WebView instead of in a browser
-        AisCoreUtils.mWebView.setWebChromeClient(new WebChromeClient(){
-
-            Snackbar snackbar;
-
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                if(newProgress == 100 && snackbar != null){
-                    snackbar.dismiss();
-                    pageLoadComplete(view.getUrl());
-                    return;
-                }
-                String text = getString(R.string.webview_loading) + newProgress+ "% " + view.getUrl();
-                if(snackbar == null){
-                    snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
-                } else {
-                    snackbar.setText(text);
-                }
-
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-                params.setMargins(0, 0, 0, 0);
-                snackbar.getView().setLayoutParams(params);
-                snackbar.show();
-            }
-
-        });
+//        AisCoreUtils.mWebView.setWebChromeClient(new WebChromeClient(){
+//
+//            Snackbar snackbar;
+//
+//            @Override
+//            public void onProgressChanged(WebView view, int newProgress) {
+//                if(newProgress == 100 && snackbar != null){
+//                    snackbar.dismiss();
+//                    pageLoadComplete(view.getUrl());
+//                    return;
+//                }
+//                String text = getString(R.string.webview_loading) + newProgress+ "% " + view.getUrl();
+//                if(snackbar == null){
+//                    snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
+//                } else {
+//                    snackbar.setText(text);
+//                }
+//
+//                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+//                params.setMargins(0, 0, 0, 0);
+//                snackbar.getView().setLayoutParams(params);
+//                snackbar.show();
+//            }
+//
+//        });
 
 
         AisCoreUtils.mWebView.setWebViewClient(new WebViewClient(){

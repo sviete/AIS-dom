@@ -152,11 +152,16 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         mButtonModeConnection.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                // sprawdzam połączenie
-                speakOutFromBrowser("Sprawdzam połączenie.");
-                // mSwitchIconModeConnection.setIconEnabled(false, true);
-                mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                appLaunchUrl = mConfig.getAppLaunchUrl(true);
+                appLaunchUrl = mConfig.getAppLaunchUrl(false);
+                if (appLaunchUrl.startsWith("dom-")) {
+                    // sprawdzam połączenie
+                    speakOutFromBrowser("Sprawdzam połączenie.");
+                    // mSwitchIconModeConnection.setIconEnabled(false, true);
+                    mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                    appLaunchUrl = mConfig.getAppLaunchUrl(true);
+                } else {
+                    speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.");
+                }
                 return true;
             }
         });

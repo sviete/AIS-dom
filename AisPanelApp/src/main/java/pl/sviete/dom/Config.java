@@ -215,6 +215,9 @@ public class Config {
             String localIpHist = AisConnectionHistJSON.getLocalIpForGate(myContext, gateID);
             checkConnectionUrlJob checkConnectionUrlJob = new checkConnectionUrlJob();
             checkConnectionUrlJob.execute(gateID, localIpHist);
+        } else {
+            // the url is set by hand, save it for interface communication with gate
+            AisCoreUtils.setAisDomUrl(url);
         }
         return url;
     }
