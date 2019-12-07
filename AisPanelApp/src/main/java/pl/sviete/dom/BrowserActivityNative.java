@@ -1,22 +1,22 @@
 package pl.sviete.dom;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
-import android.os.Handler;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -24,23 +24,51 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.os.Bundle;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.github.zagum.switchicon.SwitchIconView;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
-
-
-import static android.widget.ListPopupWindow.MATCH_PARENT;
-import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
 
 public class BrowserActivityNative extends BrowserActivity {
 
     final String TAG = BrowserActivityNative.class.getName();
     boolean doubleBackToExitPressedOnce = false;
+    public static final int INPUT_FILE_REQUEST_CODE = 1;
+    public static final String EXTRA_FROM_NOTIFICATION = "EXTRA_FROM_NOTIFICATION";
+    private ValueCallback<Uri[]> mFilePathCallback;
+    private String mCameraPhotoPath;
+
+
+    /**
+     * More info this method can be found at
+     * http://developer.android.com/training/camera/photobasics.html
+     *
+     * @return
+     * @throws IOException
+     */
+    private File createImageFile() {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File imageFile = null;
+        try {
+            imageFile = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageFile;
+    }
 
     @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
     @Override
@@ -61,8 +89,6 @@ public class BrowserActivityNative extends BrowserActivity {
         AisCoreUtils.mWebView.setScrollContainer(true);
 
 
-        // TODO check this....
-        // AisCoreUtils.mWebView.clearCache(true);
         //
         Locale current_locale;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
@@ -73,32 +99,60 @@ public class BrowserActivityNative extends BrowserActivity {
         }
         Locale.setDefault(Locale.forLanguageTag(current_locale.getLanguage()));
 
-        // Force links and redirects to open in the WebView instead of in a browser
-//        AisCoreUtils.mWebView.setWebChromeClient(new WebChromeClient(){
-//
-//            Snackbar snackbar;
-//
-//            @Override
-//            public void onProgressChanged(WebView view, int newProgress) {
-//                if(newProgress == 100 && snackbar != null){
-//                    snackbar.dismiss();
-//                    pageLoadComplete(view.getUrl());
-//                    return;
-//                }
-//                String text = getString(R.string.webview_loading) + newProgress+ "% " + view.getUrl();
-//                if(snackbar == null){
-//                    snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
-//                } else {
-//                    snackbar.setText(text);
-//                }
-//
-//                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-//                params.setMargins(0, 0, 0, 0);
-//                snackbar.getView().setLayoutParams(params);
-//                snackbar.show();
-//            }
-//
-//        });
+        // File choicer
+        AisCoreUtils.mWebView.setWebChromeClient(new WebChromeClient() {
+            public boolean onShowFileChooser(
+                    WebView webView, ValueCallback<Uri[]> filePathCallback,
+                    WebChromeClient.FileChooserParams fileChooserParams) {
+
+                // Double check that we don't have any existing callbacks
+                if(mFilePathCallback != null) {
+                    mFilePathCallback.onReceiveValue(null);
+                }
+                mFilePathCallback = filePathCallback;
+
+                // Set up the take picture intent
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    photoFile = createImageFile();
+                    takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
+
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                                Uri.fromFile(photoFile));
+                    } else {
+                        takePictureIntent = null;
+                    }
+                }
+
+                // Set up the intent to get an existing image
+                Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                contentSelectionIntent.setType("image/*");
+
+                // Set up the intents for the Intent chooser
+                Intent[] intentArray;
+                if(takePictureIntent != null) {
+                    intentArray = new Intent[]{takePictureIntent};
+                } else {
+                    intentArray = new Intent[0];
+                }
+
+                Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+                chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+                chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+
+                startActivityForResult(chooserIntent, INPUT_FILE_REQUEST_CODE);
+
+                return true;
+            }
+        });
+
 
 
         AisCoreUtils.mWebView.setWebViewClient(new WebViewClient(){
@@ -202,6 +256,35 @@ public class BrowserActivityNative extends BrowserActivity {
         super.onCreate(savedInstanceState);
     }
 
+
+    @Override
+    public void onActivityResult (int requestCode, int resultCode, Intent data) {
+        if(requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+
+        Uri[] results = null;
+
+        // Check that the response is a good one
+        if(resultCode == Activity.RESULT_OK) {
+            if(data == null) {
+                // If there is not data, then we may have taken a photo
+                if(mCameraPhotoPath != null) {
+                    results = new Uri[]{Uri.parse(mCameraPhotoPath)};
+                }
+            } else {
+                String dataString = data.getDataString();
+                if (dataString != null) {
+                    results = new Uri[]{Uri.parse(dataString)};
+                }
+            }
+        }
+
+        mFilePathCallback.onReceiveValue(results);
+        mFilePathCallback = null;
+        return;
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState ) {
