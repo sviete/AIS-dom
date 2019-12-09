@@ -42,33 +42,12 @@ public class InSyncAnimatorPage2_1 {
     }
 
     private void initializeAnimator() {
-//        final View starShadowView = rootView.findViewById(R.id.star_shadow_2_1);
-//        Animator starShadowAnimator = getScaleAndVisibilityAnimator(starShadowView);
-//
-//        final View starView = rootView.findViewById(R.id.star2_1);
-//        Animator starAnimator = getScaleAndVisibilityAnimator(starView);
-//
-//
-        final View avatarView = rootView.findViewById(R.id.star2_1);
-        final ObjectAnimator scaleXAnimator = ObjectAnimator
-                .ofFloat(avatarView, View.SCALE_X, 0f, 1f);
-//        scaleXAnimator.setDuration(500);
-//        scaleXAnimator.setInterpolator(new OvershootInterpolator());
-
-
-        final ObjectAnimator scaleYAnimator = ObjectAnimator
-                .ofFloat(avatarView, View.SCALE_Y, 0f, 1f);
-        scaleYAnimator.setDuration(500);
-        scaleYAnimator.setInterpolator(new OvershootInterpolator());
 
         final View aisLogoView = rootView.findViewById(R.id.avatar_ais_logo_page2_1);
         Animator aisLogoAnimator = getAnimator(aisLogoView);
 
         animator = new AnimatorSet();
-//        animator.play(aisLogoAnimator).after(starShadowAnimator);
-//        animator.play(starShadowAnimator).after(starAnimator);
-//        animator.play(starAnimator).after(scaleXAnimator);
-        animator.play(aisLogoAnimator).with(scaleYAnimator); //.before(maskScaleXAnimator);
+        animator.play(aisLogoAnimator);
 
     }
 

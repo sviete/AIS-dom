@@ -274,13 +274,13 @@
     <string name="wizard_skip">DALEJ</string>
     <string name="wizard_checking">sprawdzam</string>
     <string name="wizzard_mic_on_info">mikrofon dostępny</string>
-    <string name="wizzard_mic_off_info">naciśnij by włączyć</string>
+    <string name="wizzard_mic_off_info">NACIŚNIJ ABY WŁĄCZYĆ</string>
     <string name="wizzard_files_on_info">pliki dostępne</string>
-    <string name="wizzard_files_off_info">naciśnij by włączyć</string>
+    <string name="wizzard_files_off_info">NACIŚNIJ ABY WŁĄCZYĆ</string>
     <string name="wizzard_cam_on_info">kamera dostępna</string>
-    <string name="wizzard_cam_off_info">naciśnij by włączyć</string>
-    <string name="wizzard_qr_on_info">identyfikator bramki dostępny\n naciśnij by zeskanować ponownie</string>
-    <string name="wizzard_qr_off_info">naciśnij by zeskanować\n identyfikator bramki</string>
+    <string name="wizzard_cam_off_info">NACIŚNIJ ABY WŁĄCZYĆ</string>
+    <string name="wizzard_qr_on_info">naciśnij by zeskanować ponownie</string>
+    <string name="wizzard_qr_off_info">NACIŚNIJ I ZESKANUJ</string>
 
     <string name="long_click_to_execute_gesture">Przytrzymaj dłużej, aby uruchomić sterowanie gestami.</string>
     <string name="long_click_to_execute_connection">Przytrzymaj dłużej, aby uruchomić sprawdzenie połączenia.</string>

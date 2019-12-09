@@ -44,19 +44,24 @@ public class InSyncAnimatorPage4 {
 
     private void initializeAnimator() {
         final View avatarView = rootView.findViewById(R.id.avatar5);
-        final ObjectAnimator scaleXAnimator = ObjectAnimator
-                .ofFloat(avatarView, View.SCALE_X, 0f, 1f);
+        final ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(avatarView, View.SCALE_X, 0f, 1f);
         scaleXAnimator.setDuration(300);
         scaleXAnimator.setInterpolator(new OvershootInterpolator());
-        final ObjectAnimator scaleYAnimator = ObjectAnimator
-                .ofFloat(avatarView, View.SCALE_Y, 0f, 1f);
+        final ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(avatarView, View.SCALE_Y, 0f, 1f);
         scaleYAnimator.setDuration(300);
         scaleYAnimator.setInterpolator(new OvershootInterpolator());
+
+        final View starView = rootView.findViewById(R.id.star_4);
+        final ObjectAnimator scaleXAnimatorStart = ObjectAnimator.ofFloat(starView, View.SCALE_X, 0f, 1f);
+        scaleXAnimatorStart.setDuration(500);
+        scaleXAnimatorStart.setInterpolator(new OvershootInterpolator());
+
 
         final View aisLogoView = rootView.findViewById(R.id.avatar_ais_logo_page4);
         Animator aisLogoAnimator = getAnimator(aisLogoView);
 
         animator = new AnimatorSet();
+        animator.play(scaleXAnimatorStart).after(aisLogoAnimator);
         animator.play(aisLogoAnimator).after(scaleXAnimator);
         animator.play(scaleXAnimator).with(scaleYAnimator); //.before(maskScaleXAnimator);
     }

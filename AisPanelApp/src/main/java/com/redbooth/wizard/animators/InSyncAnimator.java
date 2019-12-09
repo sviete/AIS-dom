@@ -44,20 +44,18 @@ public class InSyncAnimator {
 
     private void initializeAnimator() {
         final View avatarView = rootView.findViewById(R.id.avatar5);
-        //final View arrowChartMaskView = rootView.findViewById(R.id.arrow_chart_mask);
-        final ObjectAnimator scaleXAnimator = ObjectAnimator
-                .ofFloat(avatarView, View.SCALE_X, 0f, 1f);
+        final ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(avatarView, View.SCALE_X, 0f, 1f);
         scaleXAnimator.setDuration(300);
         scaleXAnimator.setInterpolator(new OvershootInterpolator());
-        final ObjectAnimator scaleYAnimator = ObjectAnimator
-                .ofFloat(avatarView, View.SCALE_Y, 0f, 1f);
+
+        final ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(avatarView, View.SCALE_Y, 0f, 1f);
         scaleYAnimator.setDuration(300);
         scaleYAnimator.setInterpolator(new OvershootInterpolator());
 
-        //final ObjectAnimator maskScaleXAnimator = ObjectAnimator
-        //        .ofFloat(arrowChartMaskView, View.SCALE_X, 1f, 0f);
-        //maskScaleXAnimator.setDuration(500);
-        //maskScaleXAnimator.setInterpolator(new LinearInterpolator());
+        final View starView = rootView.findViewById(R.id.star_3);
+        final ObjectAnimator scaleYAnimatorStar =  ObjectAnimator.ofFloat(starView, View.SCALE_Y, 0f, 1f);
+        scaleYAnimatorStar.setDuration(500);
+        scaleYAnimatorStar.setInterpolator(new OvershootInterpolator());
 
         final View aisLogoView = rootView.findViewById(R.id.avatar_ais_logo_page3);
         Animator aisLogoAnimator = getAnimator(aisLogoView);
@@ -65,6 +63,7 @@ public class InSyncAnimator {
         Animator info3AisAnimator = getAnimator(info_ais);
 
         animator = new AnimatorSet();
+        animator.play(scaleYAnimatorStar).after(info3AisAnimator);
         animator.play(info3AisAnimator).after(aisLogoAnimator);
         animator.play(aisLogoAnimator).after(scaleXAnimator);
         animator.play(scaleXAnimator).with(scaleYAnimator); //w.before(maskScaleXAnimator);

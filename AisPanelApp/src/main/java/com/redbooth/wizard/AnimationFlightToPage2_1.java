@@ -56,7 +56,6 @@ public class AnimationFlightToPage2_1 extends WelcomePageBehavior {
 
     private void configureTranslation() {
         final View targetView = getTargetView();
-        final View shadowView = getTargetView().findViewById(R.id.star_shadow_2_1);
         int[] viewLocation = new int[LENGTH_LOCATION_ARRAY];
         getLeftPositionFrom(targetView, viewLocation);
         int[] destinyViewLocation = new int[LENGTH_LOCATION_ARRAY];
@@ -67,7 +66,6 @@ public class AnimationFlightToPage2_1 extends WelcomePageBehavior {
         objectAnimatorX = ObjectAnimator.ofFloat(targetView, View.TRANSLATION_X, 0, -(viewLocation[X] - destinyViewLocation[X]));
         objectAnimatorX.setInterpolator(new LinearInterpolator());
         objectAnimatorX.setDuration(DURATION);
-        alphaAnimator = ObjectAnimator.ofFloat(shadowView, View.ALPHA, 0, 0.4f);
         alphaAnimator.setInterpolator(new LinearInterpolator());
         alphaAnimator.setDuration(DURATION);
     }

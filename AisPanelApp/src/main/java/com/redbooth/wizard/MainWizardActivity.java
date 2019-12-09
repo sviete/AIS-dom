@@ -258,6 +258,7 @@ public class MainWizardActivity extends AppCompatActivity {
         TextView infoText = findViewById(R.id.wizard_info_page2_1);
         infoButton.setImageResource(R.drawable.wizzard_files_off);
         infoText.setText(getString(R.string.wizzard_files_off_info));
+        infoText.setTextColor(getResources().getColor(R.color.important_info));
         infoButton.setOnClickListener(v -> askForFilesOn());
     }
 
@@ -300,6 +301,7 @@ public class MainWizardActivity extends AppCompatActivity {
         TextView infoText = findViewById(R.id.wizard_info_page2);
         infoButton.setImageResource(R.drawable.wizzard_mic_off);
         infoText.setText(getString(R.string.wizzard_mic_off_info));
+        infoText.setTextColor(getResources().getColor(R.color.important_info));
         infoButton.setOnClickListener(v -> askForMicOn());
     }
 
@@ -335,6 +337,7 @@ public class MainWizardActivity extends AppCompatActivity {
         TextView infoText = findViewById(R.id.wizard_info_page3);
         infoButton.setImageResource(R.drawable.wizzard_cam_off);
         infoText.setText(getString(R.string.wizzard_cam_off_info));
+        infoText.setTextColor(getResources().getColor(R.color.important_info));
         infoButton.setOnClickListener(v -> askForCamOn());
     }
 
@@ -374,6 +377,7 @@ public class MainWizardActivity extends AppCompatActivity {
         TextView infoText = findViewById(R.id.wizard_info_page4);
         infoButton.setImageResource(R.drawable.wizzard_qr_off);
         infoText.setText(getString(R.string.wizzard_qr_off_info));
+        infoText.setTextColor(getResources().getColor(R.color.important_info));
         infoButton.setOnClickListener(v -> skanGateId());
 
         TextView qrText = findViewById(R.id.gate_id_from_qr_code);
