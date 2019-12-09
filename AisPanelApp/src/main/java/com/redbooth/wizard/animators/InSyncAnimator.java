@@ -53,6 +53,7 @@ public class InSyncAnimator {
                 .ofFloat(avatarView, View.SCALE_Y, 0f, 1f);
         scaleYAnimator.setDuration(300);
         scaleYAnimator.setInterpolator(new OvershootInterpolator());
+
         //final ObjectAnimator maskScaleXAnimator = ObjectAnimator
         //        .ofFloat(arrowChartMaskView, View.SCALE_X, 1f, 0f);
         //maskScaleXAnimator.setDuration(500);

@@ -253,13 +253,20 @@
 
     <string name="key_setting_app_wizard_done">setting_app_wizard_done</string>
     <string name="default_setting_app_wizard_done">false</string>
-    <string name="wizard_step_1_title">Configuration in 3 steps!</string>
+
+    <string name="wizard_step_1_title">Configuration step by step!</string>
     <string name="wizard_step_1_info">Set the application parameters easily using the wizard..</string>
-    <string name="wizard_step_2_title">1. Turn on the microphone</string>
+
+    <string name="wizard_step_2_title">Allow access to the microphone</string>
     <string name="wizard_step_2_info">Access to the microphone is needed to give voice commands to the assistant.</string>
-    <string name="wizard_step_3_title">2. Turn on the camera</string>
-    <string name="wizard_step_3_info">Scan or enter the unique ID of your gateway.</string>
-    <string name="wizard_step_4_title">3. Access to the microphone is needed to scan the gate id</string>
+
+    <string name="wizard_step_2_1_title"> Allow access to files</string>
+    <string name="wizard_step_2_1_info">Access to tfiles is needed to send pictures to Assistant domowy.</string>
+
+    <string name="wizard_step_3_title">Allow the access to camera</string>
+    <string name="wizard_step_3_info">Access to the camera is needed to scan the gate id.</string>
+
+    <string name="wizard_step_4_title">Unique gate ID </string>
     <string name="wizard_step_4_info">Scan the unique ID of your gateway.</string>
 
     <string name="welcome_page_5">Welcome on board\nAI-Speaker.com</string>
@@ -268,6 +275,8 @@
     <string name="wizard_checking">checking</string>
     <string name="wizzard_mic_on_info">microphone available</string>
     <string name="wizzard_mic_off_info">press to turn on</string>
+    <string name="wizzard_files_on_info">files available</string>
+    <string name="wizzard_files_off_info">press to turn on</string>
     <string name="wizzard_cam_on_info">camera available</string>
     <string name="wizzard_cam_off_info">press to turn on</string>
     <string name="wizzard_qr_on_info">gate id available\n press to scan again</string>

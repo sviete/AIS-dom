@@ -253,11 +253,14 @@
 
     <string name="key_setting_app_wizard_done">setting_app_wizard_done</string>
     <string name="default_setting_app_wizard_done">false</string>
-    <string name="wizard_step_1_title">Konfiguracja w 3 krokach!</string>
+    <string name="wizard_step_1_title">Konfiguracja krok po kroku!</string>
     <string name="wizard_step_1_info">Ustaw parametry aplikacji w łatwy sposób przy pomocy kreatora..</string>
 
     <string name="wizard_step_2_title">Dostęp do mikrofonu</string>
     <string name="wizard_step_2_info">Dostęp do mikrofonu jest potrzebny, by wydawać polecania głosowe dla asystenta.</string>
+
+    <string name="wizard_step_2_1_title">Dostęp do plików</string>
+    <string name="wizard_step_2_1_info">Dostęp do plików jest potrzebny, by wysyłać zdjęcia do Asystenta domowego.</string>
 
     <string name="wizard_step_3_title">Dostęp do kamery</string>
     <string name="wizard_step_3_info">Dostęp do kamery jest potrzebny, by skanować identyfikator urządzenia.</string>
@@ -272,6 +275,8 @@
     <string name="wizard_checking">sprawdzam</string>
     <string name="wizzard_mic_on_info">mikrofon dostępny</string>
     <string name="wizzard_mic_off_info">naciśnij by włączyć</string>
+    <string name="wizzard_files_on_info">pliki dostępne</string>
+    <string name="wizzard_files_off_info">naciśnij by włączyć</string>
     <string name="wizzard_cam_on_info">kamera dostępna</string>
     <string name="wizzard_cam_off_info">naciśnij by włączyć</string>
     <string name="wizzard_qr_on_info">identyfikator bramki dostępny\n naciśnij by zeskanować ponownie</string>

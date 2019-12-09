@@ -1,15 +1,20 @@
 package pl.sviete.dom;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,6 +31,7 @@ import android.os.Bundle;
 import android.webkit.WebViewClient;
 
 import com.github.zagum.switchicon.SwitchIconView;
+import com.redbooth.wizard.MainWizardActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,9 +45,14 @@ public class BrowserActivityNative extends BrowserActivity {
     final String TAG = BrowserActivityNative.class.getName();
     boolean doubleBackToExitPressedOnce = false;
     public static final int INPUT_FILE_REQUEST_CODE = 1;
+    private static final int FILECHOOSER_RESULTCODE = 1;
     public static final String EXTRA_FROM_NOTIFICATION = "EXTRA_FROM_NOTIFICATION";
+    private final int REQUEST_FILES_PERMISSION = 220;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
+    private ValueCallback<Uri> mUploadMessage;
+    private Uri mCapturedImageURI = null;
+
 
 
     /**
@@ -105,6 +116,15 @@ public class BrowserActivityNative extends BrowserActivity {
                     WebView webView, ValueCallback<Uri[]> filePathCallback,
                     WebChromeClient.FileChooserParams fileChooserParams) {
 
+                // check if we have access to files
+                int permissionFiles = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionFiles != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(BrowserActivityNative.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_FILES_PERMISSION);
+                    return false;
+                }
+
                 // Double check that we don't have any existing callbacks
                 if(mFilePathCallback != null) {
                     mFilePathCallback.onReceiveValue(null);
@@ -150,6 +170,50 @@ public class BrowserActivityNative extends BrowserActivity {
                 startActivityForResult(chooserIntent, INPUT_FILE_REQUEST_CODE);
 
                 return true;
+            }
+            // openFileChooser for Android 3.0+
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+                mUploadMessage = uploadMsg;
+                // Create AndroidExampleFolder at sdcard
+                // Create AndroidExampleFolder at sdcard
+                File imageStorageDir = new File(
+                        Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_PICTURES)
+                        , "AndroidExampleFolder");
+                if (!imageStorageDir.exists()) {
+                    // Create AndroidExampleFolder at sdcard
+                    imageStorageDir.mkdirs();
+                }
+                // Create camera captured image file path and name
+                File file = new File(
+                        imageStorageDir + File.separator + "IMG_"
+                                + String.valueOf(System.currentTimeMillis())
+                                + ".jpg");
+                mCapturedImageURI = Uri.fromFile(file);
+                // Camera capture image intent
+                final Intent captureIntent = new Intent(
+                        android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("image/*");
+                // Create file chooser intent
+                Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
+                // Set camera intent to file chooser
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS
+                        , new Parcelable[] { captureIntent });
+                // On select image call onActivityResult method of activity
+                startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+            }
+            // openFileChooser for Android < 3.0
+            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+                openFileChooser(uploadMsg, "");
+            }
+            //openFileChooser for other Android versions
+            public void openFileChooser(ValueCallback<Uri> uploadMsg,
+                                        String acceptType,
+                                        String capture) {
+                openFileChooser(uploadMsg, acceptType);
             }
         });
 
@@ -256,6 +320,22 @@ public class BrowserActivityNative extends BrowserActivity {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.i(TAG, "onRequestPermissionsResult");
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_FILES_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // TODO
+                    Log.i(TAG, "REQUEST_FILES_PERMISSION OK");
+                } else {
+                    Log.i(TAG, "REQUEST_FILES_PERMISSION NOK");
+                }
+        }
+    }
+
+
 
     @Override
     public void onActivityResult (int requestCode, int resultCode, Intent data) {
@@ -351,24 +431,24 @@ public class BrowserActivityNative extends BrowserActivity {
 
         if(event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
             // Back in browser
-                if (event.getAction() == KeyEvent.ACTION_UP){
-                    Log.i(TAG, "Back button pressed in on display mode");
-                    String historyUrl="";
-                    WebBackForwardList mWebBackForwardList = AisCoreUtils.mWebView.copyBackForwardList();
-                    if (mWebBackForwardList.getCurrentIndex() > 0) {
-                        historyUrl = mWebBackForwardList.getItemAtIndex(mWebBackForwardList.getCurrentIndex() - 1).getUrl();
-                    }
+            if (event.getAction() == KeyEvent.ACTION_UP){
+                Log.i(TAG, "Back button pressed in on display mode");
+                String historyUrl="";
+                WebBackForwardList mWebBackForwardList = AisCoreUtils.mWebView.copyBackForwardList();
+                if (mWebBackForwardList.getCurrentIndex() > 0) {
+                    historyUrl = mWebBackForwardList.getItemAtIndex(mWebBackForwardList.getCurrentIndex() - 1).getUrl();
+                }
 
-                    if (AisCoreUtils.mWebView.canGoBack() && !historyUrl.equals("file:///android_asset/web/ais_loading.html")) {
-                        AisCoreUtils.mWebView.evaluateJavascript("window.history.back()", null);
-                            return true;
-                    } else {
-                        // exit on back in not on box
-                            Log.i(TAG, "Back button pressed we should exit the app");
-                            Intent startMain = new Intent(Intent.ACTION_MAIN);
-                            startMain.addCategory(Intent.CATEGORY_HOME);
-                            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(startMain);
+                if (AisCoreUtils.mWebView.canGoBack() && !historyUrl.equals("file:///android_asset/web/ais_loading.html")) {
+                    AisCoreUtils.mWebView.evaluateJavascript("window.history.back()", null);
+                    return true;
+                } else {
+                    // exit on back in not on box
+                    Log.i(TAG, "Back button pressed we should exit the app");
+                    Intent startMain = new Intent(Intent.ACTION_MAIN);
+                    startMain.addCategory(Intent.CATEGORY_HOME);
+                    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(startMain);
 //                            if (doubleBackToExitPressedOnce) {
 //                                // going to home screen programmatically
 //                                Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -386,8 +466,8 @@ public class BrowserActivityNative extends BrowserActivity {
 //                                    }
 //                                }, 2000);
 //                            }
-                    }
                 }
+            }
         }
 
         else if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_DOWN || event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP){

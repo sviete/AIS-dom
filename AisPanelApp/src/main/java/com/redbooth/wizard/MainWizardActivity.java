@@ -11,7 +11,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -23,6 +22,7 @@ import android.widget.TextView;
 import com.redbooth.WelcomeCoordinatorLayout;
 import com.redbooth.wizard.animators.ChatAvatarsAnimator;
 import com.redbooth.wizard.animators.InSyncAnimator;
+import com.redbooth.wizard.animators.InSyncAnimatorPage2_1;
 import com.redbooth.wizard.animators.InSyncAnimatorPage4;
 import com.redbooth.wizard.animators.RocketAvatarsAnimator;
 import com.redbooth.wizard.animators.RocketFlightAwayAnimator;
@@ -42,11 +42,13 @@ public class MainWizardActivity extends AppCompatActivity {
     private ChatAvatarsAnimator chatAvatarsAnimator;
     private RocketFlightAwayAnimator rocketFlightAwayAnimator;
     private InSyncAnimator inSyncAnimator;
+    private InSyncAnimatorPage2_1 inSyncAnimatorPage2_1;
     private InSyncAnimatorPage4 inSyncAnimatorPage4;
     private WelcomeCoordinatorLayout coordinatorLayout;
 
     private final int REQUEST_RECORD_PERMISSION = 100;
     private final int REQUEST_CAMERA_PERMISSION = 110;
+    private final int REQUEST_FILES_PERMISSION = 120;
     private final String TAG = "MainWizardActivity";
 
     @Override
@@ -75,6 +77,7 @@ public class MainWizardActivity extends AppCompatActivity {
         coordinatorLayout.addPage(
                 R.layout.welcome_page_1,
                 R.layout.welcome_page_2,
+                R.layout.welcome_page_2_1,
                 R.layout.welcome_page_3,
                 R.layout.welcome_page_4,
                 R.layout.welcome_page_5);
@@ -110,6 +113,14 @@ public class MainWizardActivity extends AppCompatActivity {
                         checkMicAccess();
                         break;
                     case 2:
+                        if (inSyncAnimatorPage2_1 == null) {
+                            inSyncAnimatorPage2_1 = new InSyncAnimatorPage2_1(coordinatorLayout);
+                            inSyncAnimatorPage2_1.play();
+                        }
+                        // check and set file access
+                        checkFileAccess();
+                        break;
+                    case 3:
                         if (inSyncAnimator == null) {
                             inSyncAnimator = new InSyncAnimator(coordinatorLayout);
                             inSyncAnimator.play();
@@ -117,7 +128,7 @@ public class MainWizardActivity extends AppCompatActivity {
                         // check and set camera access
                         checkCamAccess();
                         break;
-                    case 3:
+                    case 4:
                         if (inSyncAnimatorPage4 == null) {
                             inSyncAnimatorPage4 = new InSyncAnimatorPage4(coordinatorLayout);
                             inSyncAnimatorPage4.play();
@@ -125,7 +136,7 @@ public class MainWizardActivity extends AppCompatActivity {
                         // check if gate was scanned
                         checkGateExists();
                         break;
-                    case 4:
+                    case 5:
                         if (rocketFlightAwayAnimator == null) {
                             rocketFlightAwayAnimator = new RocketFlightAwayAnimator(coordinatorLayout);
                             rocketFlightAwayAnimator.play();
@@ -140,11 +151,12 @@ public class MainWizardActivity extends AppCompatActivity {
         final Resources resources = getResources();
         final int colorPage1 = ResourcesCompat.getColor(resources, R.color.page1, getTheme());
         final int colorPage2 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
+        final int colorPage2_1 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
         final int colorPage3 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
         final int colorPage4 = ResourcesCompat.getColor(resources, R.color.page3, getTheme());
         final int colorPage5 = ResourcesCompat.getColor(resources, R.color.page3, getTheme());
         backgroundAnimator = ValueAnimator
-                .ofObject(new ArgbEvaluator(), colorPage1, colorPage2, colorPage3, colorPage4, colorPage5);
+                .ofObject(new ArgbEvaluator(), colorPage1, colorPage2, colorPage2_1, colorPage3, colorPage4, colorPage5);
 
         backgroundAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -162,7 +174,7 @@ public class MainWizardActivity extends AppCompatActivity {
         bSkip.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 int page = coordinatorLayout.getPageSelected();
-                if (page == 4) {
+                if (page == 5) {
                     go_to_browser();
                 } else {
                     coordinatorLayout.setCurrentPage(page + 1, true);
@@ -178,17 +190,31 @@ public class MainWizardActivity extends AppCompatActivity {
              }
         });
 
+        ImageView bAisNext2 = (ImageView) findViewById(R.id.avatar_ais_logo_page2);
+        bAisNext2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                coordinatorLayout.setCurrentPage(2, true);
+            }
+        });
+
+        ImageView bAisNext2_1 = (ImageView) findViewById(R.id.avatar_ais_logo_page2_1);
+        bAisNext2_1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                coordinatorLayout.setCurrentPage(3, true);
+            }
+        });
+
         ImageView bAisNext3 = (ImageView) findViewById(R.id.avatar_ais_logo_page3);
         bAisNext3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                coordinatorLayout.setCurrentPage(3, true);
+                coordinatorLayout.setCurrentPage(4, true);
             }
         });
 
         ImageView bAisNext4 = (ImageView) findViewById(R.id.avatar_ais_logo_page4);
         bAisNext4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                coordinatorLayout.setCurrentPage(4, true);
+                coordinatorLayout.setCurrentPage(5, true);
             }
         });
 
@@ -201,8 +227,48 @@ public class MainWizardActivity extends AppCompatActivity {
 
     }
 
+    // FILES ON PAGE 2 //
 
-    // MIC ON PAGE 2 //
+    private void checkFileAccess(){
+        if (isFilesOn()){
+            setFilesIsON();
+
+        } else {
+            setFilesIsOFF();
+        }
+    }
+    private boolean isFilesOn(){
+        int permissionFiles = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionFiles != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    private void setFilesIsON(){
+        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2_1);
+        TextView infoText = findViewById(R.id.wizard_info_page2_1);
+        infoButton.setImageResource(R.drawable.wizzard_files_on);
+        infoText.setText(getString(R.string.wizzard_files_on_info));
+        infoButton.setOnClickListener(v -> coordinatorLayout.setCurrentPage(3, true));
+    }
+
+    private void setFilesIsOFF(){
+        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2_1);
+        TextView infoText = findViewById(R.id.wizard_info_page2_1);
+        infoButton.setImageResource(R.drawable.wizzard_files_off);
+        infoText.setText(getString(R.string.wizzard_files_off_info));
+        infoButton.setOnClickListener(v -> askForFilesOn());
+    }
+
+    private void askForFilesOn(){
+        ActivityCompat.requestPermissions(MainWizardActivity.this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_FILES_PERMISSION);
+    }
+
+
+    // MIC ON PAGE 3 //
     private void checkMicAccess(){
         if (isMicOn()){
             setMicIsON();
@@ -244,7 +310,7 @@ public class MainWizardActivity extends AppCompatActivity {
     }
 
 
-    // CAM ON PAGE 3 //
+    // CAM ON PAGE 4 //
 
 
     private void checkCamAccess(){
@@ -261,7 +327,7 @@ public class MainWizardActivity extends AppCompatActivity {
         TextView infoText = findViewById(R.id.wizard_info_page3);
         infoButton.setImageResource(R.drawable.wizzard_cam_on);
         infoText.setText(getString(R.string.wizzard_cam_on_info));
-        infoButton.setOnClickListener(v -> coordinatorLayout.setCurrentPage(3, true));
+        infoButton.setOnClickListener(v -> coordinatorLayout.setCurrentPage(4, true));
     }
 
     private void setCamIsOFF(){
@@ -279,7 +345,7 @@ public class MainWizardActivity extends AppCompatActivity {
     }
 
 
-    // GATE ON PAGE 4 //
+    // GATE ON PAGE 5 //
 
     private void checkGateExists(){
         Config config = new Config(this.getApplicationContext());
@@ -344,6 +410,12 @@ public class MainWizardActivity extends AppCompatActivity {
                     setCamIsON();
                 } else {
                     setCamIsOFF();
+                }
+            case REQUEST_FILES_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setFilesIsON();
+                } else {
+                    setFilesIsOFF();
                 }
         }
     }

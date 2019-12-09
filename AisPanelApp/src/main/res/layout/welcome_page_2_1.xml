@@ -7,7 +7,7 @@
     tools:background="@color/page2">
 
     <View
-        android:id="@+id/android_destiny_3"
+        android:id="@+id/android_destiny_2_1"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentTop="true"
@@ -16,6 +16,7 @@
         android:layout_marginEnd="40dp"/>
 
     <RelativeLayout
+        android:id="@+id/card2_page2_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -24,40 +25,59 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/tablet_face"
-            android:contentDescription="@string/todo" />
-
-        <ImageView
-            android:id="@+id/avatar5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="120dp"
-            android:scaleX="0"
-            android:scaleY="0"
-            android:src="@drawable/ic_ais_logo_small_21_29"
+            android:src="@drawable/folder_images"
             android:contentDescription="@string/todo" />
 
     </RelativeLayout>
+    <FrameLayout
+        android:id="@+id/star2_1"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignEnd="@+id/card2_page2_1"
+        android:layout_alignTop="@+id/card2_page2_1"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        app:view_behavior="com.redbooth.wizard.AnimationFlightToPage2_1"
+        app:destiny="@+id/android_destiny_3">
+
+        <ImageView
+            android:id="@+id/star_shadow_2_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tint="#000000"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="6dp"
+            android:alpha="0"
+            android:src="@drawable/star_large_no_shadow"
+            android:contentDescription="@string/todo" />
+
+        <ImageView
+            android:layout_width="29dp"
+            android:layout_height="26dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="6dp"
+            android:contentDescription="@string/todo"
+            android:src="@drawable/star_large_no_shadow" />
+
+    </FrameLayout>
 
     <TextView
         style="@style/text_title"
-        android:id="@+id/wizard_step_3_title"
-        android:layout_above="@+id/wizard_desc_page3"
-        android:text="@string/wizard_step_3_title" />
+        android:id="@+id/wizard_step_2_1_title"
+        android:layout_above="@+id/wizard_desc_page2_1"
+        android:text="@string/wizard_step_2_1_title" />
 
     <TextView
-        android:id="@+id/wizard_desc_page3"
+        android:id="@+id/wizard_desc_page2_1"
         style="@style/text_subtitle"
-        android:text="@string/wizard_step_3_info"
-        android:layout_above="@+id/avatar_ais_logo_page3"
+        android:text="@string/wizard_step_2_1_info"
+        android:layout_above="@+id/avatar_ais_logo_page2_1"
         android:textSize="12sp"
         android:textStyle="bold"/>
 
 
     <TextView
-        android:id="@+id/wizard_info_page3"
+        android:id="@+id/wizard_info_page2_1"
         style="@style/text_subtitle"
         android:text="@string/wizard_checking"
         android:layout_alignParentBottom="true"
@@ -66,7 +86,7 @@
         android:textStyle="bold"/>
 
     <ImageView
-        android:id="@+id/avatar_ais_logo_page3"
+        android:id="@+id/avatar_ais_logo_page2_1"
         android:layout_width="50dp"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
