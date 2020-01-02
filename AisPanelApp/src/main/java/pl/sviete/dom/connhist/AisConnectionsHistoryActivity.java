@@ -93,7 +93,7 @@ public class AisConnectionsHistoryActivity extends Activity {
     public void useConnection(View view){
         RelativeLayout vwParentRow;
         if (view.getId() == R.id.id_connection_icon){
-            vwParentRow = (RelativeLayout)view.getParent().getParent();;
+            vwParentRow = (RelativeLayout)view.getParent().getParent();
         } else {
             vwParentRow = (RelativeLayout) view.getParent();
         }
