@@ -21,6 +21,8 @@ public class AisCoreUtils {
 
     // AIS_GATE ID
     public static String AIS_GATE_ID = null;
+    public static String AIS_GATE_USER = "";
+    public static String AIS_GATE_DESC = "";
     public static String AIS_DEVICE_TYPE = "MOB";
     public static int AIS_LAST_KEY_CODE = 0;
 

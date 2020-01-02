@@ -74,6 +74,38 @@ public class AisConnectionHistJSON {
         return "";
     }
 
+    public static String getUserForGate(Context context, String gateId){
+        try{
+            JSONArray mConnArray = new JSONArray(AisConnectionHistJSON.getHistoryConnectionsData(context));
+            for (int i = 0; i < mConnArray.length(); i++) {
+                JSONObject mConObj = mConnArray.getJSONObject(i);
+                if (mConObj.getString("gate").equals(gateId)){
+                    return mConObj.getString("user");
+                }
+            }
+
+        }catch (Exception e) {
+            Log.e(TAG, "Error in Reading: " + e.toString());
+        }
+        return "";
+    }
+
+    public static String getDescForGate(Context context, String gateId){
+        try{
+            JSONArray mConnArray = new JSONArray(AisConnectionHistJSON.getHistoryConnectionsData(context));
+            for (int i = 0; i < mConnArray.length(); i++) {
+                JSONObject mConObj = mConnArray.getJSONObject(i);
+                if (mConObj.getString("gate").equals(gateId)){
+                    return mConObj.getString("desc");
+                }
+            }
+
+        }catch (Exception e) {
+            Log.e(TAG, "Error in Reading: " + e.toString());
+        }
+        return "";
+    }
+
     public static void saveHistoryConnectionsData(Context context, String mJsonResponse) {
         try {
             FileWriter file = new FileWriter(context.getFilesDir().getPath() + "/" + fileName);

@@ -120,12 +120,16 @@ public class Config {
     public String getLocalIpFromCloud(String gateId) {
         // ask cloud for local IP
         // https://powiedz.co/ords/dom/dom/gate_ip_full_info?id=dom-aba
+        AisCoreUtils.AIS_GATE_USER = "";
+        AisCoreUtils.AIS_GATE_DESC = "";
         String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_full_info?id=" + gateId;
         String severAnswer = getResponseFromServer(url, 10000);
         if (!severAnswer.equals("")) {
             try {
                 JSONObject jsonAnswer = new JSONObject(severAnswer);
                 String localGateIP = jsonAnswer.getString("ip");
+                AisCoreUtils.AIS_GATE_USER = jsonAnswer.getString("user");
+                AisCoreUtils.AIS_GATE_DESC = jsonAnswer.getString("desc");
                 if (!gateId.equals("ais-dom")) {
                     return localGateIP;
                 }
@@ -145,13 +149,15 @@ public class Config {
         protected String doInBackground(String[] params) {
             String gateID = params[0];
             String localIpHist = params[1];
+            String userHist = params[2];
+            String descHist = params[3];
             String urlToGo = "";
 
             // Check if the local IP from history is still OK
 
             if (!localIpHist.equals("") && canUseLocalConnection(localIpHist, gateID)){
                     urlToGo = "http://" + localIpHist + ":8180";
-                    saveConnToHistory(localIpHist, urlToGo, gateID);
+                    saveConnToHistory(localIpHist, urlToGo, gateID, userHist, descHist);
                     return urlToGo;
             } else {
                     // Get the new local IP from the Cloud
@@ -160,18 +166,18 @@ public class Config {
                         // check if new local IP from cloud is now OK
                         if (canUseLocalConnection(localIpFromCloud, gateID)){
                             urlToGo = "http://" + localIpFromCloud + ":8180";
-                            saveConnToHistory(localIpFromCloud, urlToGo, gateID);
+                            saveConnToHistory(localIpFromCloud, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
                             return urlToGo;
                         } else {
                             // try the tunnel connection
                             urlToGo = "https://" + gateID + ".paczka.pro";
-                            saveConnToHistory(localIpFromCloud, urlToGo, gateID);
+                            saveConnToHistory(localIpFromCloud, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
                             return urlToGo;
                         }
                     } else {
                         // try tunnel
                         urlToGo = "https://" + gateID + ".paczka.pro";
-                        saveConnToHistory(localIpHist, urlToGo, gateID);
+                        saveConnToHistory(localIpHist, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
                         return urlToGo;
                     }
             }
@@ -193,12 +199,14 @@ public class Config {
     }
 
 
-    public void saveConnToHistory(String localIP, String url, String gate) {
+    public void saveConnToHistory(String localIP, String url, String gate, String user, String desc) {
         try {
             JSONObject mNewConn = new JSONObject();
             mNewConn.put("gate", gate);
             mNewConn.put("url", url);
             mNewConn.put("ip", localIP);
+            mNewConn.put("user", user);
+            mNewConn.put("desc", desc);
             AisConnectionHistJSON.addConnection(myContext, mNewConn.toString());
         } catch (Exception e) {
             Log.e(TAG, e.toString());
@@ -213,8 +221,10 @@ public class Config {
         if (url.startsWith("dom-") && disco) {
             String gateID = url;
             String localIpHist = AisConnectionHistJSON.getLocalIpForGate(myContext, gateID);
+            String userHist = AisConnectionHistJSON.getUserForGate(myContext, gateID);
+            String descHist = AisConnectionHistJSON.getDescForGate(myContext, gateID);
             checkConnectionUrlJob checkConnectionUrlJob = new checkConnectionUrlJob();
-            checkConnectionUrlJob.execute(gateID, localIpHist);
+            checkConnectionUrlJob.execute(gateID, localIpHist, userHist, descHist);
         } else {
             // the url is set by hand, save it for interface communication with gate
             AisCoreUtils.setAisDomUrl(url);

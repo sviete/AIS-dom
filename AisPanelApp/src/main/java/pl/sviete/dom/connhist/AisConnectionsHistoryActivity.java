@@ -64,7 +64,15 @@ public class AisConnectionsHistoryActivity extends Activity {
                 String time = jo_inside.getString("time");
                 String gate = jo_inside.getString("gate");
                 String ip = jo_inside.getString("ip");
-                mConnectionsList.add(new AisConnectionHistHolder(url, time, gate, ip));
+                String user = "";
+                if (jo_inside.has("user")) {
+                    user = jo_inside.getString("user");
+                }
+                String desc = "";
+                if (jo_inside.has("desc")) {
+                    desc = jo_inside.getString("desc");
+                }
+                mConnectionsList.add(new AisConnectionHistHolder(url, time, gate, ip, user, desc));
             }
 
         } catch (Exception ex) {
@@ -83,10 +91,7 @@ public class AisConnectionsHistoryActivity extends Activity {
 
 
     public void useConnection(View view){
-        TextView tvConnName = (TextView)view.findViewById(R.id.connection_url);
-        String mCurrentUrl = tvConnName.getText().toString();
-
-        TextView tvGate = (TextView)view.findViewById(R.id.connection_gate_id);
+        TextView tvGate = findViewById(R.id.connection_gate_id);
         String mCurrentGate = tvGate.getText().toString();
 
         Config config  = new Config(getApplicationContext());
@@ -97,11 +102,6 @@ public class AisConnectionsHistoryActivity extends Activity {
         } else {
             startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
         }
-    }
-
-
-    private void showToast(String string){
-        Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
     }
 
 
