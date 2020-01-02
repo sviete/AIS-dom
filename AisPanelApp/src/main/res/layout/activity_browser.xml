@@ -55,11 +55,11 @@
 
         <LinearLayout
             android:id="@+id/btnControlModeConnection"
-            android:layout_width="80dp"
-            android:layout_height="36dp"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="70dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="-10dp"
             android:background="?selectableItemBackgroundBorderless"
             android:focusable="true"
             android:gravity="center"
@@ -84,7 +84,7 @@
                 app:si_disabled_color="#b7b7b7"
                 app:si_enabled="true"
                 app:si_no_dash="true"
-                app:si_tint_color="#b7b7b7"/>
+                app:si_tint_color="#b7b7b7" />
         </LinearLayout>
         <ToggleButton
             android:id="@+id/btnSpeak"
@@ -143,7 +143,7 @@
                     android:contentDescription="@string/ais_dom_button_gesture"
                     android:padding="8dp"
                     app:si_animation_duration="500"
-                    app:si_disabled_alpha=".3"
+                    app:si_disabled_alpha=".7"
                     app:si_disabled_color="#b7b7b7"
                     app:si_enabled="false"
                     app:si_no_dash="false"

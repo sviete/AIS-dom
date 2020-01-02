@@ -83,7 +83,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     //
     private SwitchIconView mSwitchIconModeGesture;
     private View mButtonModeGesture;
-    private SwitchIconView mSwitchIconModeConnection;
     private View mButtonModeConnection;
 
     // browser speech
@@ -147,7 +146,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
 
         // buton check connection
-        mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
         mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
         mButtonModeConnection.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -156,8 +154,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 if (appLaunchUrl.startsWith("dom-")) {
                     // sprawdzam połączenie
                     speakOutFromBrowser("Sprawdzam połączenie.");
-                    // mSwitchIconModeConnection.setIconEnabled(false, true);
-                    mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                    mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
                     appLaunchUrl = mConfig.getAppLaunchUrl(true);
                 } else {
                     speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.");
@@ -266,7 +263,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         decorView.setSystemUiVisibility(uiOptions);
         // get app url with discovery
         appLaunchUrl = mConfig.getAppLaunchUrl(true);
-        loadUrl(appLaunchUrl);
+        loadUrl(appLaunchUrl, true);
 
         // set the remote control mode on start
         gestureOverlayView = (GestureOverlayView) findViewById(R.id.gesturesOverlay);
@@ -616,7 +613,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             if (intent.getAction().equals(BROADCAST_ACTION_LOAD_URL)) {
                 final String url = intent.getStringExtra(BROADCAST_ACTION_LOAD_URL);
                 Log.i(TAG, "Browsing to " + url);
-                loadUrl(url);
+                loadUrl(url, false);
             }else if (intent.getAction().equals(BROADCAST_ACTION_JS_EXEC)) {
                 final String js = intent.getStringExtra(BROADCAST_ACTION_JS_EXEC);
                 Log.i(TAG, "Executing javascript in current browser: " +js);
@@ -683,7 +680,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         bm.sendBroadcast(intent);
     }
 
-    protected abstract void loadUrl(final String url);
+    protected abstract void loadUrl(final String url, Boolean syncIcon);
     protected abstract void evaluateJavascript(final String js);
     protected abstract void clearCache();
     protected abstract void reload();

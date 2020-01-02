@@ -380,7 +380,7 @@ public class BrowserActivityNative extends BrowserActivity {
 
 
     @Override
-    protected void loadUrl(final String url) {
+    protected void loadUrl(final String url, Boolean syncIcon) {
         if (zoomLevel != 1.0) { AisCoreUtils.mWebView.setInitialScale((int)(zoomLevel * 100)); }
         if (url.equals("")) {
             // go to settings
@@ -395,12 +395,19 @@ public class BrowserActivityNative extends BrowserActivity {
             AisCoreUtils.mWebView.loadUrl(url);
         }
         SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
-        // TODO check if the url was changed...
+        View mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
+        // display connection icon
+        if (syncIcon == true){
+            mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+        } else {
+            mButtonModeConnection.setBackgroundResource(R.drawable.ic_empty_icon);
+        }
         if (url.contains("paczka.pro")) {
             mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_cloud_connection_control_bg);
         } else {
             mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_local_connection_control_bg);
         }
+
 
     }
 

@@ -83,7 +83,7 @@ public class AisConnectionsHistoryActivity extends Activity {
 
     public void deleteConnection(View view){
         RelativeLayout vwParentRow = (RelativeLayout)view.getParent().getParent();
-        TextView tv = (TextView)vwParentRow.findViewById(R.id.connection_url);
+        TextView tv = vwParentRow.findViewById(R.id.connection_url);
         String mCurrentName = tv.getText().toString();
         AisConnectionHistJSON.delConnection(getApplicationContext(), mCurrentName);
         onResume();
@@ -91,7 +91,13 @@ public class AisConnectionsHistoryActivity extends Activity {
 
 
     public void useConnection(View view){
-        TextView tvGate = findViewById(R.id.connection_gate_id);
+        RelativeLayout vwParentRow;
+        if (view.getId() == R.id.id_connection_icon){
+            vwParentRow = (RelativeLayout)view.getParent().getParent();;
+        } else {
+            vwParentRow = (RelativeLayout) view.getParent();
+        }
+        TextView tvGate = vwParentRow.findViewById(R.id.connection_gate_id);
         String mCurrentGate = tvGate.getText().toString();
 
         Config config  = new Config(getApplicationContext());
