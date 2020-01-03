@@ -2,11 +2,10 @@ package pl.sviete.dom;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;

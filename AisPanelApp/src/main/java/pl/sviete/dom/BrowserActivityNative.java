@@ -13,8 +13,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.webkit.WebViewClient;
 
 import com.github.zagum.switchicon.SwitchIconView;
-import com.redbooth.wizard.MainWizardActivity;
 
 import java.io.File;
 import java.io.IOException;

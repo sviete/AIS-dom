@@ -1,6 +1,5 @@
 package pl.sviete.dom;
 
-import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.admin.DevicePolicyManager;
@@ -9,13 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.speech.SpeechRecognizer;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 import android.webkit.WebView;
-
-import java.util.List;
 
 public class AisCoreUtils {
 
