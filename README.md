@@ -1,5 +1,5 @@
 # AIS-dom
-This is our main application that works both on the gateway and on other devices including: tablets, phones, Android TV and Wear OS.
+This is our main application that works both on the gateway and on other devices including: tablets, phones, Android TV.
 
 The app can be found on Google Play https://play.google.com/store/apps/details?id=pl.sviete.dom
 
