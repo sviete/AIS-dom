@@ -243,6 +243,7 @@
 
 
     <string name="ais_dom_button_gesture">Gesture button</string>
+    <string name="ais_dom_button_hotword">Hotword button</string>
     <string name="ais_dom_button_connection">Connection button</string>
     <string name="ais_dom_button_mic">Microphone</string>
     <string name="ais_dom_button_settings">Settings</string>
@@ -284,6 +285,7 @@
 
     <string name="long_click_to_execute_gesture">Hold longer to activate gesture control.</string>
     <string name="long_click_to_execute_connection">Hold longer to run the connection check.</string>
+    <string name="long_click_to_enable_hotword">Hold longer to activate key word detection by microphone.</string>
 
 
 </resources>

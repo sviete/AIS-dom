@@ -74,6 +74,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     //
     public static GestureLibrary gestureLibrary;
     private String gesture_sentence;
+
     public static GestureOverlayView gestureOverlayView;
     //
     public static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
@@ -81,8 +82,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
     //
     private SwitchIconView mSwitchIconModeGesture;
+    private SwitchIconView mSwitchIconHotWord;
     private View mButtonModeGesture;
     private View mButtonModeConnection;
+    private View mButtonHotWord;
 
     // browser speech
     private TextToSpeech mBrowserTts;
@@ -139,6 +142,39 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         mButtonModeGesture.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_gesture), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        // button mic
+        mSwitchIconHotWord = findViewById(R.id.switchControlHotWord);
+        mButtonHotWord = findViewById(R.id.btnControlHotWord);
+        mButtonHotWord.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                if (mSwitchIconHotWord.isIconEnabled()) {
+
+                    // hotword off
+                    mSwitchIconHotWord.setIconEnabled(false);
+                    speakOutFromBrowser("Nasłuchiwanie wyłączone.");
+
+                } else {
+
+                    // hotword on
+                    mSwitchIconHotWord.setIconEnabled(true);
+                    speakOutFromBrowser("Nasłuchiwanie włączone.");
+
+
+                }
+
+                return true;
+            }
+        });
+
+        mButtonHotWord.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_enable_hotword), Toast.LENGTH_SHORT).show();
             }
         });
 

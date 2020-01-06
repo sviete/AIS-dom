@@ -120,10 +120,41 @@
                 android:nextFocusRight="@+id/btnControlModeGesture"
                 android:nextFocusUp="@+id/btnControlModeGesture"/>
 
+        <LinearLayout
+            android:id="@+id/btnControlHotWord"
+            android:orientation="vertical"
+            android:layout_width="60dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="-10dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:focusable="true"
+            android:nextFocusUp="@+id/btnGoToSettings"
+            android:nextFocusRight="@+id/btnGoToSettings"
+            android:nextFocusLeft="@+id/ais_recognition_view"
+            android:nextFocusDown="@+id/ais_recognition_view">
+            <com.github.zagum.switchicon.SwitchIconView
+                android:id="@+id/switchControlHotWord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/ais_dom_button_hotword"
+                android:padding="8dp"
+                app:si_animation_duration="500"
+                app:si_disabled_alpha=".7"
+                app:si_disabled_color="#b7b7b7"
+                app:si_enabled="false"
+                app:si_no_dash="false"
+                app:si_tint_color="#ff3c00"
+                app:srcCompat="@drawable/ic_hotword_control_bg" />
+        </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/btnControlModeGesture"
                 android:orientation="vertical"
-                android:layout_width="80dp"
+                android:layout_width="60dp"
                 android:layout_height="80dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
