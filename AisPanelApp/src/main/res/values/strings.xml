@@ -296,9 +296,9 @@
     <string name="wizzard_qr_on_info">gate id available\n press to scan again</string>
     <string name="wizzard_qr_off_info">press to scan gate id</string>
 
-    <string name="long_click_to_execute_gesture">Hold longer to activate gesture control.</string>
+    <string name="long_click_to_execute_gesture">Hold longer to change the gesture control.</string>
     <string name="long_click_to_execute_connection">Hold longer to run the connection check.</string>
-    <string name="long_click_to_enable_hotword">Hold longer to activate key word detection by microphone.</string>
+    <string name="long_click_to_enable_hotword">Hold longer to change the key word detection by microphone.</string>
 
 
 </resources>

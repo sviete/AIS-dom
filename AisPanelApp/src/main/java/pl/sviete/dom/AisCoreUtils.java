@@ -40,13 +40,6 @@ public class AisCoreUtils {
     public static final String TTS_TEXT_TYPE_OUT = "TTS_TEXT_TYPE_OUT";
     public static final String TTS_TEXT_TYPE_ERROR = "TTS_TEXT_TYPE_ERROR";
 
-    // IP
-    public static final String BROADCAST_ON_IP_CHANGE = "BROADCAST_ON_IP_CHANGE";
-    public static final String BROADCAST_ON_IP_CHANGE_NEW_IP = "BROADCAST_ON_IP_CHANGE_NEW_IP";
-    public static final String BROADCAST_ON_IP_CHANGE_NEW_ICON = "BROADCAST_ON_IP_CHANGE_NEW_ICON";
-    public static final String BROADCAST_ON_IP_CHANGE_NEW_INFO = "BROADCAST_ON_IP_CHANGE_NEW_INFO";
-
-
     // USB
     private static String TAG = "AisCoreUtils";
     private static String AIS_DOM_URL = "http://127.0.0.1:8180";
@@ -83,7 +76,6 @@ public class AisCoreUtils {
     }
 
     public static Activity mBrowserActivity = null;
-    public static Activity mSplashScreenActivity = null;
     public static WebView mWebView = null;
 
     // STT
@@ -93,20 +85,8 @@ public class AisCoreUtils {
     //
     // Control mode
     public static String mOnDisplay = "ON_DISPLAY";
-    public static String mOffDisplay = "OFF_DISPLAY";
     public static String mByGesture = "BY_GESTURE";
 
-
-    // IOT and IP
-    public static int    mLastLongPressKeyCode = -1;
-    public static long   mLastSwitchControlModeTime = System.currentTimeMillis();
-    public static long   mLastWifiDisconnectInfoTime = System.currentTimeMillis();
-    public static int    mLastConnectedNetworkId = -1;
-    public static boolean mReconnectToEthernet = false;
-    public static String G_Last_IP_Address = " ";
-    public static int G_Last_Network_Type = -2;
-    public static boolean mIOTparringInProgress = false;
-    public static boolean mSayInfoConnectionBack = false;
 
     // Audio source
     public static String mAudioSourceSpotify = "Spotify";
@@ -122,14 +102,6 @@ public class AisCoreUtils {
      *
      * @return <code>true</code> if we are on Box, otherwise <code>false</code>
      */
-
-    public static boolean onWatch() {
-        if (AIS_DEVICE_TYPE.equals("WATCH")){
-            return true;
-        }
-        return false;
-
-    }
 
     public static boolean onTv() {
         if (AIS_DEVICE_TYPE.equals("TV")){

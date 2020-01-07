@@ -12,7 +12,6 @@ import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -79,10 +78,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-//    protected boolean isValidFragment(String fragmentName) {
-//        return PreferenceFragment.class.getName().equals(fragmentName)
-//                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
-//    }
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -113,20 +108,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             // get version info
             String versionName = BuildConfig.VERSION_NAME;
-
-            // hide some options on watch / phone
-            PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("ais_dom_main_pref_screen");
-            PreferenceCategory prefCategoryAbout = (PreferenceCategory) findPreference("pref_category_about");
             PreferenceCategory prefCategorySettings = (PreferenceCategory) findPreference("pref_category_app_settings");
-            PreferenceCategory prefCategoryConnHistory = (PreferenceCategory) findPreference("ais_dom_list_history");
-            PreferenceCategory prefCategoryConnUrl = (PreferenceCategory) findPreference("ais_dom_con_url");
             //
             Preference preferenceVersion = findPreference("pref_ais_dom_version");
             Preference preferenceRemote = findPreference("setting_app_remotemode");
-            Preference preferenceAppDisco = findPreference("setting_app_discovery");
-            Preference preferenceAppTtsVoice = findPreference("setting_app_tts_voice");
-            Preference preferenceAppZoomLevel = findPreference("setting_test_zoomlevel");
-            Preference preferenceGesture = findPreference("pref_ais_dom_list_gesture");
 
 
             prefCategorySettings.removePreference(preferenceRemote);
@@ -135,18 +120,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             //
             bindPreferenceSummaryToValue(findPreference(getString(R.string.key_setting_app_launchurl)));
 
-            // on watch
-            if (AisCoreUtils.onWatch()) {
-                // remove select tts voice
-                prefCategorySettings.removePreference(preferenceAppTtsVoice);
-                // remove discovery option
-                prefCategorySettings.removePreference(preferenceAppDisco);
-                // remove gesture list
-                prefCategorySettings.removePreference(preferenceGesture);
-                // remove zoom in app
-                prefCategorySettings.removePreference(preferenceAppZoomLevel);
-
-            }
 
 
             Preference.OnPreferenceChangeListener preferenceChangeListener = new Preference.OnPreferenceChangeListener() {

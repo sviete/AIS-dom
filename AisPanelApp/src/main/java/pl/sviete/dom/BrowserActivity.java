@@ -110,10 +110,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         // if this will not work here, I'm going to move this further
         //
-        btnSpeak = (ToggleButton) findViewById(R.id.btnSpeak);
+        btnSpeak = findViewById(R.id.btnSpeak);
 
-        //btnSpeak.setSelected(true);
-        //btnSpeak.requestFocus();
 
         //
         mSwitchIconModeGesture = findViewById(R.id.switchControlModeGesture);
@@ -283,7 +281,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         mConfig = new Config(this.getApplicationContext());
 
         //
-        btnGoToSettings = (Button) findViewById(R.id.btnGoToSettings);
+        btnGoToSettings = findViewById(R.id.btnGoToSettings);
         btnGoToSettings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(BrowserActivity.this, WelcomeActivity.class);
@@ -314,7 +312,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         loadUrl(appLaunchUrl, true);
 
         // set the remote control mode on start
-        gestureOverlayView = (GestureOverlayView) findViewById(R.id.gesturesOverlay);
+        gestureOverlayView = findViewById(R.id.gesturesOverlay);
         if (AisCoreUtils.getRemoteControllerMode().equals(AisCoreUtils.mByGesture)) {
             gestureOverlayView.setVisibility(View.VISIBLE);
             mSwitchIconModeGesture.setIconEnabled(true);
@@ -323,7 +321,12 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             mSwitchIconModeGesture.setIconEnabled(false);
         }
 
-        // Hot Word
+        // Hot Word - set on start
+        if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), PorcupineService.class)){
+            mSwitchIconHotWord.setIconEnabled(true);
+        } else {
+            mSwitchIconHotWord.setIconEnabled(false);
+        }
         try {
             copyResourceFile(R.raw.params, "porcupine_params.pv");
             copyResourceFile(R.raw.alexa, "porcupine_android.ppn");
@@ -708,7 +711,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 Log.i(TAG, AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH + " btn speak set checked false.");
                 onEndTextToSpeech();
             }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT)){
-                Log.i(TAG, AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT + " btn speak set checked true.");
+                Log.i(TAG, AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT + " btn speak set checked true.");
                 if (!btnSpeak.isChecked()) {
                     btnSpeak.setChecked(true);
                 }
@@ -751,7 +754,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
     private void startHotWordService() {
         Intent serviceIntent = new Intent(this, PorcupineService.class);
-        serviceIntent.putExtra("keywordFileName", "porcupine_android.ppn");
         ContextCompat.startForegroundService(this, serviceIntent);
     }
 
