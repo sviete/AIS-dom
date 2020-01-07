@@ -61,9 +61,9 @@ public class PorcupineService extends Service {
         numKeywordsDetected = 0;
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("AIS hotword")
-                .setContentText("ilość wywołań : " + numKeywordsDetected)
-                .setSmallIcon(R.drawable.ic_launcher_hot_word)
+                .setContentTitle("AI-Speaker")
+                .setContentText("nasłuchiwanie słowa: Alexa")
+                .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
                 .build();
 
@@ -84,7 +84,7 @@ public class PorcupineService extends Service {
                         (keywordIndex) -> {
                             numKeywordsDetected++;
 
-                            CharSequence title = "Jolka";
+                            CharSequence title = "AI-Speaker";
                             PendingIntent contentIntent = PendingIntent.getActivity(
                                     this,
                                     0,
