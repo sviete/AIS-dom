@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -39,6 +40,8 @@ import android.widget.Button;
 
 import com.github.zagum.switchicon.SwitchIconView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,6 +52,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import ai.picovoice.hotword.PorcupineService;
 import pl.sviete.dom.views.RecognitionProgressView;
 
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
@@ -68,6 +72,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     private ToggleButton btnSpeak;
     private Button btnGoToSettings;
     private final int REQUEST_RECORD_PERMISSION = 100;
+    private final int REQUEST_HOT_WORD_MIC_PERMISSION = 200;
     private LocalBroadcastManager localBroadcastManager;
     private Config mConfig = null;
     public RecognitionProgressView recognitionProgressView = null;
@@ -154,14 +159,22 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             public boolean onLongClick(View v) {
 
                 if (mSwitchIconHotWord.isIconEnabled()) {
-
-                    // hotword off
+                    // hot word off
                     mSwitchIconHotWord.setIconEnabled(false);
                     speakOutFromBrowser("Nasłuchiwanie wyłączone.");
+                    stopHotWordService();
 
                 } else {
-
-                    // hotword on
+                    int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+                    if (permissionMic != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions
+                                (BrowserActivity.this,
+                                        new String[]{Manifest.permission.RECORD_AUDIO},
+                                        REQUEST_HOT_WORD_MIC_PERMISSION);
+                    } else {
+                        startHotWordService();
+                    }
+                    // hot word on
                     mSwitchIconHotWord.setIconEnabled(true);
                     speakOutFromBrowser("Nasłuchiwanie włączone.");
 
@@ -308,6 +321,26 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         } else {
             gestureOverlayView.setVisibility(View.INVISIBLE);
             mSwitchIconModeGesture.setIconEnabled(false);
+        }
+
+        // Hot Word
+        try {
+            copyResourceFile(R.raw.params, "porcupine_params.pv");
+            copyResourceFile(R.raw.alexa, "porcupine_android.ppn");
+        } catch (IOException e) {
+            Toast.makeText(this, "Failed to copy resource files.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // copy porcupine files
+    private void copyResourceFile(int resourceID, String filename) throws IOException {
+        Resources resources = getResources();
+        try (InputStream is = new BufferedInputStream(resources.openRawResource(resourceID), 256); OutputStream os = new BufferedOutputStream(openFileOutput(filename, Context.MODE_PRIVATE), 256)) {
+            int r;
+            while ((r = is.read()) != -1) {
+                os.write(r);
+            }
+            os.flush();
         }
     }
 
@@ -515,9 +548,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
     private void startTheSpeechToText(){
         Log.d(TAG, "startTheSpeechToText");
-        if(AisCoreUtils.getRemoteControllerMode() == AisCoreUtils.mOffDisplay){
-            return;
-        }
 
         if (AisCoreUtils.mSpeech == null){
             AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(this);
@@ -612,6 +642,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             case REQUEST_RECORD_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startTheSpeechToText();
+                }
+            case REQUEST_HOT_WORD_MIC_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startHotWordService();
                 }
         }
     }
@@ -714,6 +748,18 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
         bm.sendBroadcast(intent);
     }
+
+    private void startHotWordService() {
+        Intent serviceIntent = new Intent(this, PorcupineService.class);
+        serviceIntent.putExtra("keywordFileName", "porcupine_android.ppn");
+        ContextCompat.startForegroundService(this, serviceIntent);
+    }
+
+    private void stopHotWordService() {
+        Intent serviceIntent = new Intent(this, PorcupineService.class);
+        stopService(serviceIntent);
+    }
+
 
     protected abstract void loadUrl(final String url, Boolean syncIcon);
     protected abstract void evaluateJavascript(final String js);

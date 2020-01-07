@@ -57,6 +57,14 @@
                 android:key="@string/key_setting_app_remotecontrollermode"
                 android:icon="@drawable/ic_controle_mode"/>
             <ListPreference
+                android:defaultValue="@string/default_setting_app_hot_word"
+                android:entries="@array/hot_word_names"
+                android:entryValues="@array/hot_word_values"
+                android:title="@string/title_setting_app_hot_word"
+                android:summary="@string/summary_setting_app_hot_word"
+                android:key="@string/key_setting_app_hot_word"
+                android:icon="@drawable/ic_hot_word"/>
+            <ListPreference
                 android:defaultValue="@string/default_setting_app_tts_voice"
                 android:entries="@array/tts_voice_names"
                 android:entryValues="@array/tts_voice_values"

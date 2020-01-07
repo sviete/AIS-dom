@@ -12,6 +12,8 @@ import androidx.annotation.RequiresApi;
 import android.util.Log;
 import android.webkit.WebView;
 
+import ai.picovoice.porcupinemanager.PorcupineManager;
+
 public class AisCoreUtils {
 
     // AIS_GATE ID
@@ -51,6 +53,9 @@ public class AisCoreUtils {
     private static String AIS_DOM_CLOUD_WS_URL = "https://powiedz.co/ords/dom/dom/";
     private static String AIS_DOM_CLOUD_WS_URL_HTTP = "http://powiedz.co/ords/dom/dom/";
     private static String mCurrentRemoteControllerMode = AisCoreUtils.mOnDisplay;
+
+    // HOT WORD
+    public static PorcupineManager mPorcupineManager = null;
 
 
 

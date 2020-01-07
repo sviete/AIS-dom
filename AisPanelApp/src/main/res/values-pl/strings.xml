@@ -61,6 +61,13 @@
         <item>"pl-pl-x-oda#male_3-local"</item>
     </string-array>
 
+    <string-array name="hot_word_names">
+        <item>"Alexa"</item>
+    </string-array>
+    <string-array name="hot_word_values">
+        <item>"alexa"</item>
+    </string-array>
+
     <string name="app_name">AIS dom</string>
 
     <string name="aispanel_service_notification_title">Powiedz.co</string>
@@ -102,6 +109,12 @@
     <string name="title_setting_app_tts_voice">Głos asystenta</string>
     <string name="summary_setting_app_tts_voice">Wybierz głos asystenta</string>
     <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
+
+    <string name="default_setting_app_hot_word">setting_app_hot_word</string>g>
+    <string name="title_setting_app_hot_word">Słowo aktywujące komendę</string>
+    <string name="summary_setting_app_hot_word">wybierz słowo aktywujące komendę</string>
+    <string name="key_setting_app_hot_word">alexa</string>
+
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>
     <string name="title_setting_app_discovery">Wykrywanie odtwarzacza</string>

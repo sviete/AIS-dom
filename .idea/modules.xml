@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AIS-dom.iml" filepath="$PROJECT_DIR$/AIS-dom.iml" />
       <module fileurl="file://$PROJECT_DIR$/AisPanelApp/AisPanelApp.iml" filepath="$PROJECT_DIR$/AisPanelApp/AisPanelApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/porcupine/porcupine.iml" filepath="$PROJECT_DIR$/porcupine/porcupine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/porcupinemanager/porcupinemanager.iml" filepath="$PROJECT_DIR$/porcupinemanager/porcupinemanager.iml" />
     </modules>
   </component>
 </project>
