@@ -237,6 +237,11 @@ public class Config {
                     R.string.default_setting_app_remotecontrollermode);
     }
 
+    public String getSelectedHotWord() {
+        return getStringPref(R.string.key_setting_app_hot_word,
+                R.string.default_setting_app_hot_word);
+    }
+
     public Boolean getAppDiscoveryMode() {
         return getBoolPref(R.string.key_setting_app_discovery, R.string.default_setting_app_discovery);
     }

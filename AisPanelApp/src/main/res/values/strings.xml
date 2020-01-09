@@ -141,10 +141,11 @@
     <string name="summary_setting_app_tts_voice">choose a voice</string>
     <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
 
-    <string name="default_setting_app_hot_word">setting_app_hot_word</string>g>
+    <string name="key_setting_app_hot_word">setting_app_hot_word</string>
+    <string name="default_setting_app_hot_word">alexa</string>g>
     <string name="title_setting_app_hot_word">Hot Word</string>
     <string name="summary_setting_app_hot_word">choose a hot word</string>
-    <string name="key_setting_app_hot_word">alexa</string>
+
 
     <string name="key_setting_android_browsertype">setting_android_browsertype</string>
     <string name="title_setting_android_browsertype">Browser engine</string>

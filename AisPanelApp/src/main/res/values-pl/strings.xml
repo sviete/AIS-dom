@@ -133,10 +133,10 @@
     <string name="summary_setting_app_tts_voice">Wybierz głos asystenta</string>
     <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
 
-    <string name="default_setting_app_hot_word">setting_app_hot_word</string>g>
+    <string name="key_setting_app_hot_word">setting_app_hot_word</string>
+    <string name="default_setting_app_hot_word">alexa</string>g>
     <string name="title_setting_app_hot_word">Słowo aktywujące komendę</string>
     <string name="summary_setting_app_hot_word">wybierz słowo aktywujące komendę</string>
-    <string name="key_setting_app_hot_word">alexa</string>
 
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>

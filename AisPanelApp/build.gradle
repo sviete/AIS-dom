@@ -7,8 +7,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 106
-        versionName '1.0.5.AndroidX'
+        versionCode 107
+        versionName '1.0.6.HotWord'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true

@@ -26,6 +26,7 @@ import ai.picovoice.porcupinemanager.PorcupineManagerException;
 import pl.sviete.dom.AisCoreUtils;
 import pl.sviete.dom.AisRecognitionListener;
 import pl.sviete.dom.BrowserActivityNative;
+import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
 
 public class PorcupineService extends Service {
@@ -59,9 +60,11 @@ public class PorcupineService extends Service {
 
         numKeywordsDetected = 0;
         //
+        Config config = new Config(this.getApplicationContext());
+        String hotword = config.getSelectedHotWord();
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("AI-Speaker")
-                .setContentText("nasłuchiwanie słowa: Alexa")
+                .setContentText(getString(R.string.hotword_selected_word_info) + hotword.substring(0, 1).toUpperCase() + hotword.substring(1))
                 .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
                 .build();
@@ -82,7 +85,10 @@ public class PorcupineService extends Service {
 
     private void startHotWordListening(Intent intent) {
         String modelFilePath = new File(this.getFilesDir(), "porcupine_params.pv").getAbsolutePath();
-        String keywordFileName = "porcupine_android.ppn";
+
+        Config config = new Config(this.getApplicationContext());
+        String hotword = config.getSelectedHotWord();
+        String keywordFileName = hotword + ".ppn";
         String keywordFilePath = new File(this.getFilesDir(), keywordFileName).getAbsolutePath();
 
 
