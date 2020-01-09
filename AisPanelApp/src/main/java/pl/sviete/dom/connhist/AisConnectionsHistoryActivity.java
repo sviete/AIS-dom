@@ -7,17 +7,15 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-import pl.sviete.dom.AisCoreUtils;
 import pl.sviete.dom.BrowserActivityNative;
 import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
-import pl.sviete.dom.WatchScreenActivity;
 
 public class AisConnectionsHistoryActivity extends Activity {
     private static final String TAG = "AisConnectionsHistoryActivity";
@@ -103,11 +101,7 @@ public class AisConnectionsHistoryActivity extends Activity {
         Config config  = new Config(getApplicationContext());
         config.setAppLaunchUrl(mCurrentGate);
         // go to app
-        if (AisCoreUtils.onWatch()){
-            startActivity(new Intent(getApplicationContext(), WatchScreenActivity.class));
-        } else {
-            startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
-        }
+        startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
     }
 
 

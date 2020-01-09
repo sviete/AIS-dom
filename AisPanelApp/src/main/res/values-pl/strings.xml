@@ -319,9 +319,9 @@
     <string name="wizzard_qr_on_info">naciśnij by zeskanować ponownie</string>
     <string name="wizzard_qr_off_info">NACIŚNIJ I ZESKANUJ</string>
 
-    <string name="long_click_to_execute_gesture">Przytrzymaj dłużej, aby uruchomić sterowanie gestami.</string>
+    <string name="long_click_to_execute_gesture">Przytrzymaj dłużej, aby przełączyć sterowanie gestami.</string>
     <string name="long_click_to_execute_connection">Przytrzymaj dłużej, aby uruchomić sprawdzenie połączenia.</string>
-    <string name="long_click_to_enable_hotword">Przytrzymaj dłużej, aby uruchomić nasłuchiwanie słowa uruchamiającego komendę.</string>
+    <string name="long_click_to_enable_hotword">Przytrzymaj dłużej, aby przełączyć nasłuchiwanie słowa uruchamiającego komendę.</string>
     <string name="hotword_selected_word_info">Nasłuchiwanie słowa: </string>
 
 </resources>

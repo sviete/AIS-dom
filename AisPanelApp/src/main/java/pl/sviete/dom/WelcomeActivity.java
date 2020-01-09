@@ -84,31 +84,18 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void redirectToActivity(){
-        if (AisCoreUtils.onWatch()) {
-            Log.i(TAG, "On client. Go to watch on Startup");
-            startWatchActivity();
+        Log.i(TAG, "On client. Go to browser on Startup");
+        Config config = new Config(this.getApplicationContext());
+        if (config.getAppWizardDone()){
+            startBrowserActivity();
         } else {
-            Log.i(TAG, "On client. Go to browser on Startup");
-            Config config = new Config(this.getApplicationContext());
-            if (config.getAppWizardDone()){
-                startBrowserActivity();
-            } else {
-                startWizardActivity();
-
-            }
+            startWizardActivity();
         }
-
     }
 
     private void startBrowserActivity() {
         Log.d(TAG, "startBrowserActivity Called");
         startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
-    }
-
-
-    private void startWatchActivity() {
-        Log.d(TAG, "startWatchActivity Called");
-        startActivity(new Intent(getApplicationContext(), WatchScreenActivity.class));
     }
 
     private void startWizardActivity() {
