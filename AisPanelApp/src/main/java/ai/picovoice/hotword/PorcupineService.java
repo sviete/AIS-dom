@@ -59,7 +59,7 @@ public class PorcupineService extends Service {
                 0);
 
         numKeywordsDetected = 0;
-
+        //
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("AI-Speaker")
                 .setContentText("nasłuchiwanie słowa: Alexa")
@@ -106,9 +106,9 @@ public class PorcupineService extends Service {
                             //}
 
                             // start mic
-                            //Intent SttIntent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
-                            //LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                            //bm.sendBroadcast(SttIntent);
+                            Intent SttIntent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
+                            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                            bm.sendBroadcast(SttIntent);
 
                             //
                             //NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

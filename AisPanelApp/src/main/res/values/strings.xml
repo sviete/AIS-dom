@@ -51,9 +51,31 @@
 
     <string-array name="hot_word_names">
         <item>"Alexa"</item>
+        <item>"Americano"</item>
+        <item>"Avocado"</item>
+        <item>"Blueberry"</item>
+        <item>"Caterpillar"</item>
+        <item>"Christina"</item>
+        <item>"Dragonfly"</item>
+        <item>"Flamingo"</item>
+        <item>"Francesca"</item>
+        <item>"Iguana"</item>
+        <item>"Raspberry"</item>
+        <item>"Terminator"</item>
     </string-array>
     <string-array name="hot_word_values">
         <item>"alexa"</item>
+        <item>"americano"</item>
+        <item>"avocado"</item>
+        <item>"blueberry"</item>
+        <item>"caterpillar"</item>
+        <item>"christina"</item>
+        <item>"dragonfly"</item>
+        <item>"flamingo"</item>
+        <item>"francesca"</item>
+        <item>"iguana"</item>
+        <item>"raspberry"</item>
+        <item>"terminator"</item>
     </string-array>
 
     <string-array name="remotecontroller_modes_names">
@@ -299,6 +321,6 @@
     <string name="long_click_to_execute_gesture">Hold longer to activate gesture control.</string>
     <string name="long_click_to_execute_connection">Hold longer to run the connection check.</string>
     <string name="long_click_to_enable_hotword">Hold longer to activate key word detection by microphone.</string>
-
+    <string name="hotword_selected_word_info">Listening the hotword: </string>
 
 </resources>
