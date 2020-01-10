@@ -12,6 +12,7 @@ import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -111,10 +112,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             PreferenceCategory prefCategorySettings = (PreferenceCategory) findPreference("pref_category_app_settings");
             //
             Preference preferenceVersion = findPreference("pref_ais_dom_version");
-            Preference preferenceRemote = findPreference("setting_app_remotemode");
 
-
-            prefCategorySettings.removePreference(preferenceRemote);
             // set info in version
             preferenceVersion.setSummary(versionName + " (client app)");
             //
@@ -125,11 +123,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             Preference.OnPreferenceChangeListener preferenceChangeListener = new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String summary = newValue + " seconds";
-                    preference.setSummary(summary);
+
+                   if ((boolean) newValue) {
+                       // start service
+
+                   } else {
+                       // stop service
+
+                   }
+
+
                     return true;
                 }
             };
+
+
+            Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
+            preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
+
 
 
             // scanner
