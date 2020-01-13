@@ -14,6 +14,9 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import ai.picovoice.hotword.PorcupineService;
+import ai.picovoice.porcupinemanager.PorcupineManagerException;
+
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -123,14 +126,29 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             Preference.OnPreferenceChangeListener preferenceChangeListener = new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    String prefKey = preference.getKey();
+                    if (prefKey.equals("setting_app_discovery")) {
 
-                   if ((boolean) newValue) {
-                       // start service
+                        if ((boolean) newValue) {
+                            // start service
 
-                   } else {
-                       // stop service
+                        } else {
+                            // stop service
 
-                   }
+
+                        }
+                    }
+// todo stop service
+//                    if (prefKey.equals("setting_app_hot_word_sensitivity") || prefKey.equals("setting_app_hot_word")) {
+//                        if (AisCoreUtils.mPorcupineManager != null) {
+//                            try {
+//                                Intent serviceIntent = new Intent(this, PorcupineService.class);
+//                                stopService(serviceIntent);
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
 
 
                     return true;
@@ -140,7 +158,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
             preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
-
+            Preference preferenceHotWord = findPreference("setting_app_hot_word");
+            preferenceHotWord.setOnPreferenceChangeListener(preferenceChangeListener);
+            Preference preferenceHotWordSensitivity = findPreference("setting_app_hot_word_sensitivity");
+            preferenceHotWordSensitivity.setOnPreferenceChangeListener(preferenceChangeListener);
 
 
             // scanner

@@ -1,0 +1,5 @@
+<resources>
+    <integer name="sensitivity_bar_default">50</integer>
+    <integer name="sensitivity_bar_max">100</integer>
+    <integer name="sensitivity_bar_min">10</integer>
+</resources>

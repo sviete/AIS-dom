@@ -136,7 +136,9 @@
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
     <string name="default_setting_app_hot_word">alexa</string>g>
     <string name="title_setting_app_hot_word">Słowo aktywujące komendę</string>
-    <string name="summary_setting_app_hot_word">wybierz słowo aktywujące komendę</string>
+    <string name="summary_setting_app_hot_word">wybierz słowo aktywujące komendę\n(po zmianie wymagane jest ponowne uruchomienie usługi nasłuchiwania)</string>
+    <string name="title_setting_app_hot_word_sensitivity">Czułość nasłuchiwania</string>
+    <string name="summary_setting_app_hot_word_sensitivity">wybierz czułość nasłuchiwania\n(po zmianie wymagane jest ponowne uruchomienie usługi nasłuchiwania)</string>
 
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>

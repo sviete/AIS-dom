@@ -144,7 +144,9 @@
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
     <string name="default_setting_app_hot_word">alexa</string>g>
     <string name="title_setting_app_hot_word">Hot Word</string>
-    <string name="summary_setting_app_hot_word">choose a hot word</string>
+    <string name="summary_setting_app_hot_word">choose a hot word\n(you must restart the listener service after the change)</string>
+    <string name="title_setting_app_hot_word_sensitivity">Hot Word Sensitivity</string>
+    <string name="summary_setting_app_hot_word_sensitivity">choose a hot word sensitivity\n(you must restart the listener service after the change)</string>
 
 
     <string name="key_setting_android_browsertype">setting_android_browsertype</string>

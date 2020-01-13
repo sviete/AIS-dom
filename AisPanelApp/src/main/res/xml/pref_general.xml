@@ -64,6 +64,15 @@
                 android:summary="@string/summary_setting_app_hot_word"
                 android:key="@string/key_setting_app_hot_word"
                 android:icon="@drawable/ic_hot_word"/>
+            <SeekBarPreference
+                android:min="@integer/sensitivity_bar_min"
+                android:max="@integer/sensitivity_bar_max"
+                android:defaultValue="@integer/sensitivity_bar_default"
+                android:key="setting_app_hot_word_sensitivity"
+                android:title="@string/title_setting_app_hot_word_sensitivity"
+                android:summary="@string/summary_setting_app_hot_word_sensitivity"
+                android:icon="@drawable/ic_hot_word_sensitivity"
+                />
             <ListPreference
                 android:defaultValue="@string/default_setting_app_tts_voice"
                 android:entries="@array/tts_voice_names"

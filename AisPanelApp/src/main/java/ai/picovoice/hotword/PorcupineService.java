@@ -88,16 +88,18 @@ public class PorcupineService extends Service {
 
         Config config = new Config(this.getApplicationContext());
         String hotword = config.getSelectedHotWord();
+        int hotWordSensitivity = config.getSelectedHotWordSensitivity();
         String keywordFileName = hotword + ".ppn";
         String keywordFilePath = new File(this.getFilesDir(), keywordFileName).getAbsolutePath();
 
 
         try {
             if (AisCoreUtils.mPorcupineManager == null) {
+
                 AisCoreUtils.mPorcupineManager = new PorcupineManager(
                         modelFilePath,
                         keywordFilePath,
-                        0.9f,
+                (float) hotWordSensitivity / 100,
                         (keywordIndex) -> {
                             numKeywordsDetected++;
                             Log.i(TAG, "numKeywordsDetected " + numKeywordsDetected);

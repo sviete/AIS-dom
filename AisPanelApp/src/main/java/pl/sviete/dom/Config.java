@@ -242,6 +242,11 @@ public class Config {
                 R.string.default_setting_app_hot_word);
     }
 
+    public int getSelectedHotWordSensitivity(){
+        int howWordSensitivity = sharedPreferences.getInt("setting_app_hot_word_sensitivity", 50);
+        return howWordSensitivity;
+    }
+
     public Boolean getAppDiscoveryMode() {
         return getBoolPref(R.string.key_setting_app_discovery, R.string.default_setting_app_discovery);
     }
