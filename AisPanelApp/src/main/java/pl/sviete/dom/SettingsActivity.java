@@ -14,8 +14,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import ai.picovoice.hotword.PorcupineService;
-import ai.picovoice.porcupinemanager.PorcupineManagerException;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity {

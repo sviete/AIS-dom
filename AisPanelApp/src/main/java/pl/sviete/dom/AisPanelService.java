@@ -129,10 +129,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private String m_media_content_id = null;
 
 
-    // MDNS
-    private NsdManager.RegistrationListener mRegistrationListenerAisDom;
-    private NsdManager mNsdManager;
-    private String mServiceName;
 
 
     @Override
@@ -374,73 +370,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         Log.i(TAG, "destroy");
     }
 
-    public void unRegisterMdnsServices(){
-        Log.i(TAG, "MDNS unRegisterMdnsServices");
-        if (mRegistrationListenerAisDom != null) {
-            try {
-                mNsdManager.unregisterService(mRegistrationListenerAisDom);
-                mRegistrationListenerAisDom = null;
-            } catch (Exception e){
-                Log.e(TAG, "MDNS unRegisterMdnsServices error " +  e.toString());
-            }
-
-        }
-    }
-
-    public void registerMdnsServices(Context context) {
-        Log.i(TAG, "MDNS registerMdnsServices");
-        String AisDomHostName = AisNetUtils.getHostName();
-        // AIS dom
-        try {
-            NsdServiceInfo serviceInfofoAisDom = new NsdServiceInfo();
-            serviceInfofoAisDom.setServiceName(AisDomHostName);
-            serviceInfofoAisDom.setServiceType("_ais-dom._tcp");
-            serviceInfofoAisDom.setPort(8180);
-            serviceInfofoAisDom.setAttribute("gate_id", AisCoreUtils.AIS_GATE_ID);
-            serviceInfofoAisDom.setAttribute("company_url", "https://ai-speaker.com");
-
-            if (mRegistrationListenerAisDom == null)
-                initializeRegistrationListenerAisDom();
-
-            mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
-            mNsdManager.registerService(serviceInfofoAisDom, NsdManager.PROTOCOL_DNS_SD, mRegistrationListenerAisDom);
-        } catch (Exception e){
-            Log.e(TAG, "MDNS registerMdnsServices error " +  e.toString());
-        }
-    }
-
-    private void initializeRegistrationListenerAisDom() {
-        mRegistrationListenerAisDom = new NsdManager.RegistrationListener() {
-
-            @Override
-            public void onServiceRegistered(NsdServiceInfo NsdServiceInfo) {
-                // Save the service name.  Android may have changed it in order to
-                // resolve a conflict, so update the name you initially requested
-                // with the name Android actually used.
-                mServiceName = NsdServiceInfo.getServiceName();
-                Log.i(TAG, "MDNS onServiceRegistered " + mServiceName);
-            }
-
-            @Override
-            public void onRegistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-                // Registration failed!  Put debugging code here to determine why.
-                Log.i(TAG, "MDNS onServiceUnregistered");
-            }
-
-            @Override
-            public void onServiceUnregistered(NsdServiceInfo arg0) {
-                // Service has been unregistered.  This only happens when you call
-                // NsdManager.unregisterService() and pass in this listener.
-                Log.i(TAG, "MDNS onServiceUnregistered");
-            }
-
-            @Override
-            public void onUnregistrationFailed(NsdServiceInfo serviceInfo, int errorCode) {
-                // Unregistration failed.  Put debugging code here to determine why.
-                Log.i(TAG, "MDNS onUnregistrationFailed");
-            }
-        };
-    }
 
     private void startForeground(){
         Log.d(TAG, "startForeground Called");

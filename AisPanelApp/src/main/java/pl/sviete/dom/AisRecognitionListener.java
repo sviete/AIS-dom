@@ -21,7 +21,6 @@ public class AisRecognitionListener implements RecognitionListener {
     public static final String TAG = AisRecognitionListener.class.getName();
     public Context context;
     public static SpeechRecognizer speechRecognizer;
-    public static int mTimeoutErrorCount = 0;
     public AisRecognitionListener (Context context, SpeechRecognizer speechRecognizer) {
         this.context = context;
         this.speechRecognizer = speechRecognizer;
@@ -107,9 +106,6 @@ public class AisRecognitionListener implements RecognitionListener {
 
         // on phone
         DomWebInterface.publishMessage( matches.get(0), "speech_command");
-
-        // reset the timeout error count
-        mTimeoutErrorCount = 0;
     }
 
     @Override
@@ -159,19 +155,10 @@ public class AisRecognitionListener implements RecognitionListener {
                 message = "Problem z siecią, spróbuj ponownie.";
                 break;
             case SpeechRecognizer.ERROR_NO_MATCH:
-                bRandom = true;
                 break;
             case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
                 bRandom = true;
-                // on error code 6 - ERROR_SPEECH_TIMEOUT we need to resetart usb
-                // restart usb
-                Log.i(TAG, "resetUsb mTimeoutErrorCount: " + mTimeoutErrorCount);
-                mTimeoutErrorCount = mTimeoutErrorCount + 1;
-                if (mTimeoutErrorCount > 1){
-                    Log.i(TAG, "resetUsb! start");
-                    DomWebInterface.publishMessage("reset_usb.sh", "execute_script");
-                    mTimeoutErrorCount = 0;
-                }
+                // on error code 6 - ERROR_SPEECH_TIMEOUT
                 break;
             default:
                 bRandom = true;

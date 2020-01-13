@@ -1,16 +1,9 @@
 package pl.sviete.dom;
 
-import android.os.StrictMode;
-
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,100 +58,6 @@ public final class AisNetUtils {
         return host;
     }
 
-    public static String getMacAddr() {
-        try {
-            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface nif : all) {
-                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
-                byte[] macBytes = nif.getHardwareAddress();
-                if (macBytes == null) {
-                    return "";
-                }
-
-                StringBuilder res1 = new StringBuilder();
-                for (byte b : macBytes) {
-                    res1.append(String.format("%02X:", b));
-                }
-
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                }
-                return res1.toString();
-            }
-        } catch (Exception ex) {
-        }
-        return "02:00:00:00:00:00";
-    }
-
-
-    public static String getIPAddress() {
-        return "ok";
-    }
-
-
-    /**
-     * Convert byte array to hex string
-     *
-     * @param bytes toConvert
-     * @return hexValue
-     */
-    public static String bytesToHex(byte[] bytes) {
-        StringBuilder sbuf = new StringBuilder();
-        for (int idx = 0; idx < bytes.length; idx++) {
-            int intVal = bytes[idx] & 0xff;
-            if (intVal < 0x10) sbuf.append("0");
-            sbuf.append(Integer.toHexString(intVal).toUpperCase());
-        }
-        return sbuf.toString();
-    }
-
-    /**
-     * Get utf8 byte array.
-     *
-     * @param str which to be converted
-     * @return array of NULL if error was found
-     */
-    public static byte[] getUTF8Bytes(String str) {
-        try {
-            return str.getBytes("UTF-8");
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    /**
-     * Load UTF8withBOM or any ansi text file.
-     *
-     * @param filename which to be converted to string
-     * @return String value of File
-     * @throws java.io.IOException if error occurs
-     */
-    public static String loadFileAsString(String filename) throws java.io.IOException {
-        final int BUFLEN = 1024;
-        BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename), BUFLEN);
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFLEN);
-            byte[] bytes = new byte[BUFLEN];
-            boolean isUTF8 = false;
-            int read, count = 0;
-            while ((read = is.read(bytes)) != -1) {
-                if (count == 0 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF) {
-                    isUTF8 = true;
-                    baos.write(bytes, 3, read - 3); // drop UTF8 bom marker
-                } else {
-                    baos.write(bytes, 0, read);
-                }
-                count += read;
-            }
-            return isUTF8 ? new String(baos.toByteArray(), "UTF-8") : new String(baos.toByteArray());
-        } finally {
-            try {
-                is.close();
-            } catch (Exception ignored) {
-            }
-        }
-    }
 
     /**
      * Returns MAC address of the given interface name.
@@ -183,12 +82,6 @@ public final class AisNetUtils {
         } catch (Exception ignored) {
         } // for now eat exceptions
         return "";
-        /*try {
-            // this is so Linux hack
-            return loadFileAsString("/sys/class/net/" +interfaceName + "/address").toUpperCase().trim();
-        } catch (IOException ex) {
-            return null;
-        }*/
     }
 
     /**

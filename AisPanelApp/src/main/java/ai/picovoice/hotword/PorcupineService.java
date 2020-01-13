@@ -133,6 +133,15 @@ public class PorcupineService extends Service {
             }
             if (action.equals(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT)){
                 stopHotWordListening();
+                if (!AisCoreUtils.mSpeechIsRecording) {
+                    stopHotWordListening();
+                    if (AisCoreUtils.mSpeech == null) {
+                        AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(context);
+                        AisRecognitionListener listener = new AisRecognitionListener(context, AisCoreUtils.mSpeech);
+                        AisCoreUtils.mSpeech.setRecognitionListener(listener);
+                    }
+                    AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
+                }
             }
         }
     };
@@ -155,15 +164,6 @@ public class PorcupineService extends Service {
         Intent SttIntent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
         bm.sendBroadcast(SttIntent);
-//        if (!AisCoreUtils.mSpeechIsRecording) {
-//            stopHotWordListening();
-//            if (AisCoreUtils.mSpeech == null) {
-//                AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(this);
-//                AisRecognitionListener listener = new AisRecognitionListener(this, AisCoreUtils.mSpeech);
-//                AisCoreUtils.mSpeech.setRecognitionListener(listener);
-//            }
-//            AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
-//        }
     }
 
 }

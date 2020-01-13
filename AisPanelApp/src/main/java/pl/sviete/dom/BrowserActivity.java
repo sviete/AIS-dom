@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import ai.picovoice.hotword.PorcupineService;
+import ai.picovoice.porcupinemanager.PorcupineManagerException;
 import pl.sviete.dom.views.RecognitionProgressView;
 
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
@@ -254,7 +255,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             public boolean onLongClick(View v) {
                 // FloatingViewService not for TV
                 if (AisCoreUtils.onTv()) {
-                    Log.i(TAG, "NO FloatingViewService on TV or box");
+                    Log.d(TAG, "NO FloatingViewService on TV or box");
                 } else {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getApplicationContext())) {
                         //If the draw over permission is not available open the settings screen
@@ -263,7 +264,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                                 Uri.parse("package:" + getPackageName()));
                         startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
                     } else {
-                        Log.i(TAG, "start FloatingViewService");
+                        Log.d(TAG, "start FloatingViewService");
                         startService(new Intent(BrowserActivity.this, FloatingViewService.class));
                         // go back to home
                         Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -388,7 +389,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e(TAG, "Language is not available.");
                 } else {
-                    Log.i(TAG, "TTS from broser is ready");
+                    Log.d(TAG, "TTS from broser is ready");
                     mBrowserTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
                         public void onDone(String utteranceId) {
@@ -413,7 +414,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     });
                 }
             } else {
-                Log.i(TAG, "TTS from broser is not possible");
+                Log.d(TAG, "TTS from broser is not possible");
             }
         }
 
@@ -429,12 +430,12 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     //
     public void reloadGestureLib(){
         // gesture
-        Log.i(TAG, "reloadGestureLib...");
+        Log.d(TAG, "reloadGestureLib...");
         File file = new File(getExternalFilesDir(null) + "/" + "gesture.txt");
         if(file.exists()){
-            Log.i(TAG, "biblioteka gestów istnieje");
+            Log.d(TAG, "biblioteka gestów istnieje");
         } else {
-            Log.i(TAG, "tworzę nową bibliotekę gestów");
+            Log.d(TAG, "tworzę nową bibliotekę gestów");
             try {
                 InputStream in = null;
                 OutputStream out = null;
@@ -465,14 +466,14 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         super.onResume();
         reloadGestureLib();
 
-        if (AisCoreUtils.mSpeech != null) {
-            try {
-                AisCoreUtils.mSpeech.destroy();
-                AisCoreUtils.mSpeech = null;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        if (AisCoreUtils.mSpeech != null) {
+//            try {
+//                AisCoreUtils.mSpeech.destroy();
+//                AisCoreUtils.mSpeech = null;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         //
         createRecognitionView();
@@ -514,7 +515,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         };
 
         int[] heights = { 80, 55, 20 };
-        recognitionProgressView = (RecognitionProgressView) findViewById(R.id.ais_recognition_view);
+        recognitionProgressView = findViewById(R.id.ais_recognition_view);
 
 
         if (AisCoreUtils.mSpeech == null) {
@@ -529,6 +530,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         recognitionProgressView.setSpacingInDp(5);
         recognitionProgressView.setIdleStateAmplitudeInDp(5);
         recognitionProgressView.setRotationRadiusInDp(20);
+
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -546,22 +549,28 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         }, 3500);
 
 
-        Log.i(TAG, "starting STT initialization");
-        Log.i(TAG, "isRecognitionAvailable: " + SpeechRecognizer.isRecognitionAvailable(this));
-
-        if (AisCoreUtils.mRecognizerIntent == null) {
+        Log.d(TAG, "starting STT initialization");
+            if (AisCoreUtils.mRecognizerIntent == null) {
             AisCoreUtils.mRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
             AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toString());
             AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-            AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, new Long(5000));
+            AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, new Long(1000));
             AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "pl.sviete.dom");
             AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
             AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
         }
+
+        // start
+        if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), PorcupineService.class)) {
+            try {
+                AisCoreUtils.mPorcupineManager.start();
+            } catch (PorcupineManagerException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void startTheSpeechToText(){
-        Log.d(TAG, "startTheSpeechToText");
 
         if (AisCoreUtils.mSpeech == null){
             AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(this);
@@ -646,11 +655,16 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         // allow the user to close the WebWiew activity without message
         Intent intent = new Intent(getApplicationContext(), AisPanelService.class);
         getApplicationContext().stopService(intent);
+
+        // stop mBrowserTts
+        if (mBrowserTts != null){
+            mBrowserTts.shutdown();
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i(TAG, "onRequestPermissionsResult");
+        Log.d(TAG, "onRequestPermissionsResult");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case REQUEST_RECORD_PERMISSION:
@@ -695,34 +709,34 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(BROADCAST_ACTION_LOAD_URL)) {
                 final String url = intent.getStringExtra(BROADCAST_ACTION_LOAD_URL);
-                Log.i(TAG, "Browsing to " + url);
+                Log.d(TAG, "Browsing to " + url);
                 loadUrl(url, false);
             }else if (intent.getAction().equals(BROADCAST_ACTION_JS_EXEC)) {
                 final String js = intent.getStringExtra(BROADCAST_ACTION_JS_EXEC);
-                Log.i(TAG, "Executing javascript in current browser: " +js);
+                Log.d(TAG, "Executing javascript in current browser: " +js);
                 evaluateJavascript(js);
             }else if (intent.getAction().equals(BROADCAST_ACTION_CLEAR_BROWSER_CACHE)) {
-                Log.i(TAG, "Clearing browser cache");
+                Log.d(TAG, "Clearing browser cache");
                 clearCache();
             }else if (intent.getAction().equals(BROADCAST_ACTION_RELOAD_PAGE)) {
-                Log.i(TAG, "Browser page reloading.");
+                Log.d(TAG, "Browser page reloading.");
                 reload();
             }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT)) {
-                Log.i(TAG, AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT + " btn speak set checked false.");
+                Log.d(TAG, AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT + " btn speak set checked false.");
                 if (btnSpeak.isChecked()) {
                     btnSpeak.setChecked(false);
                 }
                 onEndSpeechToText();
             }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH)) {
-                Log.i(TAG, AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH + " onStartTextToSpeech.");
+                Log.d(TAG, AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH + " onStartTextToSpeech.");
                 final String text = intent.getStringExtra(AisCoreUtils.TTS_TEXT);
                 final String type = intent.getStringExtra(AisCoreUtils.TTS_TEXT_TYPE);
                 onStartTextToSpeech(text, type);
             }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH)) {
-                Log.i(TAG, AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH + " btn speak set checked false.");
+                Log.d(TAG, AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH + " btn speak set checked false.");
                 onEndTextToSpeech();
             }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT)){
-                Log.i(TAG, AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT + " btn speak set checked true.");
+                Log.d(TAG, AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT + " btn speak set checked true.");
                 if (!btnSpeak.isChecked()) {
                     btnSpeak.setChecked(true);
                 }
@@ -753,14 +767,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         Log.d(TAG, "onEndSpeechToText -> rotate");
         btnSpeak.setChecked(false);
         recognitionProgressView.stop();
-    }
-
-    void pageLoadComplete(final String url) {
-        Log.d(TAG, "pageLoadComplete Called");
-        Intent intent = new Intent(AisPanelService.BROADCAST_EVENT_URL_CHANGE);
-        intent.putExtra(AisPanelService.BROADCAST_EVENT_URL_CHANGE, url);
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-        bm.sendBroadcast(intent);
     }
 
     private void startHotWordService() {
