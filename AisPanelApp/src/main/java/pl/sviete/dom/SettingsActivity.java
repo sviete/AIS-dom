@@ -14,6 +14,9 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
+import ai.picovoice.hotword.PorcupineService;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -21,37 +24,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     static final String TAG = SettingsActivity.class.getName();
     static private int mClickNo = 0;
 
-    private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+    private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
+        String stringValue = value.toString();
 
-            if(preference instanceof SwitchPreference){
-                //((SwitchPreference) preference).setChecked((boolean)value);
-                //preference.setSummary(value.toString());
-                return true;
-            }
-
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-
-                preference.setSummary(stringValue);
-            }
+        if(preference instanceof SwitchPreference){
+            //((SwitchPreference) preference).setChecked((boolean)value);
+            //preference.setSummary(value.toString());
             return true;
         }
+
+        if (preference instanceof ListPreference) {
+            // For list preferences, look up the correct display value in
+            // the preference's 'entries' list.
+            ListPreference listPreference = (ListPreference) preference;
+            int index = listPreference.findIndexOfValue(stringValue);
+
+            // Set the summary to reflect the new value.
+            preference.setSummary(
+                    index >= 0
+                            ? listPreference.getEntries()[index]
+                            : null);
+
+        } else {
+            // For all other preferences, set the summary to the value's
+            // simple string representation.
+
+            preference.setSummary(stringValue);
+        }
+        return true;
     };
 
     /**
@@ -126,14 +126,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String prefKey = preference.getKey();
                     if (prefKey.equals("setting_app_discovery")) {
-
+                        Intent serviceIntent = new Intent(preference.getContext(), AisPanelService.class);
                         if ((boolean) newValue) {
                             // start service
+                            preference.getContext().startService(serviceIntent);
 
                         } else {
                             // stop service
-
-
+                            preference.getContext().stopService(serviceIntent);
                         }
                     }
 // todo stop service

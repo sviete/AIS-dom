@@ -2,14 +2,9 @@ package pl.sviete.dom;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.speech.SpeechRecognizer;
-import androidx.annotation.RequiresApi;
-import android.util.Log;
 import android.webkit.WebView;
 
 import ai.picovoice.porcupinemanager.PorcupineManager;
@@ -97,6 +92,9 @@ public class AisCoreUtils {
     public static String mAudioSourceNews = "News";
     public static String mAudioSourceLocal = "Local";
     public static String mAudioSourceAndroid = "Android";
+
+    // Notification
+    public static int AIS_DOM_NOTIFICATION_ID = 1234;
     /*
      * Check if we are on gate or phone
      *
@@ -112,19 +110,6 @@ public class AisCoreUtils {
     }
 
 
-    /*
-     * Check if we are on display
-     *
-     * @return <code>true</code> if we are on display, otherwise <code>false</code>
-     */
-    public static boolean onDisplay() {
-        if (mCurrentRemoteControllerMode.equals("OFF_DISPLAY")){
-            return false;
-        }
-        return true;
-    }
-    
-
     public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -135,68 +120,6 @@ public class AisCoreUtils {
         return false;
     }
 
-    /*
-     * Try to grant some access to service
-     *
-     */
-    public static void grantAccess(String pkg, String access) {
-        Log.i(TAG, "grantAccess " + access);
-        // trying to add
-        try {
-            Process p = Runtime.getRuntime().exec(
-                    new String[]{"su","-c", "pm grant " + pkg + " " + access}
-            );
-            p.waitFor();
-            int exitStatus = p.exitValue();
-
-            Log.i(TAG, "grantAccess " + access + " to " + pkg + " return " + exitStatus);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /*
-     * Check if app is admin - to modify this wifi configuration
-     *
-     */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static boolean isAdminActive(Context context){
-        DevicePolicyManager devicePolicyManager =
-                (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-
-        return devicePolicyManager.isDeviceOwnerApp("pl.sviete.dom");
-    }
-
-    /*
-     * Try to enable the device owner
-     */
-    public static void setAdminActive() {
-        Log.i(TAG, "setAdminActive");
-        // trying to add
-        try {
-            Runtime.getRuntime().exec(
-                    new String[]{"su","-c", "dpm set-device-owner pl.sviete.dom/.AisAdminReceiver"}
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*
-     * Try to remove device owner
-     */
-    public static void removeActiveAdmin(Context context){
-        try {
-            DevicePolicyManager devicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-            devicePolicyManager.clearDeviceOwnerApp(context.getPackageName());
-            ComponentName componentName = new ComponentName(context, AisAdminReceiver.class);
-            devicePolicyManager.removeActiveAdmin(componentName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 }
 

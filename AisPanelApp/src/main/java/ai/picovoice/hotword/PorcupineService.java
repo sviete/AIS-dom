@@ -69,7 +69,7 @@ public class PorcupineService extends Service {
                 .setContentIntent(pendingIntent)
                 .build();
 
-        startForeground(1234, notification);
+        startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, notification);
 
         // Brodcast
         IntentFilter filter = new IntentFilter();

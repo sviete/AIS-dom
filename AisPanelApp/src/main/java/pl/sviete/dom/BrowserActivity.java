@@ -564,7 +564,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), PorcupineService.class)) {
             try {
                 AisCoreUtils.mPorcupineManager.start();
-            } catch (PorcupineManagerException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

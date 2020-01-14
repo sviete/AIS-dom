@@ -1,6 +1,8 @@
 package pl.sviete.dom;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -13,6 +15,7 @@ import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -20,6 +23,8 @@ import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
+
+import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -128,8 +133,21 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private String m_media_album_name = null;
     private String m_media_content_id = null;
 
+    private static final String CHANNEL_ID = "AisPanelServiceChannel";
 
 
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "PorcupineServiceChannel",
+                    NotificationManager.IMPORTANCE_HIGH);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            assert manager != null;
+            manager.createNotificationChannel(notificationChannel);
+        }
+    }
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
@@ -221,13 +239,23 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        Log.i(TAG, "AisPanelService onStartCommand");
-        try {
-            String action = intent.getAction();
-            Log.i(TAG, "AisPanelService onStartCommand, action: " + action);
-        } catch (Exception e) {
-            Log.i(TAG, "AisPanelService onStartCommand no action");
-        }
+
+        createNotificationChannel();
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                new Intent(this, BrowserActivityNative.class),
+                0);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("AI-Speaker")
+                .setContentText("ok odtwarzacz działa")
+                .setSmallIcon(R.drawable.ic_ais_logo)
+                .setContentIntent(pendingIntent)
+                .build();
+
+        startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, notification);
         return START_STICKY;
     }
 
@@ -341,7 +369,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "AisDom");
         extractorsFactory = new DefaultExtractorsFactory();
-        playIntro();
 
 
         createTTS();
@@ -372,7 +399,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
 
     private void startForeground(){
-        Log.d(TAG, "startForeground Called");
         Context context = getApplicationContext();
         Intent notificationIntent = new Intent(context, BrowserActivityNative.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
@@ -421,9 +447,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 Log.d(TAG, BROADCAST_ON_START_TEXT_TO_SPEECH + " turnDownVolume");
             } else if (action.equals(BROADCAST_ON_END_TEXT_TO_SPEECH)) {
                 Log.d(TAG, BROADCAST_ON_END_TEXT_TO_SPEECH + " turnUpVolume");
-            } else if (action.equals(BROADCAST_EVENT_CHANGE_CONTROLLER_MODE)) {
-                Log.d(TAG, BROADCAST_EVENT_CHANGE_CONTROLLER_MODE + " onChangeRemoteControllerMode");
-                final String newControlMode = intent.getStringExtra(EVENT_CHANGE_CONTROLLER_MODE_VALUE);
             } else if (action.equals(BROADCAST_ON_END_SPEECH_TO_TEXT_KEY_PRES)) {
                 Log.d(TAG, BROADCAST_ON_END_SPEECH_TO_TEXT_KEY_PRES + " onEndStt");
             } else if (action.equals(BROADCAST_ON_START_SPEECH_TO_TEXT_KEY_PRES)) {
@@ -453,54 +476,48 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private void configureHttp(){
         mHttpServer = new AsyncHttpServer();
 
-        mHttpServer.get("/", new HttpServerRequestCallback() {
-            @Override
-            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-                Log.d(TAG, "request: " + request);
-                JSONObject json = new JSONObject();
-                if (mConfig.getAppDiscoveryMode()){
-                    try {
-                        // the seme structure like in sonoff http://<device-ip>/cm?cmnd=status%205
-                        json.put("Hostname", AisNetUtils.getHostName());
-                        json.put("gate_id", AisCoreUtils.AIS_GATE_ID);
-                        json.put("MacWlan0", AisNetUtils.getMACAddress("wlan0"));
-                        json.put("MacEth0", AisNetUtils.getMACAddress("eth0"));
-                        json.put("IPAddressIPv4", AisNetUtils.getIPAddress(true));
-                        json.put("IPAddressIPv6", AisNetUtils.getIPAddress(false));
-                        json.put("ApiLevel", AisNetUtils.getApiLevel());
-                        json.put("Device", AisNetUtils.getDevice());
-                        json.put("OsVersion", AisNetUtils.getOsVersion());
-                        json.put("Model", AisNetUtils.getModel());
-                        json.put("Product", AisNetUtils.getProduct());
-                        json.put("Manufacturer", AisNetUtils.getManufacturer());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        // to enable search mqtt host by devices in network class C with default subnet masks 255.255.255.0
-                        json.put("Hostname", AisNetUtils.getHostName());
-                        json.put("gate_id", AisCoreUtils.AIS_GATE_ID);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+        mHttpServer.get("/", (request, response) -> {
+            Log.d(TAG, "request: " + request);
+            JSONObject json = new JSONObject();
+            if (mConfig.getAppDiscoveryMode()){
+                try {
+                    // the seme structure like in sonoff http://<device-ip>/cm?cmnd=status%205
+                    json.put("Hostname", AisNetUtils.getHostName());
+                    json.put("gate_id", AisCoreUtils.AIS_GATE_ID);
+                    json.put("MacWlan0", AisNetUtils.getMACAddress("wlan0"));
+                    json.put("MacEth0", AisNetUtils.getMACAddress("eth0"));
+                    json.put("IPAddressIPv4", AisNetUtils.getIPAddress(true));
+                    json.put("IPAddressIPv6", AisNetUtils.getIPAddress(false));
+                    json.put("ApiLevel", AisNetUtils.getApiLevel());
+                    json.put("Device", AisNetUtils.getDevice());
+                    json.put("OsVersion", AisNetUtils.getOsVersion());
+                    json.put("Model", AisNetUtils.getModel());
+                    json.put("Product", AisNetUtils.getProduct());
+                    json.put("Manufacturer", AisNetUtils.getManufacturer());
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                response.send(json);
-                response.end();
+            } else {
+                try {
+                    // to enable search mqtt host by devices in network class C with default subnet masks 255.255.255.0
+                    json.put("Hostname", AisNetUtils.getHostName());
+                    json.put("gate_id", AisCoreUtils.AIS_GATE_ID);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
+            response.send(json);
+            response.end();
         });
 
 
 
-        mHttpServer.post("/text_to_speech", new HttpServerRequestCallback() {
-            @Override
-            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-                Log.d(TAG, "text_to_speech: " + request);
-                JSONObject body = ((JSONObjectBody)request.getBody()).get();
-                processTTS(body.toString(), AisCoreUtils.TTS_TEXT_TYPE_OUT);
-                response.send("ok");
-                response.end();
-            }
+        mHttpServer.post("/text_to_speech", (request, response) -> {
+            Log.d(TAG, "text_to_speech: " + request);
+            JSONObject body = ((JSONObjectBody)request.getBody()).get();
+            processTTS(body.toString(), AisCoreUtils.TTS_TEXT_TYPE_OUT);
+            response.send("ok");
+            response.end();
         });
 
         // listen on port 8122
@@ -685,53 +702,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private void publishSpeechStatus(String status) {
         Log.d(TAG, "publishSpeechStatus: " + status);
         DomWebInterface.publishMessage(status, "speech_status");
-    }
-
-    // AUDIO
-    private void playIntro(){
-        // to prevent the play next on gate
-        m_media_source = AisCoreUtils.mAudioSourceAndroid;
-
-        exoPlayer.stop();
-        exoPlayer.prepare(mediaSource);
-        exoPlayer.setPlayWhenReady(true);
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // text info after 9sec
-                processTTS("Uruchamianie systemu Asystent domowy, poczekaj.", AisCoreUtils.TTS_TEXT_TYPE_OUT);
-            }
-        }, 9000);
-    }
-
-    private void speakVoiceIntro(){
-        String text = "Raz, dwa, raz, dwa, trzy. Próba głosu asystenta.";
-        Random random = new Random();
-        List<String> voiceTest = Arrays.asList(
-                "Bzyczy bzyg znad Bzury zbzikowane bzdury, bzyczy bzdury, bzdurstwa bzdurzy i nad Bzurą w bzach bajdurzy, bzyczy bzdury, bzdurnie bzyka, bo zbzikował i ma bzika!",
-                "Centrum handlowe to tutaj punkt zborny, to tutaj dobierają do butów torby, temat paznokcia pozornie pozorny, jej twarz to miraż jak makijaż upiorny.",
-                "Chrząszcz brzmi w trzcinie w Szczebrzeszynie, w szczękach chrząszcza trzeszczy miąższ. Czcza szczypawka czka w Szczecinie. Chrząszcza szczudłem przechrzcił wąż, strząsa skrzydła z dżdżu, a trzmiel w puszczy, tuż przy Pszczynie, straszny wszczyna szum.",
-                "Cóż potrzeba strzelcowi do zestrzelenia cietrzewia drzemiącego w dżdżysty dzień na strzelistym drzewie.",
-                "Czesał czyżyk czarny koczek, czyszcząc w koczku każdy loczek. Po czym przykrył koczek toczkiem, lecz część loczków wyszła boczkiem.",
-                "Dżdżystym rankiem gżegżółki i piegże, zamiast wziąć się za dżdżownice, nażarły się na czczo miąższu rzeżuchy i rzędem rzygały do rozżarzonej brytfanny.",
-                "Gdy Pomorze nie pomoże, to pomoże może morze, a gdy morze nie pomoże to pomoże może las.",
-                "Hasał huczek z tłuczkiem wnuczka i niechcący huknął żuczka. Ale heca... – wnuczek mruknął i z hurkotem w hełm się stuknął. Leży żuczek, leży wnuczek, a pomiędzy nimi tłuczek. Stąd dla huczka jest nauczka by nie hasać z tłuczkiem wnuczka.",
-                "Mała muszka spod Łopuszki chciała mieć różowe nóżki – różdżką nóżki czarowała, lecz wciąż nóżki czarne miała. – Po cóż czary, moja muszko? Ruszże móżdżkiem, a nie różdżką! Wyrzuć wreszcie różdżkę wróżki i unurzaj w różu nóżki!",
-                "My indywidualiści wyindywidualizowaliśmy się z rozentuzjazmowanego tłumu, który oklaskiwał przeintelektualizowane i przeliteraturalizowane dzieło.",
-                "Raz w szuwarach się zaszywszy w jednym szyku wyszły trzy wszy. Po chwili się rozmnożywszy ruch w szuwarach stał się żywszy.",
-                "Szedł Mojżesz przez morze, jak żniwiarz przez zboże, a za nim przez morze trzy cytrzystki szły. Paluszki cytrzystek nie mogą być duże gdyż w strunach cytry uwięzłyby.",
-                "Warzy żaba smar, pełen smaru gar, z wnętrza gara bucha para, z pieca bucha żar, smar jest w garze, gar na żarze, wrze na żarze smar.",
-                "W gąszczu szczawiu we Wrzeszczu klaszczą kleszcze na deszczu, szepcze szczygieł w szczelinie, szczeka szczeniak w Szczuczynie, piszczy pszczoła pod Pszczyną, świszcze świerszcz pod leszczyną, a trzy pliszki i liszka taszczą płaszcze w Szypliszkach.",
-                "W grząskich trzcinach i szuwarach kroczy jamnik w szarawarach, szarpie kłącza oczeretu i przytracza do beretu, ważkom pęki skrzypu wręcza, traszkom suchych trzcin naręcza, a gdy zmierzchać się zaczyna z jaszczurkami sprzeczkę wszczyna, po czym znika w oczerecie w szarawarach i berecie.",
-                "W krzakach rzekł do trznadla trznadel: – Możesz mi pożyczyć szpadel? Muszę nim przetrzebić chaszcze, bo w nich straszą straszne paszcze. Odrzekł na to drugi trznadel: – Niepotrzebny, trznadlu, szpadel! Gdy wytrzeszczysz oczy w chaszczach, z krzykiem pierzchnie każda, paszcza!",
-                "W wysuszonych sczerniałych trzcinowych szuwarach sześcionogi szczwany trzmiel bezczelnie szeleścił w szczawiu trzymając w szczękach strzęp szczypiorku i często trzepocąc skrzydłami.",
-                "Wróbelek Walerek miał mały werbelek, werbelek Walerka miał mały felerek, felerek werbelka naprawił Walerek, Walerek wróbelek na werbelku swym grał.",
-                "Z czeskich strzech szło Czechów trzech. Gdy nadszedł zmierzch, pierwszego w lesie zagryzł zwierz, bez śladu drugi w gąszczach sczezł, a tylko trzeci z Czechów trzech osiągnął marzeń kres.");
-        int index = random.nextInt(voiceTest.size());
-        text = text + voiceTest.get(index);
-        processTTS(text, AisCoreUtils.TTS_TEXT_TYPE_OUT);
     }
 
 }
