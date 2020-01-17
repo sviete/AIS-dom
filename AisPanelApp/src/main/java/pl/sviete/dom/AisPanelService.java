@@ -9,21 +9,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
-import android.net.nsd.NsdManager;
-import android.net.nsd.NsdServiceInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
@@ -36,10 +36,12 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
@@ -47,35 +49,32 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.koushikdutta.async.http.AsyncHttpClient;
-import com.koushikdutta.async.http.AsyncHttpPost;
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
 import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 
+import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 
 public class AisPanelService extends Service implements TextToSpeech.OnInitListener, ExoPlayer.EventListener {
-    private static final int ONGOING_NOTIFICATION_ID = 1;
     public static final String BROADCAST_EVENT_URL_CHANGE = "BROADCAST_EVENT_URL_CHANGE";
     public static final String BROADCAST_EVENT_DO_STOP_TTS = "BROADCAST_EVENT_DO_STOP_TTS";
     public static final String BROADCAST_READ_THIS_TXT_NOW = "BROADCAST_READ_THIS_TXT_NOW";
@@ -83,7 +82,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public static final String BROADCAST_EVENT_KEY_BUTTON_PRESSED = "BROADCAST_EVENT_KEY_BUTTON_PRESSED";
     public static final String EVENT_KEY_BUTTON_PRESSED_VALUE = "EVENT_KEY_BUTTON_PRESSED_VALUE";
     public static final String BROADCAST_EVENT_CHANGE_CONTROLLER_MODE = "BROADCAST_EVENT_CHANGE_CONTROLLER_MODE";
-    public static final String EVENT_CHANGE_CONTROLLER_MODE_VALUE = "EVENT_CHANGE_CONTROLLER_MODE_VALUE";
 
     // STT
     public static final String  BROADCAST_ON_END_SPEECH_TO_TEXT_KEY_PRES = "BROADCAST_ON_END_SPEECH_TO_TEXT_KEY_PRES";
@@ -118,6 +116,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public static ToneGenerator toneGenerator = null;
 
     //ExoPlayer -start
+    private Handler mainHandler;
     private RenderersFactory renderersFactory;
     private BandwidthMeter bandwidthMeter;
     private LoadControl loadControl;
@@ -132,15 +131,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private String m_media_stream_image = null;
     private String m_media_album_name = null;
     private String m_media_content_id = null;
-
-    private static final String CHANNEL_ID = "AisPanelServiceChannel";
+    private PlayerNotificationManager playerNotificationManager;
 
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "PorcupineServiceChannel",
+                    AIS_DOM_CHANNEL_ID,
+                    "AI-Speaker Cast",
                     NotificationManager.IMPORTANCE_HIGH);
 
             NotificationManager manager = getSystemService(NotificationManager.class);
@@ -248,7 +246,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 new Intent(this, BrowserActivityNative.class),
                 0);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)
                 .setContentTitle("AI-Speaker")
                 .setContentText("ok odtwarzacz działa")
                 .setSmallIcon(R.drawable.ic_ais_logo)
@@ -256,7 +254,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 .build();
 
         startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, notification);
-        return START_STICKY;
+
+        return super.onStartCommand(intent, flags, startId);
+
     }
 
 
@@ -366,6 +366,21 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         loadControl = new DefaultLoadControl();
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, renderersFactory, trackSelector, loadControl);
         exoPlayer.addListener(this);
+        playerNotificationManager = new PlayerNotificationManager(
+                this,
+                AIS_DOM_CHANNEL_ID,
+                AisCoreUtils.AIS_DOM_NOTIFICATION_ID,
+                new DescriptionAdapter());
+        playerNotificationManager.setPlayer(exoPlayer);
+        // omit skip previous and next actions
+        playerNotificationManager.setUseNavigationActions(false);
+        // omit fast forward action by setting the increment to zero
+        playerNotificationManager.setFastForwardIncrementMs(0);
+        // omit rewind action by setting the increment to zero
+        playerNotificationManager.setRewindIncrementMs(0);
+        // omit the stop action
+        //playerNotificationManager.setStopAction(null);
+
 
         dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "AisDom");
         extractorsFactory = new DefaultExtractorsFactory();
@@ -375,8 +390,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         //
         toneGenerator = new ToneGenerator(AudioManager.STREAM_SYSTEM, 100);
         //
-        startForeground();
-
     }
 
     @Override
@@ -394,21 +407,13 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         toneGenerator.release();
 
-        Log.i(TAG, "destroy");
-    }
-
-
-    private void startForeground(){
-        Context context = getApplicationContext();
-        Intent notificationIntent = new Intent(context, BrowserActivityNative.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-        Notification notification = null;
-
-        if (notification != null) {
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-            startForeground(ONGOING_NOTIFICATION_ID, notification);
+        if (exoPlayer != null) {
+            playerNotificationManager.setPlayer(null);
+            exoPlayer.release();
+            exoPlayer = null;
         }
+
+        Log.i(TAG, "destroy");
     }
 
 
@@ -451,21 +456,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 Log.d(TAG, BROADCAST_ON_END_SPEECH_TO_TEXT_KEY_PRES + " onEndStt");
             } else if (action.equals(BROADCAST_ON_START_SPEECH_TO_TEXT_KEY_PRES)) {
                 Log.d(TAG, BROADCAST_ON_START_SPEECH_TO_TEXT_KEY_PRES + " onStartStt");
-            } else if (action.equals(BROADCAST_ON_WIFI_CONNECTED)) {
-                Log.d(TAG, BROADCAST_ON_WIFI_CONNECTED + " onWiFiConnected");
-            } else if (action.equals(BROADCAST_ON_WIFI_DISCONNECTED)) {
-                Log.d(TAG, BROADCAST_ON_WIFI_DISCONNECTED + " onWiFiDisconnected");
-            } else if (action.equals(BROADCAST_SPOTIFY_PLAY_AUDIO)) {
-                Log.d(TAG, BROADCAST_SPOTIFY_PLAY_AUDIO + " spotifyOnPlayAudio");
-                final String audio_id = intent.getStringExtra(BROADCAST_SPOTIFY_PLAY_AUDIO_ID_VALUE);
-                final boolean shuffle = intent.getBooleanExtra(BROADCAST_SPOTIFY_PLAY_AUDIO_SET_SHUFFLE, false);
-                final long seek_to = intent.getLongExtra(BROADCAST_SPOTIFY_PLAY_AUDIO_SET_SEEK_TO, 0);
-            } else if (action.equals("com.spotify.music.playbackstatechanged")) {
-                Log.d(TAG, "com.spotify.music.playbackstatechanged");
-            } else if (action.equals("com.spotify.music.queuechanged")) {
-                Log.d(TAG, "com.spotify.music.queuechanged");
-            } else if (action.equals("com.spotify.music.metadatachanged")) {
-                Log.d(TAG, "com.spotify.music.metadatachanged");
             }
         }
     };
@@ -510,6 +500,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             response.end();
         });
 
+        mHttpServer.post("/command", (request, response) -> {
+            Log.d(TAG, "command: " + request);
+            JSONObject body = ((JSONObjectBody)request.getBody()).get();
+            processCommand(body.toString());
+            response.send("ok");
+            response.end();
+        });
+
 
 
         mHttpServer.post("/text_to_speech", (request, response) -> {
@@ -524,35 +522,84 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         mHttpServer.listen(8122);
     }
 
-    public static void publishIpToCloud(String IpAddress, Context context, String netType){
-        Log.d("publishIpToCloud", "publishIpToCloud Called: " + IpAddress);
-        String url = AisCoreUtils.getAisDomCloudWsUrl(false) + "/gate_ip_info";
-        // prepare the json message
-        JSONObject json = new JSONObject();
-        try {
-            json.put("local_ip", IpAddress);
-            //settings get secure android_id
-            if (AisCoreUtils.AIS_GATE_ID == null) {
-                AisCoreUtils.AIS_GATE_ID = "dom-" + Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-            }
-            json.put("gate_id",  AisCoreUtils.AIS_GATE_ID);
-            json.put("net_type",  netType);
-            Log.d("publishIpToCloud", "local_ip: " + IpAddress);
-            Log.d("publishIpToCloud", "gate_id: " + AisCoreUtils.AIS_GATE_ID);
-        } catch (JSONException e) {
-            Log.e("publishIpToCloud", e.toString());
-        }
-        // do the simple HTTP post
-        AsyncHttpPost post = new AsyncHttpPost(url);
-        JSONObjectBody body = new JSONObjectBody(json);
-        post.addHeader("Content-Type", "application/json");
-        post.setBody(body);
-        AsyncHttpClient.getDefaultInstance().executeJSONObject(post, null);
-
-    }
-
 
     //******** API Functions *****************
+
+    private boolean processCommand(JSONObject commandJson) {
+        Log.d(TAG, "processCommand Called " + commandJson.toString());
+        try {
+            if(commandJson.has("playAudioFullInfo")) {
+                JSONObject audioInfo = commandJson.getJSONObject("playAudioFullInfo");
+                setAudioInfo(audioInfo);
+                String url = audioInfo.getString("media_content_id");
+                boolean shuffle = audioInfo.getBoolean("setPlayerShuffle");
+                long position = audioInfo.getLong("setMediaPosition");
+                playAudio(url, shuffle, position);
+            }
+            else if(commandJson.has("playAudio")) {
+                // depricated - switch to playAudioFullInfo
+                String url = commandJson.getString("playAudio");
+                playAudio(url, false, 0);
+            }
+            else if(commandJson.has("setAudioInfo")) {
+                JSONObject audioInfo = commandJson.getJSONObject("setAudioInfo");
+                setAudioInfo(audioInfo);
+            }
+            else if(commandJson.has("stopAudio")) {
+                stopAudio();
+            }
+            else if(commandJson.has("pauseAudio")) {
+                pauseAudio(commandJson.getBoolean("pauseAudio"));
+            }
+            else if(commandJson.has("getAudioStatus")) {
+                JSONObject jState = getAudioStatus();
+                publishAudioPlayerStatus(jState.toString());
+            }
+            else if(commandJson.has("setVolume")) {
+                int vol = commandJson.getInt("setVolume");
+                setVolume(vol);
+            }
+            else if(commandJson.has("upVolume")) {
+                int vol = Math.min(getVolume() + 10, 100);
+                setVolume(vol);
+            }
+            else if(commandJson.has("downVolume")) {
+                int vol = Math.max(getVolume() - 10, 0);
+                setVolume(vol);
+            }
+            else if(commandJson.has("setPlaybackPitch")) {
+                setPlaybackPitch(Float.parseFloat(commandJson.getString("setPlaybackPitch")));
+            }
+            else if(commandJson.has("setPlaybackSpeed")) {
+                setPlaybackSpeed(Float.parseFloat(commandJson.getString("setPlaybackSpeed")));
+            }
+            else if(commandJson.has("seekTo")) {
+                seekTo(commandJson.getLong("seekTo"));
+            }
+            else if(commandJson.has("skipTo")) {
+                skipTo(commandJson.getLong("skipTo"));
+            }
+            else if(commandJson.has("setPlayerShuffle")) {
+                setPlayerShuffle(commandJson.getBoolean("setPlayerShuffle"));
+            }
+        }
+        catch (JSONException ex) {
+            Log.e(TAG, "Invalid JSON passed as a command: " + commandJson.toString());
+            return false;
+        }
+        return true;
+    }
+
+    private boolean processCommand(String command) {
+        Log.d(TAG, "processCommand Called");
+        try {
+            return processCommand(new JSONObject(command));
+        }
+        catch (JSONException ex) {
+            Log.e(TAG, "Invalid JSON passed as a command: " + command);
+            return false;
+        }
+    }
 
 
     private boolean processTTS(String text, String type) {
@@ -669,13 +716,207 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     }
 
-    // publish the text to hass - this text will be displayed in app
-    // and send back to frame to read...
-    public static void publishSpeechText(String message) {
-        Log.d("TTS", "publishSpeechText " + message);
-        DomWebInterface.publishMessage(message, "speech_text");
+    private void playAudio(String streamUrl, boolean shuffle, long position){
+        Log.d(TAG, "playAudio Called: " + streamUrl + " shuffle: " + shuffle + " position: " + position);
+        m_media_content_id = streamUrl;
+        if (streamUrl.startsWith("spotify:")){
+            // stop exo
+            stopExoPlayer();
+            Log.d(TAG, "spotifyConnectToAppRemote Called");
+            Intent intent = new Intent(BROADCAST_SPOTIFY_PLAY_AUDIO);
+            intent.putExtra(BROADCAST_SPOTIFY_PLAY_AUDIO_ID_VALUE, streamUrl);
+            intent.putExtra(BROADCAST_SPOTIFY_PLAY_AUDIO_SET_SHUFFLE, shuffle);
+            intent.putExtra(BROADCAST_SPOTIFY_PLAY_AUDIO_SET_SEEK_TO, position);
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+            bm.sendBroadcast(intent);
+        } else {
+            try {
+                exoPlayer.stop();
+                mediaSource = new ExtractorMediaSource(Uri.parse(streamUrl),
+                        dataSourceFactory,
+                        extractorsFactory,
+                        mainHandler,
+                        null);
+                exoPlayer.prepare(mediaSource);
+                exoPlayer.setPlayWhenReady(true);
+                if (position > 0){
+                    exoPlayer.seekTo(position);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error playAudio: " + e.getMessage());
+            }
+        }
     }
 
+    private void setAudioInfo(JSONObject audioInfo) {
+        Log.d(TAG, "setAudioInfo Called: " + audioInfo.toString());
+        try {
+            m_media_title = audioInfo.getString("media_title");
+            m_media_source = audioInfo.getString("media_source");
+            m_media_album_name = audioInfo.getString("media_album_name");
+            m_media_stream_image = audioInfo.getString("media_stream_image");
+        } catch (Exception e) {
+            Log.e(TAG, "setAudioInfo " + e.toString());
+        }
+    }
+
+
+    private void pauseExoPlayer(Boolean pause){
+        Log.d(TAG, "pauseExoPlayer Called: " + pause.toString());
+        // pause / play
+        try {
+            exoPlayer.setPlayWhenReady(!pause);
+        } catch (Exception e) {
+            Log.e(TAG, "Error pauseAudio: " + e.getMessage());
+        }
+    }
+
+    private void stopExoPlayer(){
+        Log.d(TAG, "stopExoPlayer Called ");
+        try {
+            exoPlayer.stop();
+        } catch (Exception e) {
+            Log.e(TAG, "Error stopAudio: " + e.getMessage());
+        }
+    }
+
+    private void pauseAudio(Boolean pause){
+        Log.d(TAG, "pauseAudio Called: " + pause.toString());
+        pauseExoPlayer(pause);
+    }
+
+    private void stopAudio(){
+        Log.d(TAG, "stopAudio Called ");
+        stopExoPlayer();
+    }
+
+    private void seekTo(long positionMs){
+        exoPlayer.seekTo(exoPlayer.getCurrentPosition() + positionMs);
+    }
+
+    private void skipTo(long positionMs){
+        exoPlayer.seekTo(positionMs);
+    }
+
+
+
+    private void setVolume(int vol){
+        Log.d(TAG, "setVolume Called: " + vol);
+        try {
+            AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+            int maxVolume =  audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            int volToSet = Math.max(Math.round((vol * maxVolume) / 100), 1);
+
+            int maxSystemVolume =  audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM);
+            int volSystemToSet = Math.max(Math.round(((volToSet * maxSystemVolume) / maxVolume)/2),1);
+
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volToSet, AudioManager.FLAG_SHOW_UI);
+            audioManager.setStreamVolume(AudioManager.STREAM_SYSTEM, volSystemToSet, AudioManager.FLAG_SHOW_UI);
+
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    private void turnDownVolumeForSTT(){
+        Log.d(TAG, "turnDownVolumeForSTT Called ");
+        float vol = 0.2f;
+        exoPlayer.setVolume(vol);
+    }
+
+    private void turnUpVolumeForSTT(){
+        Log.d(TAG, "turnUpVolumeForSTT Called ");
+        float vol = 0.6f;
+        exoPlayer.setVolume(vol);
+    }
+
+    private void turnDownVolumeForTTS(){
+        Log.d(TAG, "turnDownVolumeForTTS Called ");
+        float vol = 0.2f;
+        exoPlayer.setVolume(vol);
+    }
+
+    private void turnUpVolumeForTTS(){
+        Log.d(TAG, "turnUpVolumeForTTS Called ");
+        float vol = 1.0f;
+        exoPlayer.setVolume(vol);
+    }
+
+    private int getVolume(){
+        Log.d(TAG, "getVolume Called ");
+        //return exoPlayer.getVolume();
+        try {
+            AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+            int currVolume =  audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int maxSystemVolume =  audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+            return Math.round(((currVolume * 100) / maxSystemVolume));
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+            return 100;
+        }
+    }
+
+    private void setPlaybackPitch(float pitch){
+        Log.d(TAG, "setPlaybackPitch Called ");
+        PlaybackParameters pp = new  PlaybackParameters(1.0f, pitch);
+        exoPlayer.setPlaybackParameters(pp);
+    }
+
+    private void setPlaybackSpeed(float speed){
+
+            PlaybackParameters pp = new PlaybackParameters(speed, 1.0f);
+            exoPlayer.setPlaybackParameters(pp);
+            Log.d(TAG, "setPlaybackSpeed speed: " + speed);
+            JSONObject jState = new JSONObject();
+            try {
+                jState.put("currentSpeed", speed);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            publishAudioPlayerSpeed(jState.toString());
+    }
+
+    private void setPlayerShuffle(boolean Shuffle){
+        // currently we are able to set Shuffle only on Spotify
+    }
+
+    private void publishAudioPlayerSpeed(String speed) {
+        Log.d(TAG, "publishAudioPlayerSpeed: " + speed);
+        DomWebInterface.publishMessage(speed, "player_speed");
+    }
+
+    private JSONObject getAudioStatus(){
+        // TODO do this for Spotify too
+        Log.d(TAG, "getAudioStatus Called ");
+        JSONObject jState = new JSONObject();
+        if (m_media_source.equals(AisCoreUtils.mAudioSourceSpotify)){
+            // TODO
+
+        } else {
+            int state = 0;
+            try {
+                state = exoPlayer.getPlaybackState();
+            } catch (Exception e) {
+                Log.e(TAG, "Error getAudioStatus: " + e.getMessage());
+            }
+            try {
+                jState.put("currentStatus", state);
+                jState.put("currentMedia", m_media_title);
+                jState.put("playing", exoPlayer.getPlayWhenReady());
+                jState.put("currentVolume", getVolume());
+                jState.put("duration", exoPlayer.getDuration());
+                jState.put("currentPosition", exoPlayer.getCurrentPosition());
+                jState.put("currentSpeed", exoPlayer.getPlaybackParameters().speed);
+                jState.put("media_source", m_media_source);
+                jState.put("media_album_name", m_media_album_name);
+                jState.put("media_stream_image", m_media_stream_image);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return jState;
+    }
 
     private void publishSpeechCommand(String message) {
         Log.d(TAG, "publishSpeechCommand " + message);
@@ -693,15 +934,42 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         DomWebInterface.publishMessage(status, "player_status");
     }
 
-    private void publishAudioPlayerSpeed(String speed) {
-        Log.d(TAG, "publishAudioPlayerSpeed: " + speed);
-        DomWebInterface.publishMessage(speed, "player_speed");
-    }
-
-
     private void publishSpeechStatus(String status) {
         Log.d(TAG, "publishSpeechStatus: " + status);
         DomWebInterface.publishMessage(status, "speech_status");
+    }
+
+
+    // ExoPlauer notification
+    private class DescriptionAdapter implements
+            PlayerNotificationManager.MediaDescriptionAdapter {
+
+        @Override
+        public String getCurrentContentTitle(Player player) {
+            return m_media_title;
+        }
+
+        @Nullable
+        @Override
+        public String getCurrentContentText(Player player) {
+            return m_media_album_name;
+        }
+
+        @Nullable
+        @Override
+        public Bitmap getCurrentLargeIcon(Player player,
+                                          PlayerNotificationManager.BitmapCallback callback) {
+            // m_media_stream_image
+            Bitmap largeIcon = null;
+            return largeIcon;
+        }
+
+        @Nullable
+        @Override
+        public PendingIntent createCurrentContentIntent(Player player) {
+            int window = player.getCurrentWindowIndex();
+            return null;
+        }
     }
 
 }

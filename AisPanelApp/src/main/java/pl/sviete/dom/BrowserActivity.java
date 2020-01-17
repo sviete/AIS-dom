@@ -652,9 +652,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         if (AisCoreUtils.mSpeech != null) {
                 AisCoreUtils.mSpeech.destroy();
         }
+
         // allow the user to close the WebWiew activity without message
-        Intent intent = new Intent(getApplicationContext(), AisPanelService.class);
-        getApplicationContext().stopService(intent);
+        //Intent intent = new Intent(getApplicationContext(), AisPanelService.class);
+        //getApplicationContext().stopService(intent);
 
         // stop mBrowserTts
         if (mBrowserTts != null){

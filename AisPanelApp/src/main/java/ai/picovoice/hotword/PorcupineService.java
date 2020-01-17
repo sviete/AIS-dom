@@ -30,7 +30,7 @@ import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
 
 public class PorcupineService extends Service {
-    private static final String CHANNEL_ID = "PorcupineServiceChannel";
+
 
     private int numKeywordsDetected;
     private final String TAG = PorcupineService.class.getName();
@@ -38,8 +38,8 @@ public class PorcupineService extends Service {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "PorcupineServiceChannel",
+                    AisCoreUtils.AIS_DOM_CHANNEL_ID,
+                    "AI-Speaker Mic",
                     NotificationManager.IMPORTANCE_HIGH);
 
             NotificationManager manager = getSystemService(NotificationManager.class);
@@ -62,7 +62,7 @@ public class PorcupineService extends Service {
         //
         Config config = new Config(this.getApplicationContext());
         String hotword = config.getSelectedHotWord();
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
                 .setContentTitle("AI-Speaker")
                 .setContentText(getString(R.string.hotword_selected_word_info) + hotword.substring(0, 1).toUpperCase() + hotword.substring(1))
                 .setSmallIcon(R.drawable.ic_ais_logo)
