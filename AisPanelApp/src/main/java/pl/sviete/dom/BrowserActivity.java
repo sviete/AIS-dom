@@ -149,72 +149,58 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }
         });
 
-
+        // Hot Word
         // button mic
         mSwitchIconHotWord = findViewById(R.id.switchControlHotWord);
         mButtonHotWord = findViewById(R.id.btnControlHotWord);
-        mButtonHotWord.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
+        mButtonHotWord.setOnLongClickListener(v -> {
 
-                if (mSwitchIconHotWord.isIconEnabled()) {
-                    // hot word off
-                    mSwitchIconHotWord.setIconEnabled(false);
-                    speakOutFromBrowser("Nasłuchiwanie wyłączone.");
-                    stopHotWordService();
+            if (mSwitchIconHotWord.isIconEnabled()) {
+                // hot word off
+                mSwitchIconHotWord.setIconEnabled(false);
+                speakOutFromBrowser("Nasłuchiwanie wyłączone.");
+                stopHotWordService();
 
+            } else {
+                int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+                if (permissionMic != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions
+                            (BrowserActivity.this,
+                                    new String[]{Manifest.permission.RECORD_AUDIO},
+                                    REQUEST_HOT_WORD_MIC_PERMISSION);
                 } else {
-                    int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
-                    if (permissionMic != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions
-                                (BrowserActivity.this,
-                                        new String[]{Manifest.permission.RECORD_AUDIO},
-                                        REQUEST_HOT_WORD_MIC_PERMISSION);
-                    } else {
-                        startHotWordService();
-                    }
-                    // hot word on
-                    mSwitchIconHotWord.setIconEnabled(true);
-                    speakOutFromBrowser("Nasłuchiwanie włączone.");
-
-
+                    startHotWordService();
                 }
+                // hot word on
+                mSwitchIconHotWord.setIconEnabled(true);
+                speakOutFromBrowser("Nasłuchiwanie włączone.");
 
-                return true;
+
             }
+
+            return true;
         });
 
-        mButtonHotWord.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_enable_hotword), Toast.LENGTH_SHORT).show();
-            }
-        });
+        mButtonHotWord.setOnClickListener(v -> Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_enable_hotword), Toast.LENGTH_SHORT).show());
 
 
 
         // buton check connection
         mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
-        mButtonModeConnection.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                appLaunchUrl = mConfig.getAppLaunchUrl(false);
-                if (appLaunchUrl.startsWith("dom-")) {
-                    // sprawdzam połączenie
-                    speakOutFromBrowser("Sprawdzam połączenie.");
-                    mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                    appLaunchUrl = mConfig.getAppLaunchUrl(true);
-                } else {
-                    speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.");
-                }
-                return true;
+        mButtonModeConnection.setOnLongClickListener(v -> {
+            appLaunchUrl = mConfig.getAppLaunchUrl(false);
+            if (appLaunchUrl.startsWith("dom-")) {
+                // sprawdzam połączenie
+                speakOutFromBrowser("Sprawdzam połączenie.");
+                mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                appLaunchUrl = mConfig.getAppLaunchUrl(true);
+            } else {
+                speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.");
             }
+            return true;
         });
 
-        mButtonModeConnection.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
+        mButtonModeConnection.setOnClickListener(v -> Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_connection), Toast.LENGTH_SHORT).show());
 
 
         // this is done onResume
@@ -250,32 +236,30 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }
         });
 
-        btnSpeak.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                // FloatingViewService not for TV
-                if (AisCoreUtils.onTv()) {
-                    Log.d(TAG, "NO FloatingViewService on TV or box");
-                } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getApplicationContext())) {
-                        //If the draw over permission is not available open the settings screen
-                        //to grant the permission.
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
-                    } else {
-                        Log.d(TAG, "start FloatingViewService");
-                        startService(new Intent(BrowserActivity.this, FloatingViewService.class));
-                        // go back to home
-                        Intent startMain = new Intent(Intent.ACTION_MAIN);
-                        startMain.addCategory(Intent.CATEGORY_HOME);
-                        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(startMain);
+        // BTN MIC
+        btnSpeak.setOnLongClickListener(v -> {
+            if (mSwitchIconHotWord.isIconEnabled()) {
+                // hot word off
+                mSwitchIconHotWord.setIconEnabled(false);
+                speakOutFromBrowser("Nasłuchiwanie wyłączone.");
+                stopHotWordService();
 
-                    }
+            } else {
+                int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+                if (permissionMic != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions
+                            (BrowserActivity.this,
+                                    new String[]{Manifest.permission.RECORD_AUDIO},
+                                    REQUEST_HOT_WORD_MIC_PERMISSION);
+                } else {
+                    startHotWordService();
                 }
-                return true;
+                // hot word on
+                mSwitchIconHotWord.setIconEnabled(true);
+                speakOutFromBrowser("Nasłuchiwanie włączone.");
             }
+
+            return true;
         });
 
         //
@@ -283,12 +267,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
         //
         btnGoToSettings = findViewById(R.id.btnGoToSettings);
-        btnGoToSettings.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(BrowserActivity.this, WelcomeActivity.class);
-                intent.putExtra(WelcomeActivity.BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE, true);
-                startActivity(intent);
-            }
+        btnGoToSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(BrowserActivity.this, WelcomeActivity.class);
+            intent.putExtra(WelcomeActivity.BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE, true);
+            startActivity(intent);
         });
 
 

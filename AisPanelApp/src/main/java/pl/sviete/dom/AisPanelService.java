@@ -375,11 +375,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // omit skip previous and next actions
         playerNotificationManager.setUseNavigationActions(false);
         // omit fast forward action by setting the increment to zero
-        playerNotificationManager.setFastForwardIncrementMs(0);
+        // playerNotificationManager.setFastForwardIncrementMs(0);
         // omit rewind action by setting the increment to zero
-        playerNotificationManager.setRewindIncrementMs(0);
+        // playerNotificationManager.setRewindIncrementMs(0);
         // omit the stop action
-        //playerNotificationManager.setStopAction(null);
+        playerNotificationManager.setStopAction(null);
 
 
         dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "AisDom");

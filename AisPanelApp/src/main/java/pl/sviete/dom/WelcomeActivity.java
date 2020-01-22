@@ -48,6 +48,11 @@ public class WelcomeActivity extends AppCompatActivity {
                 AisCoreUtils.AIS_DEVICE_TYPE = "MOB";
             }
 
+            // run exo player service on start
+            if (config.getAppDiscoveryMode()) {
+                Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
+                this.getApplicationContext().startService(serviceIntent);
+            }
         }
 
 
@@ -103,33 +108,6 @@ public class WelcomeActivity extends AppCompatActivity {
         startActivity(new Intent(getApplicationContext(), MainWizardActivity.class));
     }
 
-
-    public void startMic(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getApplicationContext())) {
-            //If the draw over permission is not available open the settings screen
-            //to grant the permission.
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, BrowserActivity.CODE_DRAW_OVER_OTHER_APP_PERMISSION);
-        } else {
-            Log.i(TAG, "start FloatingViewService");
-            startService(new Intent(WelcomeActivity.this, FloatingViewService.class));
-            // go back to home
-            appExit();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-        if (requestCode == BrowserActivity.CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
-            if (Settings.canDrawOverlays(getApplicationContext())) {
-                // You have permission, exit
-                startMic();
-            }
-          }
-        }
-    }
 
     public void appExit() {
         Log.d(TAG, "onExit Called");

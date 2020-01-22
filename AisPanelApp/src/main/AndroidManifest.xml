@@ -101,11 +101,6 @@
             android:exported="true"
             android:stopWithTask="false">
         </service>
-        <service
-            android:name="pl.sviete.dom.FloatingViewService"
-            android:enabled="true"
-            android:exported="false">
-        </service>
         <service android:name="ai.picovoice.hotword.PorcupineService" android:enabled="true" android:exported="true"></service>
         <activity
             android:name="pl.sviete.dom.gesture.GestureActivity"
