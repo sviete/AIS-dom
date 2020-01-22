@@ -24,10 +24,13 @@ import ai.picovoice.porcupinemanager.PorcupineManager;
 import ai.picovoice.porcupinemanager.PorcupineManagerException;
 
 import pl.sviete.dom.AisCoreUtils;
+import pl.sviete.dom.AisPanelService;
 import pl.sviete.dom.AisRecognitionListener;
 import pl.sviete.dom.BrowserActivityNative;
 import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
+
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
 
 public class PorcupineService extends Service {
 
@@ -40,7 +43,7 @@ public class PorcupineService extends Service {
             NotificationChannel notificationChannel = new NotificationChannel(
                     AisCoreUtils.AIS_DOM_CHANNEL_ID,
                     "AI-Speaker Mic",
-                    NotificationManager.IMPORTANCE_HIGH);
+                    NotificationManager.IMPORTANCE_LOW);
 
             NotificationManager manager = getSystemService(NotificationManager.class);
             assert manager != null;
@@ -62,14 +65,29 @@ public class PorcupineService extends Service {
         //
         Config config = new Config(this.getApplicationContext());
         String hotword = config.getSelectedHotWord();
+        hotword = hotword.substring(0, 1).toUpperCase() + hotword.substring(1);
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
-                .setContentTitle("AI-Speaker")
-                .setContentText(getString(R.string.hotword_selected_word_info) + hotword.substring(0, 1).toUpperCase() + hotword.substring(1))
+                .setContentTitle("AI-Speaker (" + hotword + ")")
+                .setContentText(getString(R.string.hotword_selected_word_info) + hotword)
                 .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
                 .build();
 
         startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, notification);
+        //
+        if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {
+            //
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+            // try to stop and start ExoPlayer
+            Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
+            pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "pause");
+            bm.sendBroadcast(pauseIntent);
+
+            // try to stop and start ExoPlayer
+            Intent palyIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
+            palyIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "play");
+            bm.sendBroadcast(palyIntent);
+        }
 
         // Brodcast
         IntentFilter filter = new IntentFilter();

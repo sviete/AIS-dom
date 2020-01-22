@@ -16,7 +16,6 @@ public class AisCoreUtils {
     public static String AIS_GATE_USER = "";
     public static String AIS_GATE_DESC = "";
     public static String AIS_DEVICE_TYPE = "MOB";
-    public static int AIS_LAST_KEY_CODE = 0;
 
     // STT
     public static final String BROADCAST_ON_END_SPEECH_TO_TEXT = "BROADCAST_ON_END_SPEECH_TO_TEXT";
@@ -44,6 +43,10 @@ public class AisCoreUtils {
 
     // HOT WORD
     public static PorcupineManager mPorcupineManager = null;
+
+    // EXO PLAYER
+    public static final String BROADCAST_EXO_PLAYER_COMMAND = "BROADCAST_EXO_PLAYER_COMMAND";
+    public static final String BROADCAST_EXO_PLAYER_COMMAND_TEXT = "BROADCAST_EXO_PLAYER_COMMAND_TEXT";
 
 
 
@@ -95,7 +98,7 @@ public class AisCoreUtils {
 
     // Notification
     public static int AIS_DOM_NOTIFICATION_ID = 1234;
-    public static final String AIS_DOM_CHANNEL_ID = "AisDomServiceChannel";
+    public static final String AIS_DOM_CHANNEL_ID = "AisServiceChannelId";
     /*
      * Check if we are on gate or phone
      *

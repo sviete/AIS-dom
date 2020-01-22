@@ -91,18 +91,18 @@
     </string-array>
 
 
-    <string name="app_name">AIS dom</string>
+    <string name="app_name">AI-Speaker</string>
 
     <string name="aispanel_service_notification_title">Powiedz.co</string>
     <string name="aispanel_service_notification_message">uruchomiony</string>
 
     <string name="share_file_chooser_title">Udostępnij dla</string>
     <string name="grant_permission">Udziel zgody</string>
-    <string name="permission_description">AIS dom:API potrzebuje następujących uprawnień:\n</string>
+    <string name="permission_description">AI-Speaker:API potrzebuje następujących uprawnień:\n</string>
 
     <string name="title_activity_settings">USTAWIENIA APLIKACJA</string>
     <string name="title_activity_other_apps">INTEGRACJE</string>
-    <string name="title_activity_browser">AIS dom</string>
+    <string name="title_activity_browser">AI-Speaker</string>
 
     <string name="title_ais_dom_wizard_section">KONFIGURATOR USTAWIEŃ</string>
     <string name="title_experimental_settings">EKSPERYMENTALNE</string>
@@ -164,7 +164,7 @@
     <string name="default_setting_android_ext_storage_write">false</string>
 
     <string name="crash_toast_text">Upss, mamy jakiś problem! Zbieramy informację żeby naprawić ten problem.</string>
-    <string name="crash_dialog_title">Aplikacja AIS-dom przestała działać</string>
+    <string name="crash_dialog_title">Aplikacja AI-Speaker przestała działać</string>
     <string name="crash_dialog_text">Wystąpił nieoczekiwany błąd wymuszający
         zatrzymanie aplikacji. Pomóż nam to naprawić, przesyłając nam dane o problemie,
         wszystko co musisz zrobić, to kliknąć OK.</string>
@@ -182,7 +182,7 @@
     <string name="action_settings">Ustawienia</string>
     <string name="speech_not_supported">Przepraszamy! Wygląda na to, że urządzenie nie wspiera głosowych komend.</string>
 
-    <string name="application_name">AIS-dom</string>
+    <string name="application_name">AI-Speaker</string>
     <string name="shared_user_label">Użytkownik</string>
     <string name="new_session">Nowa sesja</string>
     <string name="new_session_failsafe">Failsafe</string>
@@ -197,7 +197,7 @@
     <string name="bootstrap_error_body">Nie można zainstalować pakietów startowych.\n\nSpawdz połączenie z Internetem.</string>
     <string name="bootstrap_error_abort">Anuluj</string>
     <string name="bootstrap_error_try_again">Ponów</string>
-    <string name="bootstrap_error_not_primary_user_message">AIS-dom może być zainstalowany tylko na głównym koncie.</string>
+    <string name="bootstrap_error_not_primary_user_message">AI-Speaker może być zainstalowany tylko na głównym koncie.</string>
 
     <string name="max_terminals_reached_title">Osiągnięto maksymalną ilość sesji</string>
     <string name="max_terminals_reached_message">Zamknij istniejącą sesję przed utworzeniem nowej.</string>
@@ -272,8 +272,8 @@
     <string name="list_connection_history">Historia połączeń z bramkami</string>
     <string name="list_connection_history_click_to_delete">Naciśnij by usunąć</string>
 
-    <string name="accessibility_service_label">Dostęp do klawiatury dla AIS dom</string>
-    <string name="accessibility_service_description">Jeśli chcesz obsługiwać system AIS dom za pomocą pilota zdalnego sterowania to włącz ten dostęp.</string>
+    <string name="accessibility_service_label">Dostęp do klawiatury dla AI-Speaker</string>
+    <string name="accessibility_service_description">Jeśli chcesz obsługiwać system AI-Speaker za pomocą pilota zdalnego sterowania to włącz ten dostęp.</string>
 
     <string name="ais_dom_app_name_server">Serwer AIS</string>
     <string name="ais_dom_app_name_client">Klient AIS</string>
