@@ -99,13 +99,8 @@ public class AisRecognitionListener implements RecognitionListener {
         Log.d(TAG, "AisRecognitionListener onResults");
         ArrayList<String> matches = results
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        Intent intent = new Intent(AisCoreUtils.BROADCAST_EVENT_ON_SPEECH_COMMAND);
-        intent.putExtra(AisCoreUtils.BROADCAST_EVENT_ON_SPEECH_COMMAND_TEXT, matches.get(0));
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
-        bm.sendBroadcast(intent);
-
         // on phone
-        DomWebInterface.publishMessage( matches.get(0), "speech_command");
+        DomWebInterface.publishMessage( matches.get(0), "speech_command", context);
     }
 
     @Override

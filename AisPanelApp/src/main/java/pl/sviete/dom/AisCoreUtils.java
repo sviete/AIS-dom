@@ -22,17 +22,13 @@ public class AisCoreUtils {
     public static final String BROADCAST_ON_START_SPEECH_TO_TEXT = "BROADCAST_ON_START_SPEECH_TO_TEXT";
     public static final String  BROADCAST_EVENT_ON_SPEECH_PARTIAL_RESULTS = "BROADCAST_EVENT_ON_SPEECH_PARTIAL_RESULTS";
     public static final String  BROADCAST_EVENT_ON_SPEECH_PARTIAL_RESULTS_TEXT = "BROADCAST_EVENT_ON_SPEECH_PARTIAL_RESULTS_TEXT";
-    public static final String BROADCAST_EVENT_ON_SPEECH_COMMAND = "BROADCAST_EVENT_ON_SPEECH_COMMAND";
-    public static final String BROADCAST_EVENT_ON_SPEECH_COMMAND_TEXT = "BROADCAST_EVENT_ON_SPEECH_COMMAND_TEXT";
 
     // TTS
+    public static final String BROADCAST_ACTION_SAY_IT = "BROADCAST_ACTION_SAY_IT";
+    public static final String BROADCAST_ACTION_SAY_IT_TEXT = "BROADCAST_ACTION_SAY_IT_TEXT";
     public static final String BROADCAST_ON_END_TEXT_TO_SPEECH = "BROADCAST_ON_END_TEXT_TO_SPEECH";
     public static final String BROADCAST_ON_START_TEXT_TO_SPEECH = "BROADCAST_ON_START_TEXT_TO_SPEECH";
     public static final String TTS_TEXT = "TTS_TEXT";
-    public static final String TTS_TEXT_TYPE = "TTS_TEXT_TYPE";
-    public static final String TTS_TEXT_TYPE_IN = "TTS_TEXT_TYPE_IN";
-    public static final String TTS_TEXT_TYPE_OUT = "TTS_TEXT_TYPE_OUT";
-    public static final String TTS_TEXT_TYPE_ERROR = "TTS_TEXT_TYPE_ERROR";
 
     // USB
     private static String TAG = "AisCoreUtils";

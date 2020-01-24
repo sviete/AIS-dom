@@ -101,7 +101,7 @@ public class Config {
     public boolean canUseLocalConnection(String localIP, String gateId) {
         // check local IP
         String url = "http://" + localIP + ":8122";
-        String severAnswer = getResponseFromServer(url, 4000);
+        String severAnswer = getResponseFromServer(url, 3000);
         if (!severAnswer.equals("")) {
             try {
                 JSONObject jsonAnswer = new JSONObject(severAnswer);
@@ -188,7 +188,7 @@ public class Config {
             //process message with url to go
             if (!message.equals("")){
                 // call the browser url change
-                Log.w(TAG, "browser");
+                Log.w(TAG, "message " + message);
                 Intent intent = new Intent(BrowserActivity.BROADCAST_ACTION_LOAD_URL);
                 intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, message);
                 LocalBroadcastManager bm = LocalBroadcastManager.getInstance(myContext);
@@ -226,8 +226,13 @@ public class Config {
             checkConnectionUrlJob checkConnectionUrlJob = new checkConnectionUrlJob();
             checkConnectionUrlJob.execute(gateID, localIpHist, userHist, descHist);
         } else {
-            // the url is set by hand, save it for interface communication with gate
-            AisCoreUtils.setAisDomUrl(url);
+            // save it for interface communication with gate
+            if (url.startsWith("dom-")) {
+                AisCoreUtils.setAisDomUrl("https://" + url + ".paczka.pro");
+            } else {
+                // the url is set by hand,
+                AisCoreUtils.setAisDomUrl(url);
+            }
         }
         return url;
     }

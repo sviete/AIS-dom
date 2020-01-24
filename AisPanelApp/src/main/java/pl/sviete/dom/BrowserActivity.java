@@ -56,6 +56,7 @@ import ai.picovoice.hotword.PorcupineService;
 import ai.picovoice.porcupinemanager.PorcupineManagerException;
 import pl.sviete.dom.views.RecognitionProgressView;
 
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTION_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 
@@ -357,7 +358,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             mBrowserTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "444");
             Intent intent = new Intent(BROADCAST_ON_START_TEXT_TO_SPEECH);
             intent.putExtra(AisCoreUtils.TTS_TEXT, text);
-            intent.putExtra(AisCoreUtils.TTS_TEXT_TYPE, AisCoreUtils.TTS_TEXT_TYPE_OUT);
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
             bm.sendBroadcast(intent);
         }
@@ -475,7 +475,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             if (prediction.score > 1.0) {
                 gesture_sentence = prediction.name;
                 message = "Gest: " + gesture_sentence;
-                DomWebInterface.publishMessage(gesture_sentence, "speech_command");
+                DomWebInterface.publishMessage(gesture_sentence, "speech_command", getApplicationContext());
             } else{
                 // and action
                 NumberFormat formatter = new DecimalFormat("#0.00");
@@ -596,6 +596,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         filter.addAction(BROADCAST_ACTION_JS_EXEC);
         filter.addAction(BROADCAST_ACTION_CLEAR_BROWSER_CACHE);
         filter.addAction(BROADCAST_ACTION_RELOAD_PAGE);
+        filter.addAction(BROADCAST_ACTION_SAY_IT);
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
         filter.addAction(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH);
@@ -713,8 +714,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH)) {
                 Log.d(TAG, AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH + " onStartTextToSpeech.");
                 final String text = intent.getStringExtra(AisCoreUtils.TTS_TEXT);
-                final String type = intent.getStringExtra(AisCoreUtils.TTS_TEXT_TYPE);
-                onStartTextToSpeech(text, type);
+                onStartTextToSpeech(text);
             }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH)) {
                 Log.d(TAG, AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH + " btn speak set checked false.");
                 onEndTextToSpeech();
@@ -724,13 +724,17 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     btnSpeak.setChecked(true);
                 }
                 onStartSpeechToText();
+            } else if (intent.getAction().equals(BROADCAST_ACTION_SAY_IT)){
+                final String text = intent.getStringExtra(AisCoreUtils.BROADCAST_ACTION_SAY_IT_TEXT);
+                speakOutFromBrowser(text);
             }
             }
         };
 
-    private void onStartTextToSpeech(String text, String type) {
+    private void onStartTextToSpeech(String text) {
         Log.d(TAG, "onStartTextToSpeech -> transform");
-        recognitionProgressView.transform();
+        // TODO
+        // recognitionProgressView.transform();
     }
 
     private void onEndTextToSpeech() {
