@@ -56,7 +56,7 @@ import ai.picovoice.hotword.PorcupineService;
 import ai.picovoice.porcupinemanager.PorcupineManagerException;
 import pl.sviete.dom.views.RecognitionProgressView;
 
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTION_SAY_IT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 
@@ -596,7 +596,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         filter.addAction(BROADCAST_ACTION_JS_EXEC);
         filter.addAction(BROADCAST_ACTION_CLEAR_BROWSER_CACHE);
         filter.addAction(BROADCAST_ACTION_RELOAD_PAGE);
-        filter.addAction(BROADCAST_ACTION_SAY_IT);
+        filter.addAction(BROADCAST_ACTIVITY_SAY_IT);
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
         filter.addAction(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH);
@@ -724,8 +724,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     btnSpeak.setChecked(true);
                 }
                 onStartSpeechToText();
-            } else if (intent.getAction().equals(BROADCAST_ACTION_SAY_IT)){
-                final String text = intent.getStringExtra(AisCoreUtils.BROADCAST_ACTION_SAY_IT_TEXT);
+            } else if (intent.getAction().equals(BROADCAST_ACTIVITY_SAY_IT)){
+                final String text = intent.getStringExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT);
                 speakOutFromBrowser(text);
             }
             }

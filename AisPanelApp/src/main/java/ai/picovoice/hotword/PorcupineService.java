@@ -30,8 +30,6 @@ import pl.sviete.dom.BrowserActivityNative;
 import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
 
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
-
 public class PorcupineService extends Service {
 
 
@@ -78,15 +76,16 @@ public class PorcupineService extends Service {
         if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {
             //
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-            // try to stop and start ExoPlayer
-            Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
-            pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "pause");
-            bm.sendBroadcast(pauseIntent);
 
             // try to stop and start ExoPlayer
             Intent palyIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
             palyIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "play");
             bm.sendBroadcast(palyIntent);
+
+            // try to stop and stop ExoPlayer
+            Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
+            pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "pause");
+            bm.sendBroadcast(pauseIntent);
         }
 
         // Brodcast

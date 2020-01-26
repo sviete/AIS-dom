@@ -24,8 +24,9 @@ public class AisCoreUtils {
     public static final String  BROADCAST_EVENT_ON_SPEECH_PARTIAL_RESULTS_TEXT = "BROADCAST_EVENT_ON_SPEECH_PARTIAL_RESULTS_TEXT";
 
     // TTS
-    public static final String BROADCAST_ACTION_SAY_IT = "BROADCAST_ACTION_SAY_IT";
-    public static final String BROADCAST_ACTION_SAY_IT_TEXT = "BROADCAST_ACTION_SAY_IT_TEXT";
+    public static final String BROADCAST_ACTIVITY_SAY_IT = "BROADCAST_ACTIVITY_SAY_IT";
+    public static final String BROADCAST_SERVICE_SAY_IT = "BROADCAST_SERVICE_SAY_IT";
+    public static final String BROADCAST_SAY_IT_TEXT = "BROADCAST_SAY_IT_TEXT";
     public static final String BROADCAST_ON_END_TEXT_TO_SPEECH = "BROADCAST_ON_END_TEXT_TO_SPEECH";
     public static final String BROADCAST_ON_START_TEXT_TO_SPEECH = "BROADCAST_ON_START_TEXT_TO_SPEECH";
     public static final String TTS_TEXT = "TTS_TEXT";

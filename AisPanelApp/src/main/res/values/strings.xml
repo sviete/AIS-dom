@@ -325,5 +325,7 @@
     <string name="long_click_to_execute_connection">Hold longer to run the connection check.</string>
     <string name="long_click_to_enable_hotword">Hold longer to change the key word detection by microphone.</string>
     <string name="hotword_selected_word_info">Listening the hotword: </string>
+    <string name="playback_channel_name">AIS cast</string>
+    <string name="playback_channel_descr">AIS cast channel</string>
 
 </resources>

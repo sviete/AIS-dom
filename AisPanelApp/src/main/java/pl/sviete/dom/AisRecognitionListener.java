@@ -82,8 +82,8 @@ public class AisRecognitionListener implements RecognitionListener {
         String errorMessage = getErrorText(errorCode);
         Log.d(TAG, "AisRecognitionListener onError, FAILED " + errorMessage);
         if (!errorMessage.equals("")) {
-            Intent intent = new Intent(AisPanelService.BROADCAST_READ_THIS_TXT_NOW);
-            intent.putExtra(AisPanelService.READ_THIS_TXT_MESSAGE_VALUE, errorMessage);
+            Intent intent = new Intent(AisCoreUtils.BROADCAST_SERVICE_SAY_IT);
+            intent.putExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT, errorMessage);
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
             bm.sendBroadcast(intent);
             // end of speech to text
