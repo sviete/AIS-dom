@@ -142,8 +142,8 @@
 
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>
-    <string name="title_setting_app_discovery">Wykrywanie odtwarzacza</string>
-    <string name="summary_setting_app_discovery">pozwól na wykrywanie urządzenia jako odtwarzacza w sieci</string>
+    <string name="title_setting_app_discovery">Odtwarzacz audio</string>
+    <string name="summary_setting_app_discovery">włącz usługę odtwarzacza audio\npozwala na przesyłanie audio z bramki do tego urządzenia oraz zdalne sterowanie odtwarzaczem na bramce</string>
     <string name="default_setting_app_discovery">false</string>
 
 
@@ -324,7 +324,7 @@
     <string name="long_click_to_execute_gesture">Przytrzymaj dłużej, aby przełączyć sterowanie gestami.</string>
     <string name="long_click_to_execute_connection">Przytrzymaj dłużej, aby uruchomić sprawdzenie połączenia.</string>
     <string name="long_click_to_enable_hotword">Przytrzymaj dłużej, aby przełączyć nasłuchiwanie słowa uruchamiającego komendę.</string>
-    <string name="hotword_selected_word_info">Nasłuchiwanie słowa: </string>
+    <string name="hotword_selected_word_info">Nasłuchuje: </string>
     <string name="playback_channel_name">AIS cast</string>
     <string name="playback_channel_descr">AIS cast channel</string>
 
