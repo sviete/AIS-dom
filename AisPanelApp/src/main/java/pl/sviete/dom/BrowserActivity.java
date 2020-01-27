@@ -293,7 +293,11 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         decorView.setSystemUiVisibility(uiOptions);
         // get app url with discovery
         appLaunchUrl = mConfig.getAppLaunchUrl(true);
-        loadUrl(appLaunchUrl, true);
+        if (appLaunchUrl.startsWith("dom-")) {
+            loadUrl(appLaunchUrl, true);
+        } else {
+            loadUrl(appLaunchUrl, false);
+        }
 
         // set the remote control mode on start
         gestureOverlayView = findViewById(R.id.gesturesOverlay);
