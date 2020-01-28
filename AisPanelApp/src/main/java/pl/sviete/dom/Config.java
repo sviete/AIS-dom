@@ -256,6 +256,13 @@ public class Config {
         return getBoolPref(R.string.key_setting_app_discovery, R.string.default_setting_app_discovery);
     }
 
+    //
+    public void setAppDiscoveryMode(Boolean mode) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putBoolean(myContext.getString(R.string.key_setting_app_discovery), mode);
+        ed.apply();
+    }
+
 
     public Boolean getAppWizardDone() {
         return getBoolPref(R.string.default_setting_app_wizard_done, R.string.default_setting_app_wizard_done);

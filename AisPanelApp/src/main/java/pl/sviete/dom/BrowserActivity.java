@@ -201,8 +201,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }
         });
 
-
-
         // BTN MIC
         btnSpeak.setOnLongClickListener(v -> {
             if (isServiceRunning(this.getApplicationContext(), PorcupineService.class)) {
@@ -274,12 +272,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             mSwitchIconModeGesture.setIconEnabled(false);
         }
 
-        // Hot Word - set on start
-        if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), PorcupineService.class)){
-            btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
-        } else {
-            btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
-        }
+
         try {
             copyResourceFile(R.raw.params, "porcupine_params.pv");
             copyResourceFile(R.raw.alexa, "alexa.ppn");
@@ -335,7 +328,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     @Override
     public void onInit(int status) {
         Log.v(TAG, "BrowserActivity onInit");
-            if (status == TextToSpeech.SUCCESS) {
+        if (status == TextToSpeech.SUCCESS) {
                 int result = mBrowserTts.setLanguage(new Locale("pl_PL"));
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e(TAG, "Language is not available.");
@@ -367,7 +360,23 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             } else {
                 Log.d(TAG, "TTS from broser is not possible");
             }
+
+        Intent intent = getIntent();
+        if (intent != null) {
+              if (intent.getAction() != null) {
+                  if (intent.getAction().equals("exit_mic_service")) {
+                        stopHotWordService();
+                    }
+                }
         }
+
+        // Hot Word - set on start
+        if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), PorcupineService.class)){
+            btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
+        } else {
+            btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
+        }
+    }
 
 
     public static void copyFile(InputStream in, OutputStream out) throws IOException {
@@ -416,6 +425,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     protected void onResume() {
         super.onResume();
         reloadGestureLib();
+
 
 //        if (AisCoreUtils.mSpeech != null) {
 //            try {

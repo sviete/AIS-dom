@@ -320,6 +320,7 @@ public class BrowserActivityNative extends BrowserActivity {
         super.onCreate(savedInstanceState);
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.i(TAG, "onRequestPermissionsResult");
@@ -407,8 +408,6 @@ public class BrowserActivityNative extends BrowserActivity {
         } else {
             mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_local_connection_control_bg);
         }
-
-
     }
 
 

@@ -64,11 +64,26 @@ public class PorcupineService extends Service {
         Config config = new Config(this.getApplicationContext());
         String hotword = config.getSelectedHotWord();
         hotword = hotword.substring(0, 1).toUpperCase() + hotword.substring(1);
+        int sensitivity = config.getSelectedHotWordSensitivity();
+
+
+        // Exit action
+        Intent exitIntent = new Intent(this, BrowserActivityNative.class);
+        exitIntent.setAction("exit_mic_service");
+        exitIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent exitPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                exitIntent,
+                0);
+        NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "Exit", exitPendingIntent).build();
+
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
                 .setContentTitle("AI-Speaker (" + hotword + ")")
-                .setContentText(getString(R.string.hotword_selected_word_info) + hotword)
+                .setContentText(getString(R.string.hotword_selected_word_info) + hotword + " " + sensitivity)
                 .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
+                .addAction(exitAction)
                 .build();
 
         startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, notification);

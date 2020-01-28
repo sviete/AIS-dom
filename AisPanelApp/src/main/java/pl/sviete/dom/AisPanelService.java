@@ -267,7 +267,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 new Intent(this, BrowserActivityNative.class),
                 0);
 
-        Notification notification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)
+        Notification serviceNotification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)
                 .setContentTitle("Player")
                 .setContentText("AIS dom")
                 .setSmallIcon(R.drawable.ic_ais_logo)
@@ -275,7 +275,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 .setSound(null)
                 .build();
 
-        startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, notification);
+        startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, serviceNotification);
 
         // play join intro
         playAudio("asset:///Appear.mp3", false, 0);
@@ -439,7 +439,13 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
 
         if (mExoPlayer != null) {
+            mExoPlayer.stop();
             playerNotificationManager.setPlayer(null);
+            try {
+                playerNotificationManager.notify();
+            } catch (Exception e){
+                Log.e(TAG, e.toString());
+            }
             mExoPlayer.release();
             mExoPlayer = null;
         }
@@ -1015,8 +1021,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         @Nullable
         @Override
         public PendingIntent createCurrentContentIntent(Player player) {
-            int window = player.getCurrentWindowIndex();
-            return null;
+            //  open AIS app by clicking on notification
+            Intent intent = new Intent(AisPanelService.this, BrowserActivityNative.class);
+            PendingIntent contentPendingIntent = PendingIntent.getActivity(
+                    AisPanelService.this,
+                    0,
+                    intent,
+                    0);
+            return contentPendingIntent;
         }
 
         @Nullable
@@ -1026,7 +1038,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 Config config = new Config(getApplicationContext());
                 String hotword = config.getSelectedHotWord();
                 int sensitivity = config.getSelectedHotWordSensitivity();
-                hotword = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " [" + sensitivity + "]";
+                hotword = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " " + sensitivity;
                 return hotword;
             }
             return null;
@@ -1038,6 +1050,22 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         @Override
         public Map<String, NotificationCompat.Action> createCustomActions(Context context, int instanceId) {
             Map<String, NotificationCompat.Action> actionMap = new HashMap<>();
+            // STOP
+            Intent intentAisStop = new Intent("ais_stop")
+                    .setPackage(AisPanelService.this.getPackageName());
+            PendingIntent pendingIntentAisStop = PendingIntent.getBroadcast(
+                    AisPanelService.this,
+                    instanceId,
+                    intentAisStop,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+
+            NotificationCompat.Action actionStop = new NotificationCompat.Action(
+                    R.drawable.ic_app_exit,
+                    "ais_stop",
+                    pendingIntentAisStop
+            );
+            actionMap.put("ais_stop",actionStop);
+
             // PREV
             Intent intentAisPrev = new Intent("ais_prev")
                     .setPackage(AisPanelService.this.getPackageName());
@@ -1133,6 +1161,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         @Override
         public List<String> getCustomActions(Player player) {
             List<String> customActions = new ArrayList<>();
+            customActions.add("ais_stop");
             customActions.add("ais_prev");
             if(player.getPlayWhenReady()) {
                 customActions.add("ais_pause");
@@ -1172,11 +1201,36 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     bm.sendBroadcast(micIntent);
                     AisCoreUtils.mSpeechIsRecording = true;
                 }
+            } else if (action.equals("ais_stop")) {
+                //
+                mConfig.setAppDiscoveryMode(false);
+                // stop service
+                if(AisCoreUtils.isServiceRunning(getApplicationContext(), PorcupineService.class)){
+                    Intent serviceIntent = new Intent(getApplicationContext(), PorcupineService.class);
+                    stopService(serviceIntent);
+
+                    Intent startAisApp = new Intent(getApplicationContext(), BrowserActivityNative.class);
+                    startAisApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(startAisApp);
+                }
+                Intent stopIntent = new Intent(getApplicationContext(), AisPanelService.class);
+                getApplicationContext().stopService(stopIntent);
+
             }
         }
     }
 
     private class customNotificationListener implements PlayerNotificationManager.NotificationListener{
+//        @Override
+//        public void onNotificationPosted(int notificationId, Notification notification, boolean ongoing) {
+//            // call service.startForeground(notificationId, notification) if required
+//        }
+//        @Override
+//        public void onNotificationCancelled(int notificationId, boolean dismissedByUser) {
+//            if (dismissedByUser) {
+//                // Do what the app wants to do when dismissed by the user.
+//            }
+//        }
 
     }
 
