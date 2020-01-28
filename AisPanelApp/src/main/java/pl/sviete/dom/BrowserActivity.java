@@ -59,6 +59,7 @@ import pl.sviete.dom.views.RecognitionProgressView;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
+import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 
 
 abstract class BrowserActivity extends AppCompatActivity  implements GestureOverlayView.OnGesturePerformedListener, TextToSpeech.OnInitListener{
@@ -89,10 +90,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
     //
     private SwitchIconView mSwitchIconModeGesture;
-    private SwitchIconView mSwitchIconHotWord;
     private View mButtonModeGesture;
     private View mButtonModeConnection;
-    private View mButtonHotWord;
 
     // browser speech
     private TextToSpeech mBrowserTts;
@@ -150,41 +149,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }
         });
 
-        // Hot Word
-        // button mic
-        mSwitchIconHotWord = findViewById(R.id.switchControlHotWord);
-        mButtonHotWord = findViewById(R.id.btnControlHotWord);
-        mButtonHotWord.setOnLongClickListener(v -> {
-
-            if (mSwitchIconHotWord.isIconEnabled()) {
-                // hot word off
-                mSwitchIconHotWord.setIconEnabled(false);
-                speakOutFromBrowser("Nasłuchiwanie wyłączone.");
-                stopHotWordService();
-
-            } else {
-                int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
-                if (permissionMic != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions
-                            (BrowserActivity.this,
-                                    new String[]{Manifest.permission.RECORD_AUDIO},
-                                    REQUEST_HOT_WORD_MIC_PERMISSION);
-                } else {
-                    startHotWordService();
-                }
-                // hot word on
-                mSwitchIconHotWord.setIconEnabled(true);
-                speakOutFromBrowser("Nasłuchiwanie włączone.");
-
-
-            }
-
-            return true;
-        });
-
-        mButtonHotWord.setOnClickListener(v -> Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_enable_hotword), Toast.LENGTH_SHORT).show());
-
-
 
         // buton check connection
         mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
@@ -237,13 +201,15 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }
         });
 
+
+
         // BTN MIC
         btnSpeak.setOnLongClickListener(v -> {
-            if (mSwitchIconHotWord.isIconEnabled()) {
+            if (isServiceRunning(this.getApplicationContext(), PorcupineService.class)) {
                 // hot word off
-                mSwitchIconHotWord.setIconEnabled(false);
                 speakOutFromBrowser("Nasłuchiwanie wyłączone.");
                 stopHotWordService();
+                btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
 
             } else {
                 int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
@@ -254,10 +220,9 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                                     REQUEST_HOT_WORD_MIC_PERMISSION);
                 } else {
                     startHotWordService();
+                    speakOutFromBrowser("Nasłuchiwanie włączone.");
+                    btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
                 }
-                // hot word on
-                mSwitchIconHotWord.setIconEnabled(true);
-                speakOutFromBrowser("Nasłuchiwanie włączone.");
             }
 
             return true;
@@ -311,9 +276,9 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
         // Hot Word - set on start
         if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), PorcupineService.class)){
-            mSwitchIconHotWord.setIconEnabled(true);
+            btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
         } else {
-            mSwitchIconHotWord.setIconEnabled(false);
+            btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
         }
         try {
             copyResourceFile(R.raw.params, "porcupine_params.pv");

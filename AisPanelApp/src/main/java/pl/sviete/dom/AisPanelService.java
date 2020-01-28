@@ -1025,8 +1025,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             if (isServiceRunning(getApplicationContext(), PorcupineService.class)) {
                 Config config = new Config(getApplicationContext());
                 String hotword = config.getSelectedHotWord();
-                hotword = hotword.substring(0, 1).toUpperCase() + hotword.substring(1);
-                return getString(R.string.hotword_selected_word_info) + hotword;
+                int sensitivity = config.getSelectedHotWordSensitivity();
+                hotword = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " [" + sensitivity + "]";
+                return hotword;
             }
             return null;
         }

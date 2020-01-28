@@ -89,7 +89,7 @@
         <item>ON_DISPLAY</item>
     </string-array>
 
-    <string name="app_name">AI-Speaker</string>
+    <string name="app_name">AIS</string>
 
     <string name="aispanel_service_notification_title">AI-Speaker</string>
     <string name="aispanel_service_notification_message">runing</string>
