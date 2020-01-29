@@ -14,11 +14,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import androidx.core.content.ContextCompat;
-
-import ai.picovoice.hotword.PorcupineService;
-
-
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     static final String TAG = SettingsActivity.class.getName();

@@ -41,6 +41,10 @@ public class DomWebInterface {
                 if (result.has("say_it")){
                     try {
                     String text = result.getString("say_it");
+                    if (text.equals(AisCoreUtils.AIS_DOM_LAST_TTS)){
+                        return;
+                    }
+                    AisCoreUtils.AIS_DOM_LAST_TTS = text;
                     Intent intent = null;
                     if (context.getClass().toString().equals("pl.sviete.dom.AisPanel")) {
                         // service is runing

@@ -76,7 +76,7 @@ public class PorcupineService extends Service {
                 0,
                 exitIntent,
                 0);
-        NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "Exit", exitPendingIntent).build();
+        NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
 
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
                 .setContentTitle("AI-Speaker (" + hotword + ")")

@@ -285,9 +285,20 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         JSONObject json = new JSONObject();
         json = getDeviceInfo();
         DomWebInterface.publishJson(json, "player_auto_discovery", getApplicationContext());
+        Log.i(TAG, "player_auto_discovery");
+        // ask the gate about the current player status, after 7 seconds
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //ask about current media after 7sec...
+                Log.i(TAG, "player_status_ask");
+                DomWebInterface.publishMessage("ok", "player_status_ask", getApplicationContext());
+            }
+        }, 7000);
 
+        //
         return super.onStartCommand(intent, flags, startId);
-
     }
 
 
@@ -351,14 +362,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         mConfig = new Config(getApplicationContext());
         // get current url without discovery
         currentUrl = mConfig.getAppLaunchUrl(false);
+
         // prepare the lock types we may use
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        fullWakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
-                PowerManager.ON_AFTER_RELEASE |
-                PowerManager.ACQUIRE_CAUSES_WAKEUP, "dom:fullWakeLock");
         partialWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "dom:partialWakeLock");
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, "wifiLock");
+        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, "dom:wifiLock");
 
 
         IntentFilter filter = new IntentFilter();
@@ -458,6 +467,17 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 Log.e(TAG, e.toString());
             }
 
+        }
+
+        if (partialWakeLock != null) {
+            if (partialWakeLock.isHeld()) {
+                partialWakeLock.release();
+            }
+        }
+        if (wifiLock != null) {
+            if (wifiLock.isHeld()) {
+                wifiLock.release();
+            }
         }
 
         Log.i(TAG, "destroy");
@@ -997,15 +1017,25 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         @Override
         public Bitmap getCurrentLargeIcon(Player player,
                                           PlayerNotificationManager.BitmapCallback callback) {
-
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
+            // StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
             if (m_media_stream_image == null || !m_media_stream_image.equals(m_exo_player_last_media_stream_image)) {
                 try {
                     if (m_media_stream_image == null){
                         m_exo_player_large_icon = getSpeakerImage();
                     } else {
                         URL url = new URL(m_media_stream_image);
-                        m_exo_player_large_icon = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        Thread thread = new Thread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                try  {
+                                    m_exo_player_large_icon = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        thread.start();
                     }
                     m_exo_player_last_media_stream_image = m_media_stream_image;
                 } catch (Exception e) {
@@ -1015,6 +1045,8 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             if (m_exo_player_large_icon == null){
                 m_exo_player_large_icon = getSpeakerImage();
             }
+
+            Log.e(TAG, "getCurrentLargeIcon: " + m_media_stream_image);
             return m_exo_player_large_icon;
         }
 

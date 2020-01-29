@@ -96,6 +96,7 @@ public class AisCoreUtils {
     // Notification
     public static int AIS_DOM_NOTIFICATION_ID = 1234;
     public static final String AIS_DOM_CHANNEL_ID = "AisServiceChannelId";
+    public static String AIS_DOM_LAST_TTS = "";
     /*
      * Check if we are on gate or phone
      *
