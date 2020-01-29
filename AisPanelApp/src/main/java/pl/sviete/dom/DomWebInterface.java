@@ -40,22 +40,22 @@ public class DomWebInterface {
                 Log.e(TAG, context.getClass().toString());
                 if (result.has("say_it")){
                     try {
-                    String text = result.getString("say_it");
-                    if (text.equals(AisCoreUtils.AIS_DOM_LAST_TTS)){
-                        return;
-                    }
-                    AisCoreUtils.AIS_DOM_LAST_TTS = text;
-                    Intent intent = null;
-                    if (context.getClass().toString().equals("pl.sviete.dom.AisPanel")) {
-                        // service is runing
-                        intent = new Intent(BROADCAST_SERVICE_SAY_IT);
-                    } else {
-                        //  pl.sviete.dom.BrowserActivityNative
-                        intent = new Intent(BROADCAST_ACTIVITY_SAY_IT);
-                    }
-                    intent.putExtra(BROADCAST_SAY_IT_TEXT, text);
-                    LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
-                    bm.sendBroadcast(intent);
+                        String text = result.getString("say_it").trim();
+                        if (text.equals(AisCoreUtils.AIS_DOM_LAST_TTS)){
+                            return;
+                        }
+                        AisCoreUtils.AIS_DOM_LAST_TTS = text;
+                        Intent intent = null;
+                        if (context.getClass().toString().equals("pl.sviete.dom.AisPanel")) {
+                            // service is runing
+                            intent = new Intent(BROADCAST_SERVICE_SAY_IT);
+                        } else {
+                            //  pl.sviete.dom.BrowserActivityNative
+                            intent = new Intent(BROADCAST_ACTIVITY_SAY_IT);
+                        }
+                        intent.putExtra(BROADCAST_SAY_IT_TEXT, text);
+                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
+                        bm.sendBroadcast(intent);
                     } catch (JSONException ex) {
                         ex.printStackTrace();
                     }

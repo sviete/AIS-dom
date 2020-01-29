@@ -553,20 +553,33 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         mHttpServer.post("/command", (request, response) -> {
             Log.d(TAG, "command: " + request);
-            JSONObject body = ((JSONObjectBody)request.getBody()).get();
-            processCommand(body.toString());
             response.send("ok");
             response.end();
+            JSONObject body = ((JSONObjectBody)request.getBody()).get();
+            processCommand(body.toString());
         });
 
 
 
         mHttpServer.post("/text_to_speech", (request, response) -> {
             Log.d(TAG, "text_to_speech: " + request);
-            JSONObject body = ((JSONObjectBody)request.getBody()).get();
-            processTTS(body.toString());
             response.send("ok");
             response.end();
+            //
+            JSONObject body = ((JSONObjectBody)request.getBody()).get();
+            String text_to_say = "";
+            try {
+                text_to_say = body.getString("text").trim();
+                if (text_to_say.equals(AisCoreUtils.AIS_DOM_LAST_TTS)){
+                    return;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, e.toString());
+            }
+
+            text_to_say = body.toString();
+            AisCoreUtils.AIS_DOM_LAST_TTS = text_to_say;
+            processTTS(text_to_say);
         });
 
         // listen on port 8122
