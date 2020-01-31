@@ -2,6 +2,7 @@ package pl.sviete.dom;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -62,7 +63,7 @@ import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 
 
-abstract class BrowserActivity extends AppCompatActivity  implements GestureOverlayView.OnGesturePerformedListener, TextToSpeech.OnInitListener{
+abstract class BrowserActivity extends AppCompatActivity  implements GestureOverlayView.OnGesturePerformedListener, TextToSpeech.OnInitListener {
     public static final String BROADCAST_ACTION_LOAD_URL = "BROADCAST_ACTION_LOAD_URL";
     public static final String BROADCAST_ACTION_JS_EXEC = "BROADCAST_ACTION_JS_EXEC";
     public static final String BROADCAST_ACTION_CLEAR_BROWSER_CACHE = "BROADCAST_ACTION_CLEAR_BROWSER_CACHE";
@@ -95,6 +96,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
     // browser speech
     private TextToSpeech mBrowserTts;
+    private static boolean isBrowserActivityVisible;
+
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -305,6 +308,14 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     }
 
     void speakOutFromBrowser(String text) {
+        // dont say if the browser activity is not visible
+        if (!isBrowserActivityVisible){
+            return;
+        }
+        if (!AisCoreUtils.shouldIsayThis(text, "browser")){
+            return;
+        }
+        //
         if (mBrowserTts != null) {
             if (mConfig == null){
                 mConfig = new Config(this.getApplicationContext());
@@ -425,6 +436,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     protected void onResume() {
         super.onResume();
         reloadGestureLib();
+        isBrowserActivityVisible = true;
 
 
 //        if (AisCoreUtils.mSpeech != null) {
@@ -605,6 +617,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 e.printStackTrace();
             }
         }
+        isBrowserActivityVisible = false;
     }
 
 

@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.StrictMode;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
@@ -33,6 +34,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -126,10 +128,10 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private TrackSelection.Factory trackSelectionFactory;
     private SimpleExoPlayer mExoPlayer;
     private TrackSelector trackSelector;
-    private String m_media_title = null;
-    private String m_media_source = AisCoreUtils.mAudioSourceAndroid;
-    private String m_media_stream_image = null;
-    private String m_media_album_name = null;
+    public static String m_media_title = null;
+    public static String m_media_source = AisCoreUtils.mAudioSourceAndroid;
+    public static String m_media_stream_image = null;
+    public static String m_media_album_name = null;
     private String m_media_content_id = null;
     private Boolean m_media_controll_only = false;
     private PlayerNotificationManager playerNotificationManager;
@@ -198,10 +200,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             // inform client about status change
             jState = getCurrentMediaInfo();
             if (playbackState == ExoPlayer.STATE_ENDED){
-                try {
-                    jState.put("giveMeNextOne", true);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (!m_media_content_id.equals("")) {
+                    try {
+                        jState.put("giveMeNextOne", true);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             try {
@@ -267,12 +271,20 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 new Intent(this, BrowserActivityNative.class),
                 0);
 
+
+//        androidx.media.app.NotificationCompat.MediaStyle style = new androidx.media.app.NotificationCompat.MediaStyle();
+//        style.setShowActionsInCompactView(0,1);
+//        style.setMediaSession(mediaSession.getSessionToken());
+
         Notification serviceNotification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)
                 .setContentTitle("Player")
                 .setContentText("AIS dom")
                 .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
                 .setSound(null)
+//                .setShowWhen(true)
+//                .setWhen(0)
+//                .setStyle(style)
                 .build();
 
         startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, serviceNotification);
@@ -398,7 +410,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         loadControl = new DefaultLoadControl();
         mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, renderersFactory, trackSelector, loadControl);
         mExoPlayer.addListener(this);
-        playerNotificationManager = new PlayerNotificationManager(
+        playerNotificationManager = new customPlayerNotificationManager(
                 this,
                 AIS_DOM_CHANNEL_ID,
                 //R.string.playback_channel_name,
@@ -410,7 +422,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         );
 
         playerNotificationManager.setPlayer(mExoPlayer);
-        playerNotificationManager.setUseNavigationActions(true);
         // omit skip previous and next actions
         playerNotificationManager.setUseNavigationActions(false);
         // omit fast forward action by setting the increment to zero
@@ -424,7 +435,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         mediaSession = new MediaSessionCompat(this, MEDIA_SESSION_TAG);
         mediaSession.setActive(true);
         playerNotificationManager.setMediaSessionToken(mediaSession.getSessionToken());
-
+        playerNotificationManager.setUseNavigationActionsInCompactView(true);
 
         dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "AisDom");
         extractorsFactory = new DefaultExtractorsFactory();
@@ -568,17 +579,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             //
             JSONObject body = ((JSONObjectBody)request.getBody()).get();
             String text_to_say = "";
-            try {
-                text_to_say = body.getString("text").trim();
-                if (text_to_say.equals(AisCoreUtils.AIS_DOM_LAST_TTS)){
-                    return;
-                }
-            } catch (JSONException e) {
-                Log.e(TAG, e.toString());
-            }
-
             text_to_say = body.toString();
-            AisCoreUtils.AIS_DOM_LAST_TTS = text_to_say;
             processTTS(text_to_say);
         });
 
@@ -694,7 +695,19 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     private boolean processTTS(String text) {
         Log.d(TAG, "processTTS Called: " + text);
+
         String textForReading = "";
+        try {
+            JSONObject textJsonTest = new JSONObject(text);
+            textForReading = textJsonTest.getString("text");
+        } catch (JSONException ex) {
+            textForReading = text;
+        }
+        if(!AisCoreUtils.shouldIsayThis(textForReading, "service")){
+            return true;
+        }
+
+
         String voice = "";
         float pitch = 1;
         float rate = 1;
@@ -1198,6 +1211,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             );
             actionMap.put("ais_mic",actionMic);
 
+
             return actionMap;
 
 
@@ -1236,14 +1250,21 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 DomWebInterface.publishMessage("media_next_track", "media_player", getApplicationContext());
             } else if (action.equals("ais_mic")) {
                 if (AisCoreUtils.mSpeechIsRecording) {
-                    Intent micOffIntent = new Intent(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
-                    LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                    bm.sendBroadcast(micOffIntent);
+                    //Intent micOffIntent = new Intent(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
+                    //LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                    //bm.sendBroadcast(micOffIntent);
+                    AisCoreUtils.mSpeech.stopListening();
                     AisCoreUtils.mSpeechIsRecording = false;
                 } else {
-                    Intent micIntent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
-                    LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                    bm.sendBroadcast(micIntent);
+                    //Intent micIntent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
+                    //LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                    //bm.sendBroadcast(micIntent);
+                    if (AisCoreUtils.mSpeech == null) {
+                        AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
+                        AisRecognitionListener listener = new AisRecognitionListener(getApplicationContext(), AisCoreUtils.mSpeech);
+                        AisCoreUtils.mSpeech.setRecognitionListener(listener);
+                    }
+                    AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
                     AisCoreUtils.mSpeechIsRecording = true;
                 }
             } else if (action.equals("ais_stop")) {
@@ -1277,6 +1298,23 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 //            }
 //        }
 
+    }
+
+    private class customPlayerNotificationManager extends PlayerNotificationManager {
+
+
+        public customPlayerNotificationManager(AisPanelService aisPanelService, String aisDomChannelId, int aisDomNotificationId, DescriptionAdapter descriptionAdapter, customNotificationListener customNotificationListener, AisPanelService.customActionReceiver customActionReceiver) {
+            super(aisPanelService, aisDomChannelId, aisDomNotificationId, descriptionAdapter, customNotificationListener, customActionReceiver);
+        }
+
+        @Override
+        protected int[] getActionIndicesForCompactView(List<String> actionNames, Player player) {
+            int[] actionIndices = new int[2];
+            // play / pause and mic
+            actionIndices[0] = 2;
+            actionIndices[1] = 4;
+            return actionIndices;
+        }
     }
 
 }

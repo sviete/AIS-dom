@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.webkit.WebView;
 
 import ai.picovoice.porcupinemanager.PorcupineManager;
@@ -97,6 +98,7 @@ public class AisCoreUtils {
     public static int AIS_DOM_NOTIFICATION_ID = 1234;
     public static final String AIS_DOM_CHANNEL_ID = "AisServiceChannelId";
     public static String AIS_DOM_LAST_TTS = "";
+    public static String AIS_DOM_LAST_TTS_SOURCE = "";
     /*
      * Check if we are on gate or phone
      *
@@ -120,6 +122,26 @@ public class AisCoreUtils {
             }
         }
         return false;
+    }
+
+    // whether this text has already been spoken
+    public static boolean shouldIsayThis(String text, String source) {
+        // source can be browser or service
+        String text_to_say = text.trim();
+        // if the source is the same we should say (to allow Jolka repeating herself)
+        if (AIS_DOM_LAST_TTS_SOURCE.equals(source)){
+            AIS_DOM_LAST_TTS = text_to_say;
+            return true;
+        }
+        AIS_DOM_LAST_TTS_SOURCE = source;
+        // if the source is different but the text is the same we should not allow to say
+        // we should compare only 250 first characters
+        if (AIS_DOM_LAST_TTS.substring(0, Math.min(AIS_DOM_LAST_TTS.length(), 250)).equals(text_to_say.substring(0, Math.min(text_to_say.length(), 250)))){
+            return false;
+        }
+
+        AIS_DOM_LAST_TTS = text_to_say;
+        return true;
     }
 
 

@@ -295,11 +295,6 @@ public class BrowserActivityNative extends BrowserActivity {
 
             @JavascriptInterface
             public void sayInFrame(String text) {
-                String text_to_say = text.trim();
-                if (text_to_say.equals(AisCoreUtils.AIS_DOM_LAST_TTS)){
-                    return;
-                }
-                AisCoreUtils.AIS_DOM_LAST_TTS = text_to_say;
                 speakOutFromBrowser(text);
             }
         }

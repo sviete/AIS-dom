@@ -17,6 +17,7 @@ import com.koushikdutta.async.http.body.JSONObjectBody;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
+import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 
 public class DomWebInterface {
     final static String TAG = DomWebInterface.class.getName();
@@ -36,17 +37,12 @@ public class DomWebInterface {
                     e.printStackTrace();
                     return;
                 }
-                Log.e(TAG, result.toString());
-                Log.e(TAG, context.getClass().toString());
+                // say the response
                 if (result.has("say_it")){
                     try {
                         String text = result.getString("say_it").trim();
-                        if (text.equals(AisCoreUtils.AIS_DOM_LAST_TTS)){
-                            return;
-                        }
-                        AisCoreUtils.AIS_DOM_LAST_TTS = text;
                         Intent intent = null;
-                        if (context.getClass().toString().equals("pl.sviete.dom.AisPanel")) {
+                        if (isServiceRunning(context, AisPanelService.class)) {
                             // service is runing
                             intent = new Intent(BROADCAST_SERVICE_SAY_IT);
                         } else {
@@ -60,6 +56,19 @@ public class DomWebInterface {
                         ex.printStackTrace();
                     }
                 }
+                //
+                if (result.has("player_status")){
+                    try {
+                        JSONObject player_status = result.getJSONObject("player_status");
+                        AisPanelService.m_media_title = player_status.getString("media_title");
+                        AisPanelService.m_media_source = player_status.getString("media_source");
+                        AisPanelService.m_media_album_name = player_status.getString("media_album_name");
+                        AisPanelService.m_media_stream_image = player_status.getString("media_stream_image");
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
             }
         });
     }
