@@ -12,16 +12,13 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
-import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.os.StrictMode;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
@@ -31,8 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.support.v4.media.MediaDescriptionCompat;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import android.util.Log;
@@ -290,7 +285,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, serviceNotification);
 
         // play join intro
-        playAudio("asset:///Appear.mp3", false, 0);
+        playAudio("asset:///1-second-of-silence.mp3", false, 0);
 
 
         // player auto discovery on gate
@@ -927,13 +922,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
             int maxVolume =  audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             int volToSet = Math.max(Math.round((vol * maxVolume) / 100), 1);
-
-            int maxSystemVolume =  audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM);
-            int volSystemToSet = Math.max(Math.round(((volToSet * maxSystemVolume) / maxVolume)/2),1);
-
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volToSet, AudioManager.FLAG_SHOW_UI);
-            audioManager.setStreamVolume(AudioManager.STREAM_SYSTEM, volSystemToSet, AudioManager.FLAG_SHOW_UI);
-
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
@@ -1250,22 +1239,19 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 DomWebInterface.publishMessage("media_next_track", "media_player", getApplicationContext());
             } else if (action.equals("ais_mic")) {
                 if (AisCoreUtils.mSpeechIsRecording) {
-                    //Intent micOffIntent = new Intent(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
-                    //LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                    //bm.sendBroadcast(micOffIntent);
-                    AisCoreUtils.mSpeech.stopListening();
+                    Log.e(TAG, "mSpeechIsRecording = false");
                     AisCoreUtils.mSpeechIsRecording = false;
+                    AisCoreUtils.mSpeech.stopListening();
+
                 } else {
-                    //Intent micIntent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
-                    //LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                    //bm.sendBroadcast(micIntent);
+                    Log.e(TAG, "mSpeechIsRecording = true");
+                    AisCoreUtils.mSpeechIsRecording = true;
                     if (AisCoreUtils.mSpeech == null) {
                         AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
                         AisRecognitionListener listener = new AisRecognitionListener(getApplicationContext(), AisCoreUtils.mSpeech);
                         AisCoreUtils.mSpeech.setRecognitionListener(listener);
                     }
                     AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
-                    AisCoreUtils.mSpeechIsRecording = true;
                 }
             } else if (action.equals("ais_stop")) {
                 //
