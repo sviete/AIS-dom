@@ -46,6 +46,7 @@ public class AisRecognitionListener implements RecognitionListener {
     public void onReadyForSpeech(Bundle params) {
 
         //
+        Log.e(TAG, "onReadyForSpeech mSpeechIsRecording = true");
         AisCoreUtils.mSpeechIsRecording = true;
     }
 
@@ -74,13 +75,14 @@ public class AisRecognitionListener implements RecognitionListener {
         bm.sendBroadcast(intent);
 
         //
+        Log.e(TAG, "onEndOfSpeech mSpeechIsRecording = false");
         AisCoreUtils.mSpeechIsRecording = false;
     }
 
     @Override
     public void onError(int errorCode) {
         String errorMessage = getErrorText(errorCode);
-        Log.d(TAG, "AisRecognitionListener onError, FAILED " + errorMessage);
+        Log.d(TAG, "AisRecognitionListener onError, FAILED mSpeechIsRecording " + errorCode + " " + errorMessage);
         if (!errorMessage.equals("")) {
             Intent intent = new Intent(AisCoreUtils.BROADCAST_SERVICE_SAY_IT);
             intent.putExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT, errorMessage);
@@ -90,8 +92,11 @@ public class AisRecognitionListener implements RecognitionListener {
             onEndOfSpeech();
         }
 
-        //
-        AisCoreUtils.mSpeechIsRecording = false;
+        if (errorCode != SpeechRecognizer.ERROR_RECOGNIZER_BUSY && errorCode != SpeechRecognizer.ERROR_NO_MATCH) {
+            // ignore error 7 and 8
+            Log.e(TAG, "onError mSpeechIsRecording = false");
+            AisCoreUtils.mSpeechIsRecording = false;
+        }
     }
 
     @Override
@@ -142,9 +147,6 @@ public class AisRecognitionListener implements RecognitionListener {
                 break;
             case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                 // "stopListening called by other caller than startListening - ignoring"
-                //message = "Usługa rozpoznawania mowy jest zajęta.";
-                //speechRecognizer.stopListening();
-                //speechRecognizer.cancel();
                 break;
             case SpeechRecognizer.ERROR_SERVER:
                 message = "Problem z siecią, spróbuj ponownie.";
