@@ -30,28 +30,42 @@ public class DomWebInterface {
         post.addHeader("Content-Type", "application/json");
         post.setBody(body);
         AsyncHttpClient.getDefaultInstance().executeJSONObject(post, new AsyncHttpClient.JSONObjectCallback() {
+
+            void say(String text){
+                Intent intent = null;
+                if (isServiceRunning(context, AisPanelService.class)) {
+                    // service is runing
+                    intent = new Intent(BROADCAST_SERVICE_SAY_IT);
+                } else {
+                    //  pl.sviete.dom.BrowserActivityNative
+                    intent = new Intent(BROADCAST_ACTIVITY_SAY_IT);
+                }
+                intent.putExtra(BROADCAST_SAY_IT_TEXT, text);
+                LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
+                bm.sendBroadcast(intent);
+            }
+
             // Callback is invoked with any exceptions/errors, and the result, if available.
             @Override
             public void onCompleted(Exception e, AsyncHttpResponse response, JSONObject result) {
                 if (e != null) {
-                    e.printStackTrace();
+                    // try to discover gate or inform about connection problem
+                    Config config = new Config(context.getApplicationContext());
+                    String appLaunchUrl = config.getAppLaunchUrl(false);
+                    if (appLaunchUrl.startsWith("dom-")) {
+                        // sprawdzam połączenie
+                        say("Sprawdzam połączenie.");
+                        appLaunchUrl = config.getAppLaunchUrl(true);
+                    } else {
+                        say("Sprawdz połączenie z bramką.");
+                    }
                     return;
                 }
                 // say the response
                 if (result.has("say_it")){
                     try {
                         String text = result.getString("say_it").trim();
-                        Intent intent = null;
-                        if (isServiceRunning(context, AisPanelService.class)) {
-                            // service is runing
-                            intent = new Intent(BROADCAST_SERVICE_SAY_IT);
-                        } else {
-                            //  pl.sviete.dom.BrowserActivityNative
-                            intent = new Intent(BROADCAST_ACTIVITY_SAY_IT);
-                        }
-                        intent.putExtra(BROADCAST_SAY_IT_TEXT, text);
-                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
-                        bm.sendBroadcast(intent);
+                        say(text);
                     } catch (JSONException ex) {
                         ex.printStackTrace();
                     }
