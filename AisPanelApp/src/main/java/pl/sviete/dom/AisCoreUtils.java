@@ -37,10 +37,12 @@ public class AisCoreUtils {
     private static String AIS_DOM_URL = "http://127.0.0.1:8180";
     private static String AIS_DOM_CLOUD_WS_URL = "https://powiedz.co/ords/dom/dom/";
     private static String AIS_DOM_CLOUD_WS_URL_HTTP = "http://powiedz.co/ords/dom/dom/";
-    private static String mCurrentRemoteControllerMode = AisCoreUtils.mOnDisplay;
 
     // HOT WORD
     public static PorcupineManager mPorcupineManager = null;
+    public static final String BROADCAST_ON_END_HOT_WORD_LISTENING = "BROADCAST_ON_END_HOT_WORD_LISTENING";
+    public static final String BROADCAST_ON_START_HOT_WORD_LISTENING = "BROADCAST_ON_START_HOT_WORD_LISTENING";
+
 
     // EXO PLAYER
     public static final String BROADCAST_EXO_PLAYER_COMMAND = "BROADCAST_EXO_PLAYER_COMMAND";
@@ -61,14 +63,6 @@ public class AisCoreUtils {
 
     public static void setAisDomUrl(String url){
          AIS_DOM_URL = url;
-    }
-
-    public static String getRemoteControllerMode(){
-        return mCurrentRemoteControllerMode;
-    }
-
-    public static void setRemoteControllerMode(String mode){
-        mCurrentRemoteControllerMode = mode;
     }
 
     public static Activity mBrowserActivity = null;

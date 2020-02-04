@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
@@ -79,8 +80,8 @@ public class PorcupineService extends Service {
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
 
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
-                .setContentTitle("AI-Speaker (" + hotword + ")")
-                .setContentText(getString(R.string.hotword_selected_word_info) + hotword + " " + sensitivity)
+                .setContentTitle("AIS : " + hotword + " " + sensitivity)
+                .setContentText(getString(R.string.hotword_selected_word_info) + " ...")
                 .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
                 .addAction(exitAction)
@@ -106,16 +107,16 @@ public class PorcupineService extends Service {
         // Brodcast
         IntentFilter filter = new IntentFilter();
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
-        filter.addAction(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
+        filter.addAction(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
         bm.registerReceiver(mBroadcastReceiver, filter);
 
-        startHotWordListening(intent);
+        startHotWordListening();
 
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void startHotWordListening(Intent intent) {
+    private void startHotWordListening() {
         String modelFilePath = new File(this.getFilesDir(), "porcupine_params.pv").getAbsolutePath();
 
         Config config = new Config(this.getApplicationContext());
@@ -124,34 +125,32 @@ public class PorcupineService extends Service {
         String keywordFileName = hotword + ".ppn";
         String keywordFilePath = new File(this.getFilesDir(), keywordFileName).getAbsolutePath();
 
-
-        try {
-            if (AisCoreUtils.mPorcupineManager == null) {
-
+        if (AisCoreUtils.mPorcupineManager == null) {
+            try {
                 AisCoreUtils.mPorcupineManager = new PorcupineManager(
                         modelFilePath,
                         keywordFilePath,
-                (float) hotWordSensitivity / 100,
+                        (float) hotWordSensitivity / 100,
                         (keywordIndex) -> {
-                            numKeywordsDetected++;
-                            Log.i(TAG, "numKeywordsDetected " + numKeywordsDetected);
                             startTheSpeechToText();
                         });
+                AisCoreUtils.mPorcupineManager.start();
             }
-            AisCoreUtils.mPorcupineManager.start();
-        } catch (PorcupineManagerException e) {
-            Log.e("PORCUPINE_SERVICE", e.toString());
+
+            catch(PorcupineManagerException e){
+                Log.e("HWL PORCUPINE_SERVICE", e.toString());
+            }
         }
     }
 
     private void stopHotWordListening(){
         if (AisCoreUtils.mPorcupineManager != null) {
-            Log.i(TAG, "onDestroy PorcupineService");
+            Log.i(TAG, "HWL onDestroy PorcupineService");
             try {
                 AisCoreUtils.mPorcupineManager.stop();
                 AisCoreUtils.mPorcupineManager = null;
-            } catch (PorcupineManagerException e) {
-                Log.e("PORCUPINE_SERVICE", e.toString());
+            } catch (Exception e) {
+                Log.e("HWL PORCUPINE_SERVICE", e.toString());
             }
         }
     }
@@ -161,12 +160,31 @@ public class PorcupineService extends Service {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT)) {
-                startHotWordListening(intent);
+                Log.d(TAG, "HWL startHotWordListening");
+                startHotWordListening();
+                // check if started after 2 seconds
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "HWL check the status 1");
+                        stopHotWordListening();
+                    }
+                }, 3000);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //ask about current media after 7sec...
+                        Log.d(TAG, "HWL check the status 2");
+                        startHotWordListening();
+                    }
+                }, 5000);
             }
-            if (action.equals(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT)){
+            if (action.equals(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING)){
+                Log.d(TAG, "HWL stopHotWordListening");
                 stopHotWordListening();
                 if (!AisCoreUtils.mSpeechIsRecording) {
-                    stopHotWordListening();
+                    //stopHotWordListening();
                     if (AisCoreUtils.mSpeech == null) {
                         AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(context);
                         AisRecognitionListener listener = new AisRecognitionListener(context, AisCoreUtils.mSpeech);
@@ -193,7 +211,7 @@ public class PorcupineService extends Service {
 
     private void startTheSpeechToText(){
         // start mic
-        Intent SttIntent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
+        Intent SttIntent = new Intent(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
         bm.sendBroadcast(SttIntent);
     }

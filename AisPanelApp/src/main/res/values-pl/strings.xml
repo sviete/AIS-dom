@@ -28,18 +28,6 @@
         <item>2.0</item>
     </string-array>
 
-    <string-array name="remotecontroller_modes_names">
-        <item>"Sterowanie pilotem bez monitora"</item>
-        <item>"Sterowanie gestami"</item>
-        <item>"Sterowanie na monitorze"</item>
-    </string-array>
-    <string-array name="remotecontroller_modes_values">
-        <item>OFF_DISPLAY</item>
-        <item>BY_GESTURE</item>
-        <item>ON_DISPLAY</item>
-    </string-array>
-
-
     <string-array name="tts_voice_names">
         <item>"Jola online"</item>
         <item>"Jola lokalnie"</item>
@@ -101,6 +89,7 @@
     <string name="permission_description">AI-Speaker:API potrzebuje następujących uprawnień:\n</string>
 
     <string name="title_activity_settings">USTAWIENIA APLIKACJA</string>
+    <string name="title_activity_settings_smart_panel">DOTYKOWY PANEL STEROWANIA</string>
     <string name="title_activity_other_apps">INTEGRACJE</string>
     <string name="title_activity_browser">AI-Speaker</string>
 
@@ -123,11 +112,6 @@
     <string name="title_setting_run_wizard_title">Uruchom kreator ustawień.</string>
     <string name="title_setting_run_wizard_summary">Możesz uruchomić kreator i łatwo skonfigurować aplikację.</string>
 
-    <string name="key_setting_app_remotecontrollermode">setting_app_remotemode</string>
-    <string name="title_setting_app_remotecontrollermode">Tryb sterowania w aplikacji</string>
-    <string name="summary_setting_app_remotecontrollermode">wybierz tryb sterowania</string>
-    <string name="default_setting_app_remotecontrollermode">ON_DISPLAY</string>
-
     <string name="key_setting_app_tts_voice">setting_app_tts_voice</string>
     <string name="title_setting_app_tts_voice">Głos asystenta</string>
     <string name="summary_setting_app_tts_voice">Wybierz głos asystenta</string>
@@ -135,10 +119,10 @@
 
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
     <string name="default_setting_app_hot_word">alexa</string>g>
-    <string name="title_setting_app_hot_word">Słowo aktywujące komendę</string>
-    <string name="summary_setting_app_hot_word">wybierz słowo aktywujące komendę\n(po zmianie wymagane jest ponowne uruchomienie usługi nasłuchiwania)</string>
+    <string name="title_setting_app_hot_word">Wyrażenie aktywujące komendę</string>
+    <string name="summary_setting_app_hot_word">wybierz wyrażenie aktywujące komendę</string>
     <string name="title_setting_app_hot_word_sensitivity">Czułość nasłuchiwania</string>
-    <string name="summary_setting_app_hot_word_sensitivity">wybierz czułość nasłuchiwania\n(po zmianie wymagane jest ponowne uruchomienie usługi nasłuchiwania)</string>
+    <string name="summary_setting_app_hot_word_sensitivity">wybierz czułość nasłuchiwania wyrażenia aktywującego</string>
 
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>
@@ -146,6 +130,10 @@
     <string name="summary_setting_app_discovery">włącz usługę odtwarzacza audio\npozwala na przesyłanie audio z bramki do tego urządzenia oraz zdalne sterowanie odtwarzaczem na bramce</string>
     <string name="default_setting_app_discovery">false</string>
 
+    <string name="key_setting_hot_word_mode">setting_hot_word_mode</string>
+    <string name="default_setting_hot_word_mode">false</string>
+    <string name="title_setting_hot_word_mode">Nasłuchiwanie wyrażenia aktywującego</string>
+    <string name="summary_setting_hot_word_mode">pozwól urządzeniu nasłuchiwać wyrażenia aktywującego rejestrowanie i przetwarzanie komendy</string>
 
     <string name="default_setting_app_beep_on_click">true</string>
     <string name="summary_setting_app_beep_on_click">Odtwórz sygnał dźwiękowy po kliknięciu przycisku na pilocie w trybie sterowania bez monitora</string>

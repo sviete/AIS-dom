@@ -13,6 +13,8 @@ import android.util.Log;
 
 import com.redbooth.wizard.MainWizardActivity;
 
+import ai.picovoice.hotword.PorcupineService;
+
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -35,8 +37,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
             // set remote control mode on start
             Config config = new Config(this.getApplicationContext());
-            AisCoreUtils.setRemoteControllerMode(config.getAppRemoteControllerMode());
-            Log.i(TAG, "config.getAppRemoteControllerMode() " + config.getAppRemoteControllerMode());
 
             // check the device type on start
             UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
@@ -46,6 +46,12 @@ public class WelcomeActivity extends AppCompatActivity {
                 AisCoreUtils.AIS_DEVICE_TYPE = "TV";
             } else {
                 AisCoreUtils.AIS_DEVICE_TYPE = "MOB";
+            }
+
+            // run hot word service on start
+            if (config.getHotWordMode()) {
+                Intent porcupineServiceIntent = new Intent(this.getApplicationContext(), PorcupineService.class);
+                this.getApplicationContext().startService(porcupineServiceIntent);
             }
 
             // run exo player service on start

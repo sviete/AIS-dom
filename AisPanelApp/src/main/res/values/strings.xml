@@ -78,17 +78,6 @@
         <item>"terminator"</item>
     </string-array>
 
-    <string-array name="remotecontroller_modes_names">
-        <item>"Control by remote without a monitor"</item>
-        <item>"Control by gesture"</item>
-        <item>"Control with monitor"</item>
-    </string-array>
-    <string-array name="remotecontroller_modes_values">
-        <item>OFF_DISPLAY</item>
-        <item>BY_GESTURE</item>
-        <item>ON_DISPLAY</item>
-    </string-array>
-
     <string name="app_name">AIS</string>
 
     <string name="aispanel_service_notification_title">AI-Speaker</string>
@@ -99,6 +88,7 @@
     <string name="permission_description">AI-Speaker:API needs the following permission(s):\n</string>
 
     <string name="title_activity_settings">APPLICATION SETTINGS</string>
+    <string name="title_activity_settings_smart_panel">SMART PANEL</string>
     <string name="title_activity_other_apps">INTEGRATIONS</string>
     <string name="title_activity_browser">AI-Speaker</string>
 
@@ -106,6 +96,11 @@
     <string name="default_setting_app_discovery">false</string>
     <string name="title_setting_app_discovery">Player discovery</string>
     <string name="summary_setting_app_discovery">allow the device to be discovered as a player in the network</string>
+
+    <string name="key_setting_hot_word_mode">setting_hot_word_mode</string>
+    <string name="default_setting_hot_word_mode">false</string>
+    <string name="title_setting_hot_word_mode">Listening to the activation expression</string>
+    <string name="summary_setting_hot_word_mode">allow the device to listening for the trigger word</string>
 
     <string name="default_setting_app_beep_on_click">true</string>
     <string name="summary_setting_app_beep_on_click">Play a beep sound on remote button click</string>
@@ -130,12 +125,6 @@
     <string name="title_recent_connections">Recent connections list</string>
     <string name="summary_recent_connections">you can pick position from list to reconnect</string>
 
-
-    <string name="key_setting_app_remotecontrollermode">setting_app_remotemode</string>
-    <string name="title_setting_app_remotecontrollermode">Control operation mode</string>
-    <string name="summary_setting_app_remotecontrollermode">choose a control mode</string>
-    <string name="default_setting_app_remotecontrollermode">ON_DISPLAY</string>
-
     <string name="key_setting_app_tts_voice">setting_app_tts_voice</string>g>
     <string name="title_setting_app_tts_voice">TTS Voice</string>
     <string name="summary_setting_app_tts_voice">choose a voice</string>
@@ -144,9 +133,9 @@
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
     <string name="default_setting_app_hot_word">alexa</string>g>
     <string name="title_setting_app_hot_word">Hot Word</string>
-    <string name="summary_setting_app_hot_word">choose a hot word\n(you must restart the listener service after the change)</string>
+    <string name="summary_setting_app_hot_word">choose a hot word</string>
     <string name="title_setting_app_hot_word_sensitivity">Hot Word Sensitivity</string>
-    <string name="summary_setting_app_hot_word_sensitivity">choose a hot word sensitivity\n(you must restart the listener service after the change)</string>
+    <string name="summary_setting_app_hot_word_sensitivity">choose a hot word sensitivity</string>
 
 
     <string name="key_setting_android_browsertype">setting_android_browsertype</string>

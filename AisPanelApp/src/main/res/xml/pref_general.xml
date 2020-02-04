@@ -42,37 +42,6 @@
         <PreferenceCategory
             android:title="@string/title_activity_settings"
             android:key="pref_category_app_settings">
-            <SwitchPreference
-                android:defaultValue="@string/default_setting_app_discovery"
-                android:title="@string/title_setting_app_discovery"
-                android:summary="@string/summary_setting_app_discovery"
-                android:key="@string/key_setting_app_discovery"
-                android:icon="@drawable/ic_disco_player_in_network"/>
-            <ListPreference
-                android:defaultValue="@string/default_setting_app_remotecontrollermode"
-                android:entries="@array/remotecontroller_modes_names"
-                android:entryValues="@array/remotecontroller_modes_values"
-                android:title="@string/title_setting_app_remotecontrollermode"
-                android:summary="@string/summary_setting_app_remotecontrollermode"
-                android:key="@string/key_setting_app_remotecontrollermode"
-                android:icon="@drawable/ic_controle_mode"/>
-            <ListPreference
-                android:defaultValue="@string/default_setting_app_hot_word"
-                android:entries="@array/hot_word_names"
-                android:entryValues="@array/hot_word_values"
-                android:title="@string/title_setting_app_hot_word"
-                android:summary="@string/summary_setting_app_hot_word"
-                android:key="@string/key_setting_app_hot_word"
-                android:icon="@drawable/ic_hot_word"/>
-            <SeekBarPreference
-                android:min="@integer/sensitivity_bar_min"
-                android:max="@integer/sensitivity_bar_max"
-                android:defaultValue="@integer/sensitivity_bar_default"
-                android:key="setting_app_hot_word_sensitivity"
-                android:title="@string/title_setting_app_hot_word_sensitivity"
-                android:summary="@string/summary_setting_app_hot_word_sensitivity"
-                android:icon="@drawable/ic_hot_word_sensitivity"
-                />
             <ListPreference
                 android:defaultValue="@string/default_setting_app_tts_voice"
                 android:entries="@array/tts_voice_names"
@@ -91,6 +60,16 @@
                     android:targetClass="pl.sviete.dom.gesture.GestureListActivity"
                     />
             </PreferenceScreen>
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:title="@string/title_activity_settings_smart_panel"
+            android:key="pref_category_app_experimental">
+            <SwitchPreference
+                android:defaultValue="@string/default_setting_app_discovery"
+                android:title="@string/title_setting_app_discovery"
+                android:summary="@string/summary_setting_app_discovery"
+                android:key="@string/key_setting_app_discovery"
+                android:icon="@drawable/ic_disco_player_in_network"/>
             <ListPreference
                 android:defaultValue="@string/default_setting_test_zoomlevel"
                 android:entries="@array/zoom_level_names"
@@ -99,6 +78,28 @@
                 android:summary="@string/summary_setting_test_zoomlevel"
                 android:key="@string/key_setting_test_zoomlevel"
                 android:icon="@drawable/ic_zoom_in_browser"/>
+            <SwitchPreference
+                android:defaultValue="@string/default_setting_hot_word_mode"
+                android:title="@string/title_setting_hot_word_mode"
+                android:summary="@string/summary_setting_hot_word_mode"
+                android:key="@string/key_setting_hot_word_mode"
+                android:icon="@drawable/ic_hot_word_sensitivity"/>
+            <ListPreference
+                android:defaultValue="@string/default_setting_app_hot_word"
+                android:entries="@array/hot_word_names"
+                android:entryValues="@array/hot_word_values"
+                android:title="@string/title_setting_app_hot_word"
+                android:summary="@string/summary_setting_app_hot_word"
+                android:key="@string/key_setting_app_hot_word"
+                android:icon="@drawable/ic_hot_word"/>
+            <SeekBarPreference
+                android:min="@integer/sensitivity_bar_min"
+                android:max="@integer/sensitivity_bar_max"
+                android:defaultValue="@integer/sensitivity_bar_default"
+                android:key="setting_app_hot_word_sensitivity"
+                android:title="@string/title_setting_app_hot_word_sensitivity"
+                android:summary="@string/summary_setting_app_hot_word_sensitivity"
+                />
         </PreferenceCategory>
         <PreferenceCategory
             android:title="@string/pref_ais_about_app"

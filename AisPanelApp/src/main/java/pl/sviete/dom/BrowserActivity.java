@@ -206,10 +206,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
         // BTN MIC
         btnSpeak.setOnLongClickListener(v -> {
-            if (isServiceRunning(this.getApplicationContext(), PorcupineService.class)) {
+            if (mConfig.getHotWordMode()) {
                 // hot word off
                 speakOutFromBrowser("Nasłuchiwanie wyłączone.");
-                stopHotWordService();
+                mConfig.setHotWordMode(false);
                 btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
 
             } else {
@@ -220,7 +220,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                                     new String[]{Manifest.permission.RECORD_AUDIO},
                                     REQUEST_HOT_WORD_MIC_PERMISSION);
                 } else {
-                    startHotWordService();
+                    mConfig.setHotWordMode(true);
                     speakOutFromBrowser("Nasłuchiwanie włączone.");
                     btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
                 }
@@ -264,17 +264,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         } else {
             loadUrl(appLaunchUrl, false);
         }
-
-        // set the remote control mode on start
-        gestureOverlayView = findViewById(R.id.gesturesOverlay);
-        if (AisCoreUtils.getRemoteControllerMode().equals(AisCoreUtils.mByGesture)) {
-            gestureOverlayView.setVisibility(View.VISIBLE);
-            mSwitchIconModeGesture.setIconEnabled(true);
-        } else {
-            gestureOverlayView.setVisibility(View.INVISIBLE);
-            mSwitchIconModeGesture.setIconEnabled(false);
-        }
-
 
         try {
             copyResourceFile(R.raw.params, "porcupine_params.pv");
@@ -376,13 +365,13 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         if (intent != null) {
               if (intent.getAction() != null) {
                   if (intent.getAction().equals("exit_mic_service")) {
-                        stopHotWordService();
+                      mConfig.setHotWordMode(false);
                     }
                 }
         }
 
         // Hot Word - set on start
-        if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), PorcupineService.class)){
+        if (mConfig.getHotWordMode()){
             btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
         } else {
             btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
@@ -649,7 +638,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 }
             case REQUEST_HOT_WORD_MIC_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startHotWordService();
+                    mConfig.setHotWordMode(true);
                 }
         }
     }
@@ -747,17 +736,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         btnSpeak.setChecked(false);
         recognitionProgressView.stop();
     }
-
-    private void startHotWordService() {
-        Intent serviceIntent = new Intent(this, PorcupineService.class);
-        ContextCompat.startForegroundService(this, serviceIntent);
-    }
-
-    private void stopHotWordService() {
-        Intent serviceIntent = new Intent(this, PorcupineService.class);
-        stopService(serviceIntent);
-    }
-
 
     protected abstract void loadUrl(final String url, Boolean syncIcon);
     protected abstract void evaluateJavascript(final String js);

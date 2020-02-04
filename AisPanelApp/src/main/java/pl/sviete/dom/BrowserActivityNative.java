@@ -474,18 +474,6 @@ public class BrowserActivityNative extends BrowserActivity {
                 }
             }
         }
-
-        else if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_DOWN || event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP){
-            if (AisCoreUtils.getRemoteControllerMode().equals(AisCoreUtils.mOnDisplay)) {
-                Log.d(TAG, "dispatchKeyEvent mWebView " + event.getAction() + " " + event.getKeyCode());
-
-                if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    AisCoreUtils.mWebView.dispatchKeyEvent(new KeyEvent(event.getAction(), KeyEvent.KEYCODE_PAGE_DOWN));
-                } else {
-                    AisCoreUtils.mWebView.dispatchKeyEvent(new KeyEvent(event.getAction(), KeyEvent.KEYCODE_PAGE_UP));
-                }
-            }
-        }
         // return to parent
         return super.dispatchKeyEvent(event);
     }

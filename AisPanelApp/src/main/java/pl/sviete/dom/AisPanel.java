@@ -21,9 +21,6 @@ public class AisPanel extends Application {
         Log.i(TAG, "-------------------------------------------");
         Log.i(TAG, "-------------------------------------------");
 
-        //
-        Config config = new Config(this.getApplicationContext());
-        AisCoreUtils.setRemoteControllerMode(config.getAppRemoteControllerMode());
 
         // set gate ID
         Log.i(TAG, "set gate ID");

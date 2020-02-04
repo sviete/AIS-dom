@@ -14,6 +14,10 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
+import ai.picovoice.hotword.PorcupineService;
+
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     static final String TAG = SettingsActivity.class.getName();
@@ -103,14 +107,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             addPreferencesFromResource(R.xml.pref_general);
 
-            // get version info
+            // get version info - set info about version
             String versionName = BuildConfig.VERSION_NAME;
             PreferenceCategory prefCategorySettings = (PreferenceCategory) findPreference("pref_category_app_settings");
-            //
             Preference preferenceVersion = findPreference("pref_ais_dom_version");
-
-            // set info in version
             preferenceVersion.setSummary(versionName + " (client app)");
+
+            // set info about HotWordSensitivity
+            Preference preferenceHotWordSensitivity = findPreference("setting_app_hot_word_sensitivity");
+            Config config = new Config(preferenceHotWordSensitivity.getContext());
+            int sensitivity = config.getSelectedHotWordSensitivity();
+            preferenceHotWordSensitivity.setTitle(getString(R.string.title_setting_app_hot_word_sensitivity) + String.format(" : %d", sensitivity));
+
+            // set hot word info
+            Preference preferenceHotWord = findPreference("setting_app_hot_word");
+            final String hotWord = config.getSelectedHotWord();
+            preferenceHotWord.setTitle(getString(R.string.title_setting_app_hot_word) + ": " + hotWord);
+
             //
             bindPreferenceSummaryToValue(findPreference(getString(R.string.key_setting_app_launchurl)));
 
@@ -131,17 +144,39 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             preference.getContext().stopService(serviceIntent);
                         }
                     }
-// todo stop service
-//                    if (prefKey.equals("setting_app_hot_word_sensitivity") || prefKey.equals("setting_app_hot_word")) {
-//                        if (AisCoreUtils.mPorcupineManager != null) {
-//                            try {
-//                                Intent serviceIntent = new Intent(this, PorcupineService.class);
-//                                stopService(serviceIntent);
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
+
+                    if (prefKey.equals("setting_hot_word_mode")) {
+                        Intent serviceHotWordIntent = new Intent(preference.getContext(), PorcupineService.class);
+
+                        if ((boolean) newValue) {
+                            // start service
+                            preference.getContext().startService(serviceHotWordIntent);
+
+                        } else {
+                            // stop service
+                            preference.getContext().stopService(serviceHotWordIntent);
+                        }
+                    }
+
+                    if (prefKey.equals("setting_app_hot_word_sensitivity") || prefKey.equals("setting_app_hot_word")) {
+                        // restart hot word service
+                        Config config = new Config(preference.getContext());
+                        if (config.getHotWordMode()) {
+                            Intent serviceHotWordIntent = new Intent(preference.getContext(), PorcupineService.class);
+                            preference.getContext().stopService(serviceHotWordIntent);
+                            preference.getContext().startService(serviceHotWordIntent);
+                        }
+
+                        if (prefKey.equals("setting_app_hot_word_sensitivity")) {
+                            final int progress = Integer.valueOf(String.valueOf(newValue));
+                            preference.setTitle(getString(R.string.title_setting_app_hot_word_sensitivity) + String.format(" : %d", progress));
+                        }
+
+                        if (prefKey.equals("setting_app_hot_word")) {
+                            final String hotWord = String.valueOf(newValue);
+                            preference.setTitle(getString(R.string.title_setting_app_hot_word) + ": " + hotWord);
+                        }
+                    }
 
 
                     return true;
@@ -151,9 +186,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
             preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
-            Preference preferenceHotWord = findPreference("setting_app_hot_word");
+
+            Preference preferenceHotWordMode = findPreference("setting_hot_word_mode");
+            preferenceHotWordMode.setOnPreferenceChangeListener(preferenceChangeListener);
+
             preferenceHotWord.setOnPreferenceChangeListener(preferenceChangeListener);
-            Preference preferenceHotWordSensitivity = findPreference("setting_app_hot_word_sensitivity");
             preferenceHotWordSensitivity.setOnPreferenceChangeListener(preferenceChangeListener);
 
 

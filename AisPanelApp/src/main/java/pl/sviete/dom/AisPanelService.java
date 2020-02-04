@@ -293,17 +293,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         json = getDeviceInfo();
         DomWebInterface.publishJson(json, "player_auto_discovery", getApplicationContext());
         Log.i(TAG, "player_auto_discovery");
-        // ask the gate about the current player status, after 7 seconds
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //ask about current media after 7sec...
-                Log.i(TAG, "player_status_ask");
-                DomWebInterface.publishMessage("ok", "player_status_ask", getApplicationContext());
-            }
-        }, 7000);
-
         //
         return super.onStartCommand(intent, flags, startId);
     }
@@ -1258,10 +1247,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 mConfig.setAppDiscoveryMode(false);
                 // stop service
                 if(AisCoreUtils.isServiceRunning(getApplicationContext(), PorcupineService.class)){
-                    Intent serviceIntent = new Intent(getApplicationContext(), PorcupineService.class);
-                    stopService(serviceIntent);
+
+                    mConfig.setHotWordMode(false);
 
                     Intent startAisApp = new Intent(getApplicationContext(), BrowserActivityNative.class);
+                    startAisApp.setAction("exit_mic_service");
                     startAisApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(startAisApp);
                 }

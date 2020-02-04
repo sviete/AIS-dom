@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import ai.picovoice.hotword.PorcupineService;
 import pl.sviete.dom.connhist.AisConnectionHistJSON;
 
 public class Config {
@@ -237,11 +238,6 @@ public class Config {
         return url;
     }
 
-    public String getAppRemoteControllerMode() {
-        return getStringPref(R.string.key_setting_app_remotecontrollermode,
-                    R.string.default_setting_app_remotecontrollermode);
-    }
-
     public String getSelectedHotWord() {
         return getStringPref(R.string.key_setting_app_hot_word,
                 R.string.default_setting_app_hot_word);
@@ -264,6 +260,28 @@ public class Config {
     }
 
 
+    public Boolean getHotWordMode() {
+        return getBoolPref(R.string.key_setting_hot_word_mode, R.string.default_setting_hot_word_mode);
+    }
+
+    //
+    public void setHotWordMode(Boolean mode) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putBoolean(myContext.getString(R.string.key_setting_hot_word_mode), mode);
+        ed.apply();
+
+        Intent serviceHotWordIntent = new Intent(myContext, PorcupineService.class);
+        if (mode) {
+            // start service
+            myContext.startService(serviceHotWordIntent);
+
+        } else {
+            // stop service
+            myContext.stopService(serviceHotWordIntent);
+        }
+    }
+
+
     public Boolean getAppWizardDone() {
         return getBoolPref(R.string.default_setting_app_wizard_done, R.string.default_setting_app_wizard_done);
     }
@@ -278,14 +296,6 @@ public class Config {
         // this is executed from QR code scan or Gate history only
         SharedPreferences.Editor ed = sharedPreferences.edit();
         ed.putString(myContext.getString(R.string.key_setting_app_launchurl), gate);
-        ed.apply();
-    }
-
-
-    //
-    public void setAppRemoteControllerMode(String mode) {
-        SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putString(myContext.getString(R.string.key_setting_app_remotecontrollermode), mode);
         ed.apply();
     }
 
