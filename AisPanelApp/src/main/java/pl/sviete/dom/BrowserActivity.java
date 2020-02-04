@@ -130,14 +130,14 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                         mSwitchIconModeGesture.setIconEnabled(false);
 
                         // gesty wyłączone
-                        speakOutFromBrowser("Sterowanie gestami wyłączone.");
+                        speakOutFromBrowser("Sterowanie gestami wyłączone.", "app");
 
                     } else {
                         gestureOverlayView.setVisibility(View.VISIBLE);
                         mSwitchIconModeGesture.setIconEnabled(true);
 
                         // gesty włączone
-                        speakOutFromBrowser("Sterowanie gestami włączone.");
+                        speakOutFromBrowser("Sterowanie gestami włączone.", "app");
 
 
                     }
@@ -159,11 +159,11 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             appLaunchUrl = mConfig.getAppLaunchUrl(false);
             if (appLaunchUrl.startsWith("dom-")) {
                 // sprawdzam połączenie
-                speakOutFromBrowser("Sprawdzam połączenie.");
+                speakOutFromBrowser("Sprawdzam połączenie.", "app");
                 mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
                 appLaunchUrl = mConfig.getAppLaunchUrl(true);
             } else {
-                speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.");
+                speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.", "app");
             }
             return true;
         });
@@ -208,7 +208,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         btnSpeak.setOnLongClickListener(v -> {
             if (mConfig.getHotWordMode()) {
                 // hot word off
-                speakOutFromBrowser("Nasłuchiwanie wyłączone.");
+                speakOutFromBrowser("Nasłuchiwanie wyłączone.", "app");
                 mConfig.setHotWordMode(false);
                 btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
 
@@ -221,7 +221,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                                     REQUEST_HOT_WORD_MIC_PERMISSION);
                 } else {
                     mConfig.setHotWordMode(true);
-                    speakOutFromBrowser("Nasłuchiwanie włączone.");
+                    speakOutFromBrowser("Nasłuchiwanie włączone.", "app");
                     btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
                 }
             }
@@ -265,6 +265,14 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             loadUrl(appLaunchUrl, false);
         }
 
+
+        // set the remote control mode on start
+        gestureOverlayView = findViewById(R.id.gesturesOverlay);
+        gestureOverlayView.setVisibility(View.INVISIBLE);
+        mSwitchIconModeGesture.setIconEnabled(false);
+
+
+        //
         try {
             copyResourceFile(R.raw.params, "porcupine_params.pv");
             copyResourceFile(R.raw.alexa, "alexa.ppn");
@@ -296,12 +304,12 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         }
     }
 
-    void speakOutFromBrowser(String text) {
+    void speakOutFromBrowser(String text, String source) {
         // dont say if the browser activity is not visible
         if (!isBrowserActivityVisible){
             return;
         }
-        if (!AisCoreUtils.shouldIsayThis(text, "browser")){
+        if (!AisCoreUtils.shouldIsayThis(text, source)){
             return;
         }
         //
@@ -707,7 +715,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 onStartSpeechToText();
             } else if (intent.getAction().equals(BROADCAST_ACTIVITY_SAY_IT)){
                 final String text = intent.getStringExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT);
-                speakOutFromBrowser(text);
+                speakOutFromBrowser(text, "service");
             }
             }
         };

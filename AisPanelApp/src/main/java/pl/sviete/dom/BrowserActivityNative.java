@@ -295,7 +295,7 @@ public class BrowserActivityNative extends BrowserActivity {
 
             @JavascriptInterface
             public void sayInFrame(String text) {
-                speakOutFromBrowser(text);
+                speakOutFromBrowser(text, "html");
             }
         }
 
