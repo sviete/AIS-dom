@@ -8,7 +8,7 @@ android {
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 110
-        versionName '1.1.0.Player'
+        versionName '1.1.1.Player'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
