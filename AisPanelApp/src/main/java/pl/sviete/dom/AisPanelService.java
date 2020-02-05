@@ -110,7 +110,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private final IBinder mBinder = new AisPanelServiceBinder();
 
     private TextToSpeech mTts;
-    private String mReadThisTextWhenReady;
 
     //ExoPlayer -start
     private Handler mainHandler;
@@ -158,7 +157,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             jState.put("currentSpeed", mExoPlayer.getPlaybackParameters().speed);
             jState.put("media_source", m_media_source);
             jState.put("media_album_name", m_media_album_name);
-            jState.put("media_stream_image", m_media_stream_image);
+            if (m_media_stream_image == null) {
+                jState.put("media_stream_image", m_media_stream_image);
+            } else {
+                jState.put("media_stream_image", "");
+            }
         } catch(JSONException e) { e.printStackTrace(); }
         return jState;
     }
@@ -238,7 +241,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
     }
 
-    public void stopSpeechToText(){
+    public void stopTextToSpeech(){
         Log.i(TAG, "Speech started, stoping the tts");
         try {
             mTts.stop();
@@ -332,12 +335,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                         Log.d(TAG, "TTS onStart");
                     }
                 });
-
-                if (mReadThisTextWhenReady != null){
-                    processTTS(mReadThisTextWhenReady);
-                    mReadThisTextWhenReady = null;
-                }
-
             };
         } else {
             Log.e(TAG, "Could not initialize TextToSpeech.");
@@ -436,6 +433,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         mConfig.stopListeningForConfigChanges();
 
+        //
+        try {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
+            bm.unregisterReceiver(mBroadcastReceiver);
+        } catch (Exception e){
+            Log.e(TAG, "unregisterReceiver " + e.toString());
+        }
+
         if (mTts != null) {
             mTts.stop();
             mTts.shutdown();
@@ -487,7 +492,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
             if (action.equals(BROADCAST_EVENT_DO_STOP_TTS)) {
                 Log.d(TAG, "Speech started, stoping the tts");
-                stopSpeechToText();
+                stopTextToSpeech();
             } else if (action.equals(BROADCAST_SERVICE_SAY_IT)) {
                 Log.d(TAG, BROADCAST_SERVICE_SAY_IT + " going to processTTS");
                 final String txtMessage = intent.getStringExtra(BROADCAST_SAY_IT_TEXT);
@@ -563,8 +568,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             //
             JSONObject body = ((JSONObjectBody)request.getBody()).get();
             String text_to_say = "";
-            text_to_say = body.toString();
-            processTTS(text_to_say);
+            try {
+                text_to_say = body.getString("text");
+                processTTS(text_to_say);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
 
         // listen on port 8122
@@ -680,16 +689,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private boolean processTTS(String text) {
         Log.d(TAG, "processTTS Called: " + text);
 
-        String textForReading = "";
-        try {
-            JSONObject textJsonTest = new JSONObject(text);
-            textForReading = textJsonTest.getString("text");
-        } catch (JSONException ex) {
-            textForReading = text;
-        }
-        if(!AisCoreUtils.shouldIsayThis(textForReading, "service_ais_panel")){
+        if(!AisCoreUtils.shouldIsayThis(text, "service_ais_panel")){
             return true;
         }
+
+        // stop current TTS
+        stopTextToSpeech();
 
 
         String voice = "";
@@ -701,7 +706,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             Log.w(TAG, "mTts == null");
             try {
                 createTTS();
-                mReadThisTextWhenReady = text;
                 return true;
             }
             catch (Exception e) {
@@ -714,87 +718,24 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             mConfig = new Config(this.getApplicationContext());
         }
 
-        //
-        try {
-            JSONObject textJson = new JSONObject(text);
-            try {
-                if (textJson.has("text")) {
-                    textForReading = textJson.getString("text");
-                }
-                if (textJson.has("pitch")) {
-                    pitch = BigDecimal.valueOf(textJson.getDouble("pitch")).floatValue();
-                    mTts.setPitch(pitch);
-                }
-                if (textJson.has("rate")) {
-                    rate = BigDecimal.valueOf(textJson.getDouble("rate")).floatValue();
-                    mTts.setSpeechRate(rate);
-                }
-                if (textJson.has("voice")) {
-                    voice = textJson.getString("voice");
-                    Voice voiceobj = new Voice(
-                            voice, new Locale("pl_PL"),
-                            Voice.QUALITY_HIGH,
-                            Voice.LATENCY_NORMAL,
-                            false,
-                            null);
-                    mTts.setVoice(voiceobj);
-                } else {
-                    String ttsVoice = mConfig.getAppTtsVoice();
-                    Voice voiceobj = new Voice(
-                            ttsVoice, new Locale("pl_PL"),
-                            Voice.QUALITY_HIGH,
-                            Voice.LATENCY_NORMAL,
-                            false,
-                            null);
-                    mTts.setVoice(voiceobj);
-                }
-            }
-            catch (JSONException ex) {
-                Log.e(TAG, "Invalid JSON passed as a text: " + text);
-                return false;
-            }
-
-        }
-        catch (JSONException ex) {
-            textForReading = text;
-            String ttsVoice = mConfig.getAppTtsVoice();
-            Voice voiceobj = new Voice(
+        String ttsVoice = mConfig.getAppTtsVoice();
+        Voice voiceobj = new Voice(
                     ttsVoice, new Locale("pl_PL"),
                     Voice.QUALITY_HIGH,
                     Voice.LATENCY_NORMAL,
                     false,
                     null);
-            mTts.setVoice(voiceobj);
-        }
+        mTts.setVoice(voiceobj);
+
 
         //textToSpeech can only cope with Strings with < 4000 characters
-        int dividerLimit = 3900;
-        if(textForReading.length() >= dividerLimit) {
-            int textLength = textForReading.length();
-            ArrayList<String> texts = new ArrayList<String>();
-            int count = textLength / dividerLimit + ((textLength % dividerLimit == 0) ? 0 : 1);
-            int start = 0;
-            int end = textForReading.indexOf(" ", dividerLimit);
-            for(int i = 1; i<=count; i++) {
-                texts.add(textForReading.substring(start, end));
-                start = end;
-                if((start + dividerLimit) < textLength) {
-                    end = textForReading.indexOf(" ", start + dividerLimit);
-                } else {
-                    end = textLength;
-                }
-            }
-            for(int i=0; i<texts.size(); i++) {
-                mTts.speak(texts.get(i), TextToSpeech.QUEUE_ADD, null,"123");
-            }
-        } else {
-            mTts.speak(textForReading, TextToSpeech.QUEUE_FLUSH, null,"456");
+        if(text.length() >= 4000) {
+            text = text.substring(0, 3999);
         }
-
-        // TODO android.type.time TYPE_TIME and others TtsSpan
+        mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null,"123");
 
         Intent intent = new Intent(BROADCAST_ON_START_TEXT_TO_SPEECH);
-        intent.putExtra(AisCoreUtils.TTS_TEXT, textForReading);
+        intent.putExtra(AisCoreUtils.TTS_TEXT, text);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
         bm.sendBroadcast(intent);
 
@@ -966,7 +907,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 jState.put("currentSpeed", mExoPlayer.getPlaybackParameters().speed);
                 jState.put("media_source", m_media_source);
                 jState.put("media_album_name", m_media_album_name);
-                jState.put("media_stream_image", m_media_stream_image);
+                if (m_media_stream_image == null) {
+                    jState.put("media_stream_image", "");
+                } else {
+                    jState.put("media_stream_image", m_media_stream_image);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1242,6 +1187,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                         AisRecognitionListener listener = new AisRecognitionListener(getApplicationContext(), AisCoreUtils.mSpeech);
                         AisCoreUtils.mSpeech.setRecognitionListener(listener);
                     }
+                    stopTextToSpeech();
                     AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
                 }
             } else if (action.equals("ais_stop")) {

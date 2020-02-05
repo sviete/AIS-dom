@@ -56,10 +56,10 @@ public class DomWebInterface {
                     String appLaunchUrl = config.getAppLaunchUrl(false);
                     if (appLaunchUrl.startsWith("dom-")) {
                         // sprawdzam połączenie
-                        say("Sprawdzam połączenie.");
+                        // say("Sprawdzam połączenie.");
                         appLaunchUrl = config.getAppLaunchUrl(true);
                     } else {
-                        say("Sprawdz połączenie z bramką.");
+                        // say("Sprawdz połączenie z bramką.");
                     }
                     return;
                 }
@@ -91,11 +91,20 @@ public class DomWebInterface {
 
     public static void publishMessage(String message, String topicPostfix, Context context){
         // publish via http rest to local instance
+        Boolean hotWordOn = false;
+        try {
+            if (isServiceRunning(context, PorcupineService.class)){
+                hotWordOn = true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
         JSONObject json = new JSONObject();
         try {
             json.put("topic", "ais/" + topicPostfix);
             json.put("ais_gate_client_id", AisCoreUtils.AIS_GATE_ID);
             json.put("payload", message);
+            json.put("hot_word_on", hotWordOn);
         } catch (JSONException e) {
             Log.e("publishMessage", e.toString());
         }
@@ -106,10 +115,19 @@ public class DomWebInterface {
     // new
     public static void publishJson(JSONObject message, String topic, Context context){
         JSONObject json = new JSONObject();
+        Boolean hotWordOn = false;
+        try {
+            if (isServiceRunning(context, PorcupineService.class)){
+                hotWordOn = true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
         try {
             json.put("topic", "ais/" + topic);
             json.put("ais_gate_client_id", AisCoreUtils.AIS_GATE_ID);
             json.put("payload", message);
+            json.put("hot_word_on", hotWordOn);
         } catch (JSONException e) {
             Log.e("publishJson", e.toString());
         }

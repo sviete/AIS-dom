@@ -122,6 +122,8 @@ public class AisCoreUtils {
     public static boolean shouldIsayThis(String text, String source) {
         // source can be browser or service or app or app_service
         String text_to_say = text.trim();
+        Log.d(TAG, "shouldIsayThis: " + text + " source: " + source);
+
         // if the source is the same we should say (to allow Jolka repeating herself)
         if (AIS_DOM_LAST_TTS_SOURCE.equals(source)){
             AIS_DOM_LAST_TTS = text_to_say;

@@ -98,7 +98,7 @@ public class AisRecognitionListener implements RecognitionListener {
 
         if (errorCode != SpeechRecognizer.ERROR_RECOGNIZER_BUSY && errorCode != SpeechRecognizer.ERROR_NO_MATCH) {
             // ignore error 7 and 8
-            Log.e(TAG, "onError mSpeechIsRecording = false");
+            Log.e(TAG, "onError " + errorCode);
             AisCoreUtils.mSpeechIsRecording = false;
         }
     }

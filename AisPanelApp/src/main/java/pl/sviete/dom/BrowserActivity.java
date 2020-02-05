@@ -317,6 +317,14 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         if (!AisCoreUtils.shouldIsayThis(text, source)){
             return;
         }
+
+        // stop current TTS
+        try {
+            mBrowserTts.stop();
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+
         //
         if (mBrowserTts != null) {
             if (mConfig == null){
@@ -330,7 +338,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     false,
                     null);
             mBrowserTts.setVoice(voiceobj);
-            mBrowserTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "444");
+            mBrowserTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "123");
+
             Intent intent = new Intent(BROADCAST_ON_START_TEXT_TO_SPEECH);
             intent.putExtra(AisCoreUtils.TTS_TEXT, text);
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
@@ -439,16 +448,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         super.onResume();
         reloadGestureLib();
         isBrowserActivityVisible = true;
-
-
-//        if (AisCoreUtils.mSpeech != null) {
-//            try {
-//                AisCoreUtils.mSpeech.destroy();
-//                AisCoreUtils.mSpeech = null;
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
 
         //
         createRecognitionView();
@@ -627,7 +626,12 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     public void onDestroy() {
         super.onDestroy();
         if (AisCoreUtils.mSpeech != null) {
+            try {
                 AisCoreUtils.mSpeech.destroy();
+                AisCoreUtils.mSpeech = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         // allow the user to close the WebWiew activity without message
