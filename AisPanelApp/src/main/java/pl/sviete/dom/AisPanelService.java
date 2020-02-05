@@ -687,7 +687,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         } catch (JSONException ex) {
             textForReading = text;
         }
-        if(!AisCoreUtils.shouldIsayThis(textForReading, "service")){
+        if(!AisCoreUtils.shouldIsayThis(textForReading, "service_ais_panel")){
             return true;
         }
 
@@ -1230,7 +1230,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 if (AisCoreUtils.mSpeechIsRecording) {
                     Log.e(TAG, "mSpeechIsRecording = false");
                     AisCoreUtils.mSpeechIsRecording = false;
-                    AisCoreUtils.mSpeech.stopListening();
+                    if (AisCoreUtils.mSpeech != null) {
+                        AisCoreUtils.mSpeech.stopListening();
+                    }
 
                 } else {
                     Log.e(TAG, "mSpeechIsRecording = true");

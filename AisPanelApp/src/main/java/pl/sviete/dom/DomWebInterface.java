@@ -14,6 +14,8 @@ import com.koushikdutta.async.http.AsyncHttpPost;
 import com.koushikdutta.async.http.AsyncHttpResponse;
 import com.koushikdutta.async.http.body.JSONObjectBody;
 
+import ai.picovoice.hotword.PorcupineService;
+
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
@@ -33,7 +35,7 @@ public class DomWebInterface {
 
             void say(String text){
                 Intent intent = null;
-                if (isServiceRunning(context, AisPanelService.class)) {
+                if (isServiceRunning(context, AisPanelService.class) || isServiceRunning(context, PorcupineService.class)) {
                     // service is runing
                     intent = new Intent(BROADCAST_SERVICE_SAY_IT);
                 } else {

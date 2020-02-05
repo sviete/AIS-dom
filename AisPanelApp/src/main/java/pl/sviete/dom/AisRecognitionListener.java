@@ -75,7 +75,11 @@ public class AisRecognitionListener implements RecognitionListener {
         bm.sendBroadcast(intent);
 
         //
-        Log.e(TAG, "onEndOfSpeech mSpeechIsRecording = false");
+        Log.d(TAG, "AisRecognitionListener BROADCAST_ON_START_HOT_WORD_LISTENING");
+        Intent intentHotWord = new Intent(AisCoreUtils.BROADCAST_ON_START_HOT_WORD_LISTENING);
+        bm.sendBroadcast(intentHotWord);
+
+        //
         AisCoreUtils.mSpeechIsRecording = false;
     }
 

@@ -13,13 +13,23 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Locale;
 
 import ai.picovoice.porcupinemanager.PorcupineManager;
 import ai.picovoice.porcupinemanager.PorcupineManagerException;
@@ -31,11 +41,17 @@ import pl.sviete.dom.BrowserActivityNative;
 import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
 
-public class PorcupineService extends Service {
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
+
+public class PorcupineService extends Service implements TextToSpeech.OnInitListener{
 
 
     private int numKeywordsDetected;
     private final String TAG = PorcupineService.class.getName();
+    private TextToSpeech mTts;
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -106,12 +122,16 @@ public class PorcupineService extends Service {
 
         // Brodcast
         IntentFilter filter = new IntentFilter();
-        filter.addAction(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
+        filter.addAction(AisCoreUtils.BROADCAST_ON_START_HOT_WORD_LISTENING);
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING);
+        filter.addAction(AisCoreUtils.BROADCAST_SERVICE_SAY_IT);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
         bm.registerReceiver(mBroadcastReceiver, filter);
 
         startHotWordListening();
+
+        createTTS();
+        //
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -159,7 +179,7 @@ public class PorcupineService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT)) {
+            if (action.equals(AisCoreUtils.BROADCAST_ON_START_HOT_WORD_LISTENING)) {
                 Log.d(TAG, "HWL startHotWordListening");
                 startHotWordListening();
                 // check if started after 2 seconds
@@ -170,7 +190,7 @@ public class PorcupineService extends Service {
                         Log.d(TAG, "HWL check the status 1");
                         stopHotWordListening();
                     }
-                }, 3000);
+                }, 2000);
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -180,7 +200,7 @@ public class PorcupineService extends Service {
                     }
                 }, 5000);
             }
-            if (action.equals(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING)){
+            else if (action.equals(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING)){
                 Log.d(TAG, "HWL stopHotWordListening");
                 stopHotWordListening();
                 if (!AisCoreUtils.mSpeechIsRecording) {
@@ -192,6 +212,12 @@ public class PorcupineService extends Service {
                     }
                     AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
                 }
+            }
+
+            else if (action.equals(AisCoreUtils.BROADCAST_SERVICE_SAY_IT)) {
+                Log.d(TAG, BROADCAST_SERVICE_SAY_IT + " going to processTTS");
+                final String txtMessage = intent.getStringExtra(BROADCAST_SAY_IT_TEXT);
+                processTTS(txtMessage);
             }
         }
     };
@@ -206,6 +232,11 @@ public class PorcupineService extends Service {
     @Override
     public void onDestroy() {
         stopHotWordListening();
+        if (mTts != null) {
+            mTts.stop();
+            mTts.shutdown();
+            mTts = null;
+        }
         super.onDestroy();
     }
 
@@ -216,4 +247,161 @@ public class PorcupineService extends Service {
         bm.sendBroadcast(SttIntent);
     }
 
+
+    // TTS
+    public void stopSpeechToText(){
+        Log.i(TAG, "Speech started, stoping the tts");
+        try {
+            mTts.stop();
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    public void createTTS() {
+        Log.i(TAG, "starting TTS initialization");
+        mTts = new TextToSpeech(this, this);
+        mTts.setSpeechRate(1.0f);
+    }
+    private boolean processTTS(String text) {
+        Log.d(TAG, "processTTS Called: " + text);
+
+        String textForReading = "";
+        try {
+            JSONObject textJsonTest = new JSONObject(text);
+            textForReading = textJsonTest.getString("text");
+        } catch (JSONException ex) {
+            textForReading = text;
+        }
+        if(!AisCoreUtils.shouldIsayThis(textForReading, "service_hot_word")){
+            return true;
+        }
+
+
+        String voice = "";
+        float pitch = 1;
+        float rate = 1;
+
+        // speak failed: not bound to TTS engine
+        if (mTts == null){
+            Log.w(TAG, "mTts == null");
+            try {
+                createTTS();
+                return true;
+            }
+            catch (Exception e) {
+                Log.e(TAG, e.toString());
+            }
+        }
+
+        // to get voice from config
+        Config config = new Config(this.getApplicationContext());
+        //
+        try {
+            JSONObject textJson = new JSONObject(text);
+            try {
+                if (textJson.has("text")) {
+                    textForReading = textJson.getString("text");
+                }
+                if (textJson.has("pitch")) {
+                    pitch = BigDecimal.valueOf(textJson.getDouble("pitch")).floatValue();
+                    mTts.setPitch(pitch);
+                }
+                if (textJson.has("rate")) {
+                    rate = BigDecimal.valueOf(textJson.getDouble("rate")).floatValue();
+                    mTts.setSpeechRate(rate);
+                }
+                if (textJson.has("voice")) {
+                    voice = textJson.getString("voice");
+                    Voice voiceobj = new Voice(
+                            voice, new Locale("pl_PL"),
+                            Voice.QUALITY_HIGH,
+                            Voice.LATENCY_NORMAL,
+                            false,
+                            null);
+                    mTts.setVoice(voiceobj);
+                } else {
+                    String ttsVoice = config.getAppTtsVoice();
+                    Voice voiceobj = new Voice(
+                            ttsVoice, new Locale("pl_PL"),
+                            Voice.QUALITY_HIGH,
+                            Voice.LATENCY_NORMAL,
+                            false,
+                            null);
+                    mTts.setVoice(voiceobj);
+                }
+            }
+            catch (JSONException ex) {
+                Log.e(TAG, "Invalid JSON passed as a text: " + text);
+                return false;
+            }
+
+        }
+        catch (JSONException ex) {
+            textForReading = text;
+            String ttsVoice = config.getAppTtsVoice();
+            Voice voiceobj = new Voice(
+                    ttsVoice, new Locale("pl_PL"),
+                    Voice.QUALITY_HIGH,
+                    Voice.LATENCY_NORMAL,
+                    false,
+                    null);
+            mTts.setVoice(voiceobj);
+        }
+
+        //textToSpeech can only cope with Strings with < 4000 characters
+        if(textForReading.length() > 4000) {
+            textForReading = textForReading.substring(0, 4000);
+        }
+        mTts.speak(textForReading, TextToSpeech.QUEUE_FLUSH, null,"123");
+
+        Intent intent = new Intent(BROADCAST_ON_START_TEXT_TO_SPEECH);
+        intent.putExtra(AisCoreUtils.TTS_TEXT, textForReading);
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+        bm.sendBroadcast(intent);
+
+        return true;
+
+    }
+
+    @Override
+    public void onInit(int status) {
+
+        Log.e(TAG, "AisPanelService onInit");
+        if (status != TextToSpeech.ERROR) {
+            int result = mTts.setLanguage(new Locale("pl_PL"));
+            if (result == TextToSpeech.LANG_MISSING_DATA ||
+                    result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e(TAG, "Language is not available.");
+            }
+
+            if(result == TextToSpeech.SUCCESS) {
+                mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onDone(String utteranceId) {
+                        Log.d(TAG, "TTS finished");
+                        Intent intent = new Intent(BROADCAST_ON_END_TEXT_TO_SPEECH);
+                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                        bm.sendBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+                        Log.d(TAG, "TTS onError");
+                        Intent intent = new Intent(BROADCAST_ON_END_TEXT_TO_SPEECH);
+                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                        bm.sendBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onStart(String utteranceId) {
+                        Log.d(TAG, "TTS onStart");
+                    }
+                });
+            };
+        } else {
+            Log.e(TAG, "Could not initialize TextToSpeech.");
+        }
+
+    }
 }

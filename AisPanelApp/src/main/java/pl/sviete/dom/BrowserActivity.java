@@ -184,9 +184,14 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
                 if (isChecked) {
+                    LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+
+                    // stop hot word service
+                    Intent SttIntent = new Intent(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING);
+                    bm.sendBroadcast(SttIntent);
+
                     // volume down
                     Intent intent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
-                    LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
                     bm.sendBroadcast(intent);
 
                     int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
@@ -715,7 +720,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 onStartSpeechToText();
             } else if (intent.getAction().equals(BROADCAST_ACTIVITY_SAY_IT)){
                 final String text = intent.getStringExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT);
-                speakOutFromBrowser(text, "service");
+                speakOutFromBrowser(text, "service_app_activity");
             }
             }
         };
