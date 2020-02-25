@@ -120,24 +120,32 @@ public class AisCoreUtils {
 
     // whether this text has already been spoken
     public static boolean shouldIsayThis(String text, String source) {
-        // source can be browser or service or app or app_service
-        String text_to_say = text.trim();
-        Log.d(TAG, "shouldIsayThis: " + text + " source: " + source);
 
-        // if the source is the same we should say (to allow Jolka repeating herself)
-        if (AIS_DOM_LAST_TTS_SOURCE.equals(source)){
-            AIS_DOM_LAST_TTS = text_to_say;
-            return true;
-        }
-        AIS_DOM_LAST_TTS_SOURCE = source;
-        // if the source is different but the text is the same we should not allow to say
-        // we should compare only 250 first characters
+        String text_to_say = text.trim();
         if (AIS_DOM_LAST_TTS.substring(0, Math.min(AIS_DOM_LAST_TTS.length(), 250)).equals(text_to_say.substring(0, Math.min(text_to_say.length(), 250)))){
+            AIS_DOM_LAST_TTS = text_to_say;
             return false;
         }
-
         AIS_DOM_LAST_TTS = text_to_say;
         return true;
+
+//        // source can be browser or service or app or app_service
+//        Log.d(TAG, "shouldIsayThis: " + text + " source: " + source);
+//
+//        // if the source is the same we should say (to allow Jolka repeating herself)
+//        if (AIS_DOM_LAST_TTS_SOURCE.equals(source)){
+//            AIS_DOM_LAST_TTS = text_to_say;
+//            return true;
+//        }
+//        AIS_DOM_LAST_TTS_SOURCE = source;
+//        // if the source is different but the text is the same we should not allow to say
+//        // we should compare only 250 first characters
+//        if (AIS_DOM_LAST_TTS.substring(0, Math.min(AIS_DOM_LAST_TTS.length(), 250)).equals(text_to_say.substring(0, Math.min(text_to_say.length(), 250)))){
+//            return false;
+//        }
+//
+//        AIS_DOM_LAST_TTS = text_to_say;
+//        return true;
     }
 
 

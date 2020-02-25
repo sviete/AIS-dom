@@ -18,8 +18,15 @@
   animation-name: play126;
 }
 
+html {
+  color:#704201;
+
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 body {
-    background: #fff;
     font-family: sans-serif;
 }
 
@@ -71,4 +78,9 @@ p.loading{
 
 footer{
     width: 100%;
+}
+
+div.center {
+   background: #00000099;
+   padding: 20px;
 }

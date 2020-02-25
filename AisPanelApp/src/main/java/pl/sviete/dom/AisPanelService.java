@@ -197,15 +197,15 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         } else {
             // inform client about status change
             jState = getCurrentMediaInfo();
-            if (playbackState == ExoPlayer.STATE_ENDED){
-                if (!m_media_content_id.equals("")) {
-                    try {
-                        jState.put("giveMeNextOne", true);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+//            if (playbackState == ExoPlayer.STATE_ENDED){
+//                if (!m_media_content_id.equals("")) {
+//                    try {
+//                        jState.put("giveMeNextOne", true);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
             try {
                 jState.put("currentStatus", playbackState);
             } catch (JSONException e) {

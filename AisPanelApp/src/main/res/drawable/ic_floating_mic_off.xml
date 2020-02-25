@@ -1,10 +1,16 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="40dp"
-    android:height="40dp"
+    android:width="38dp"
+    android:height="38dp"
     android:viewportWidth="40.0"
     android:viewportHeight="40.0">
     <path
-        android:fillColor="#64ffbd77"
+        android:fillColor="@color/black_overlay"
+        android:pathData="M 15, 31.5
+                          m -11.5, 0
+                          a 20,20 0 1,0 33,0
+                          a 20,20 0 1,0 -33,0"/>
+    <path
+        android:fillColor="@color/colorAccent"
         android:pathData="M 15, 20
                           m -11.5, 0
                           a 16,16 0 1,0 33,0

@@ -16,7 +16,7 @@
                 android:id="@+id/activity_browser_webview_native"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="60dp"
+                android:layout_marginBottom="50dp"
                 android:scrollbars="none"
                 android:visibility="gone"
                 android:focusable="true"
@@ -86,6 +86,7 @@
                 app:si_no_dash="true"
                 app:si_tint_color="#b7b7b7" />
         </LinearLayout>
+
         <ToggleButton
             android:id="@+id/btnSpeak"
             style="@style/toggleButton"
@@ -104,21 +105,21 @@
             android:textOff=""
             android:textOn="" />
 
-            <pl.sviete.dom.views.RecognitionProgressView
-                android:id="@+id/ais_recognition_view"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignStart="@+id/btnSpeak"
-                android:layout_marginStart="35dp"
-                android:layout_marginBottom="12dp"
-                android:layout_gravity="center"
-                android:background="@drawable/ic_recognition_progress_view_bg"
-                android:focusable="true"
-                android:nextFocusLeft="@+id/btnSpeak"
-                android:nextFocusDown="@+id/btnSpeak"
-                android:nextFocusRight="@+id/btnControlModeGesture"
-                android:nextFocusUp="@+id/btnControlModeGesture"/>
+        <pl.sviete.dom.views.RecognitionProgressView
+            android:id="@+id/ais_recognition_view"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/btnSpeak"
+            android:layout_marginStart="85dp"
+            android:layout_marginBottom="-10dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_recognition_progress_view_bg"
+            android:focusable="true"
+            android:nextFocusLeft="@+id/btnSpeak"
+            android:nextFocusDown="@+id/btnSpeak"
+            android:nextFocusRight="@+id/btnControlModeGesture"
+            android:nextFocusUp="@+id/btnControlModeGesture"/>
 
             <LinearLayout
                 android:id="@+id/btnControlModeGesture"
