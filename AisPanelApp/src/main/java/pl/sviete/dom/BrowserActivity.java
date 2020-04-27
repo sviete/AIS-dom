@@ -40,6 +40,10 @@ import android.widget.ToggleButton;
 import android.widget.Button;
 
 import com.github.zagum.switchicon.SwitchIconView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -295,6 +299,24 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         } catch (IOException e) {
             Toast.makeText(this, "Failed to copy resource files.", Toast.LENGTH_SHORT).show();
         }
+
+        // [START retrieve_current_token for cloud messaging]
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "getInstanceId failed", task.getException());
+                    return;
+                }
+
+                // Get new Instance ID token
+                String token = task.getResult().getToken();
+
+                // Log and toast
+                Log.w(TAG, "FCM Token: " + token);
+            }
+        });
+        // [END retrieve_current_token]
     }
 
     // copy porcupine files

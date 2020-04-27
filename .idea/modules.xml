@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AIS-dom.iml" filepath="$PROJECT_DIR$/AIS-dom.iml" />
-      <module fileurl="file://$PROJECT_DIR$/porcupine/AIS-dom-porcupine.iml" filepath="$PROJECT_DIR$/porcupine/AIS-dom-porcupine.iml" />
-      <module fileurl="file://$PROJECT_DIR$/porcupinemanager/AIS-dom-porcupinemanager.iml" filepath="$PROJECT_DIR$/porcupinemanager/AIS-dom-porcupinemanager.iml" />
-      <module fileurl="file://$PROJECT_DIR$/AisPanelApp/AisPanelApp.iml" filepath="$PROJECT_DIR$/AisPanelApp/AisPanelApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AIS-dom.iml" filepath="$PROJECT_DIR$/AIS-dom.iml" group="AIS-dom" />
+      <module fileurl="file://$PROJECT_DIR$/porcupine/AIS-dom-porcupine.iml" filepath="$PROJECT_DIR$/porcupine/AIS-dom-porcupine.iml" group="AIS-dom/porcupine" />
+      <module fileurl="file://$PROJECT_DIR$/porcupinemanager/AIS-dom-porcupinemanager.iml" filepath="$PROJECT_DIR$/porcupinemanager/AIS-dom-porcupinemanager.iml" group="AIS-dom/porcupinemanager" />
+      <module fileurl="file://$PROJECT_DIR$/AisPanelApp/AisPanelApp.iml" filepath="$PROJECT_DIR$/AisPanelApp/AisPanelApp.iml" group="AIS-dom/AisPanelApp" />
       <module fileurl="file://$PROJECT_DIR$/porcupine/porcupine.iml" filepath="$PROJECT_DIR$/porcupine/porcupine.iml" />
       <module fileurl="file://$PROJECT_DIR$/porcupinemanager/porcupinemanager.iml" filepath="$PROJECT_DIR$/porcupinemanager/porcupinemanager.iml" />
     </modules>
