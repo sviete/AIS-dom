@@ -93,6 +93,9 @@ public class AisCoreUtils {
     public static final String AIS_DOM_CHANNEL_ID = "AisServiceChannelId";
     public static String AIS_DOM_LAST_TTS = "";
     public static String AIS_DOM_LAST_TTS_SOURCE = "";
+
+    // HA
+    public static String HA_CLIENT_ID = "";
     /*
      * Check if we are on gate or phone
      *

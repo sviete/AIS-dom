@@ -14,6 +14,9 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * NOTE: There can only be one service in each app that receives FCM messages. If multiple
  * are declared in the Manifest then the first one will be chosen.
@@ -87,11 +90,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String token) {
         Log.d(TAG, "Refreshed token: " + token);
-
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // Instance ID token to your app server.
-        sendRegistrationToServer(token);
+        // sendRegistrationToAisServer
+        JSONObject json = new JSONObject();
+        try {
+            json.put("push_notification_key", token);
+            json.put("ais_gate_client_id", AisCoreUtils.AIS_GATE_ID);
+            // TODO add gate id from settings
+            json.put("ais_gate_id", AisCoreUtils.AIS_GATE_ID);
+            DomWebInterface.publishJsonToCloud(json, "");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
     // [END on_new_token]
 
@@ -102,17 +111,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Short lived task is done.");
     }
 
-    /**
-     * Persist token to third-party servers.
-     *
-     * Modify this method to associate the user's FCM InstanceID token with any server-side account
-     * maintained by your application.
-     *
-     * @param token The new token.
-     */
-    private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
-    }
 
     /**
      * Create and show a simple notification containing the received FCM message.

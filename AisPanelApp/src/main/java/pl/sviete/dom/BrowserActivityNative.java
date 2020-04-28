@@ -223,6 +223,31 @@ public class BrowserActivityNative extends BrowserActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 view.loadUrl(request.getUrl().toString());
+
+                try {
+                    String code = request.getUrl().getQueryParameter("client_id");
+                    Log.e(TAG, "client_id - " + code);
+                } catch (Exception e) {
+                    Log.e(TAG, "client_id - no info ");
+                }
+
+                // check if this is login request
+                if (request.getUrl().toString().contains("auth_callback")) {
+                    // store client
+                    if (request.getUrl().getQueryParameter("client_id") != null){
+                        AisCoreUtils.HA_CLIENT_ID = request.getUrl().getQueryParameter("client_id");
+                    }
+                    // ask about token using the code
+                    if (request.getUrl().getQueryParameter("code") != null){
+                        try {
+                            String code = request.getUrl().getQueryParameter("code");
+                            DomWebInterface.registerAuthorizationCode(code, AisCoreUtils.HA_CLIENT_ID);
+                        } catch (Exception e) {
+                            Log.e(TAG, "code - unable to register ");
+                        }
+                    }
+                }
+
                 // then it is not handled by default action
                 return false;
             }
