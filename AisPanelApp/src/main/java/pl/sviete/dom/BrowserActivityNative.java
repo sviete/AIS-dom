@@ -223,10 +223,8 @@ public class BrowserActivityNative extends BrowserActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 view.loadUrl(request.getUrl().toString());
-
                 try {
                     String code = request.getUrl().getQueryParameter("client_id");
-                    Log.e(TAG, "client_id - " + code);
                 } catch (Exception e) {
                     Log.e(TAG, "client_id - no info ");
                 }

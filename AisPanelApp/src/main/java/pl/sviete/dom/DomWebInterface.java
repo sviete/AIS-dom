@@ -13,13 +13,17 @@ import org.json.JSONObject;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpPost;
 import com.koushikdutta.async.http.AsyncHttpResponse;
+import com.koushikdutta.async.http.BasicNameValuePair;
+import com.koushikdutta.async.http.NameValuePair;
 import com.koushikdutta.async.http.body.JSONObjectBody;
+import com.koushikdutta.async.http.body.UrlEncodedFormBody;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import ai.picovoice.hotword.PorcupineService;
 
@@ -174,19 +178,20 @@ public class DomWebInterface {
         // do the simple HTTP post in async task
         new RetrieveTokenTaskJob().execute(code, clientId);
     }
-
 }
 
 class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
+    final static String TAG = DomWebInterface.class.getName();
 
     @Override
     protected String doInBackground(String[] params) {
-        URL obj = null;
+        URL url = null;
         String code = params[0];
         String clientId = params[1];
         try {
-            obj = new URL(AisCoreUtils.getAisDomUrl() + "/auth/token");
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            // 1. get token
+            url = new URL(AisCoreUtils.getAisDomUrl() + "/auth/token");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             con.setRequestProperty("charset", "utf-8");
@@ -208,9 +213,7 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
             os.close();
 
             int responseCode = con.getResponseCode();
-            System.out.println("POST Response Code :: " + responseCode);
-
-            if (responseCode == HttpURLConnection.HTTP_OK) { //success
+            if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         con.getInputStream()));
                 String inputLine;
@@ -221,30 +224,79 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
                 }
                 in.close();
 
-                // print result
-                System.out.println(response.toString());
-                //
+                // json answer result
+                JSONObject jsonObj = new JSONObject(response.toString());
+                String accessToken = jsonObj.getString("access_token");
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("device_id", "ABCDEFGH");
+                    json.put("app_id", AisCoreUtils.AIS_GATE_ID);
+                    json.put("app_name", "AIS dom");
+                    json.put("app_version", "1.2.0");
+                    json.put("device_name", "1.2.0");
+                    json.put("manufacturer", "1.2.0");
+                    json.put("model", "1.2.0");
+                    json.put("os_name", "1.2.0");
+                    json.put("os_version", "1.2.0");
+                    json.put("supports_encryption", false);
+                    JSONObject appData = new JSONObject();
+                    appData.put("push_notification_key", "abcdef");
+                    json.put("app_data", appData);
+                    //
+                    JSONObjectBody body = new JSONObjectBody(json);
+
+                    url = new URL(AisCoreUtils.getAisDomUrl() + "/api/mobile_app/registrations");
+                    con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("POST");
+                    con.setRequestProperty("Content-Type", "application/json");
+                    con.setRequestProperty("charset", "utf-8");
+                    con.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+                    // For POST only - START
+                    con.setDoOutput(true);
+                    os = con.getOutputStream();
+                    os.write(json.toString().getBytes("UTF-8"));
+                    os.flush();
+                    os.close();
+
+                    responseCode = con.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                        in = new BufferedReader(new InputStreamReader(
+                                con.getInputStream()));
+                        response = new StringBuffer();
+
+                        while ((inputLine = in.readLine()) != null) {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        Log.e(TAG, "response: " + response.toString());
+                        // json answer result
+                        jsonObj = new JSONObject(response.toString());
+                        String webhookId = jsonObj.getString("webhook_id");
+                        return webhookId;
+                    }
+
+                } catch (Exception e) {
+                    return "";
+                }
+
             } else {
-                System.out.println("POST request not worked");
+                System.out.println("request not worked");
             }
         } catch (Exception e) {
-            return null;
+            return "";
         }
-
-        return "token";
+        return "";
     }
 
 
     @Override
-    protected void onPostExecute(String message) {
-        //process message with url to go
-        if (!message.equals("")){
-            // call the browser url change
-//            Intent intent = new Intent(BrowserActivity.BROADCAST_ACTION_LOAD_URL);
-//            intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, message);
-//            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(myContext);
-//            bm.sendBroadcast(intent);
-//            AisCoreUtils.setAisDomUrl(message);
+    protected void onPostExecute(String webhookId) {
+        // register mobile in home assistant /api/mobile_app/registrations
+        if (!webhookId.equals("")){
+            // save webhookId
+            Log.e(TAG, "webhookId: " + webhookId);
+
         }
     }
 }
