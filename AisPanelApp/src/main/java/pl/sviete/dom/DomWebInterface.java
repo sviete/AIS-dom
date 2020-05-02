@@ -229,19 +229,22 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
                 String accessToken = jsonObj.getString("access_token");
                 JSONObject json = new JSONObject();
                 try {
-                    json.put("device_id", "ABCDEFGH");
-                    json.put("app_id", AisCoreUtils.AIS_GATE_ID);
+                    json.put("device_id", AisCoreUtils.AIS_GATE_ID);
+                    json.put("app_id", "pl.sviete.dom");
                     json.put("app_name", "AIS dom");
                     json.put("app_version", "1.2.0");
-                    json.put("device_name", "1.2.0");
-                    json.put("manufacturer", "1.2.0");
-                    json.put("model", "1.2.0");
-                    json.put("os_name", "1.2.0");
-                    json.put("os_version", "1.2.0");
+                    json.put("device_name", "Mi A1");
+                    json.put("manufacturer", "Xiaomi");
+                    json.put("model", "A1");
+                    json.put("os_name", "Android");
+                    json.put("os_version", "28");
                     json.put("supports_encryption", false);
                     JSONObject appData = new JSONObject();
-                    appData.put("push_notification_key", "abcdef");
+                    appData.put("push_token", "dsadsadsadsa");
+                    appData.put("push_url", "https://powiedz.co/ords/dom/dom/sendPush");
                     json.put("app_data", appData);
+
+
                     //
                     JSONObjectBody body = new JSONObjectBody(json);
 
