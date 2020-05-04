@@ -312,8 +312,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 // Get new Instance ID token
                 String token = task.getResult().getToken();
 
-                // Log and toast
-                Log.w(TAG, "FCM Token: " + token);
+                // Log and save
+                Log.d(TAG, "FCM Token: " + token);
+
+                AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY = token;
             }
         });
         // [END retrieve_current_token]

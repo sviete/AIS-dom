@@ -90,17 +90,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String token) {
         Log.d(TAG, "Refreshed token: " + token);
-        // sendRegistrationToAisServer
-        JSONObject json = new JSONObject();
-        try {
-            json.put("push_notification_key", token);
-            json.put("ais_gate_client_id", AisCoreUtils.AIS_GATE_ID);
-            // TODO add gate id from settings
-            json.put("ais_gate_id", AisCoreUtils.AIS_GATE_ID);
-            DomWebInterface.publishJsonToCloud(json, "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY = token;
+        DomWebInterface.updateRegistrationPushToken(token);
     }
     // [END on_new_token]
 

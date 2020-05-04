@@ -178,6 +178,11 @@ public class DomWebInterface {
         // do the simple HTTP post in async task
         new RetrieveTokenTaskJob().execute(code, clientId);
     }
+
+    public static void updateRegistrationPushToken(String pushToken) {
+        // do the simple HTTP post in async task
+        new updateRegistrationPushTokenTaskJob().execute(pushToken);
+    }
 }
 
 class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
@@ -230,18 +235,18 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
                 JSONObject json = new JSONObject();
                 try {
                     json.put("device_id", AisCoreUtils.AIS_GATE_ID);
-                    json.put("app_id", "pl.sviete.dom");
+                    json.put("app_id", BuildConfig.APPLICATION_ID);
                     json.put("app_name", "AIS dom");
-                    json.put("app_version", "1.2.0");
-                    json.put("device_name", "Mi A1");
-                    json.put("manufacturer", "Xiaomi");
-                    json.put("model", "A1");
+                    json.put("app_version", BuildConfig.VERSION_NAME);
+                    json.put("device_name", "AIS " + AisNetUtils.getModel());
+                    json.put("manufacturer", AisNetUtils.getManufacturer());
+                    json.put("model", AisNetUtils.getModel() + " " + AisNetUtils.getDevice() );
                     json.put("os_name", "Android");
-                    json.put("os_version", "28");
+                    json.put("os_version", AisNetUtils.getApiLevel() + " " + AisNetUtils.getOsVersion());
                     json.put("supports_encryption", false);
                     JSONObject appData = new JSONObject();
-                    appData.put("push_token", "dsadsadsadsa");
-                    appData.put("push_url", "https://powiedz.co/ords/dom/dom/sendPush");
+                    appData.put("push_token", AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY);
+                    appData.put("push_url", "https://powiedz.co/ords/dom/dom/send_push");
                     json.put("app_data", appData);
 
 
@@ -297,9 +302,89 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String webhookId) {
         // register mobile in home assistant /api/mobile_app/registrations
         if (!webhookId.equals("")){
-            // save webhookId
-            Log.e(TAG, "webhookId: " + webhookId);
+            // TODO save webhookId
+            Log.d(TAG, "webhookId: " + webhookId);
 
         }
     }
 }
+
+
+class updateRegistrationPushTokenTaskJob extends AsyncTask<String, Void, String> {
+    final static String TAG = DomWebInterface.class.getName();
+
+    @Override
+    protected String doInBackground(String[] params) {
+        URL url = null;
+        String push_token = params[0];
+        try {
+                // json
+                JSONObject json = new JSONObject();
+                json.put("device_id", AisCoreUtils.AIS_GATE_ID);
+                json.put("app_id", BuildConfig.APPLICATION_ID);
+                json.put("app_name", "AIS dom");
+                json.put("app_version", BuildConfig.VERSION_NAME);
+                json.put("device_name", "AIS " + AisNetUtils.getModel());
+                json.put("manufacturer", AisNetUtils.getManufacturer());
+                json.put("model", AisNetUtils.getModel() + " " + AisNetUtils.getDevice() );
+                json.put("os_name", "Android");
+                json.put("os_version", AisNetUtils.getApiLevel() + " " + AisNetUtils.getOsVersion());
+                json.put("supports_encryption", false);
+                JSONObject appData = new JSONObject();
+                appData.put("push_token", push_token);
+                appData.put("push_url", "https://powiedz.co/ords/dom/dom/send_push");
+                json.put("app_data", appData);
+
+                //
+                JSONObjectBody body = new JSONObjectBody(json);
+
+                 url = new URL(AisCoreUtils.getAisDomUrl() + "/api/mobile_app/registrations");
+                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                 con.setRequestMethod("POST");
+                 con.setRequestProperty("Content-Type", "application/json");
+                 con.setRequestProperty("charset", "utf-8");
+                 con.setRequestProperty("Authorization", "Bearer " + "accessToken");
+
+                 // For POST only - START
+                 con.setDoOutput(true);
+                 OutputStream os = con.getOutputStream();
+                 os = con.getOutputStream();
+                 os.write(json.toString().getBytes("UTF-8"));
+                 os.flush();
+                 os.close();
+
+                 int responseCode = con.getResponseCode();
+                 if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                     StringBuffer response = new StringBuffer();
+                     String inputLine;
+                     while ((inputLine = in.readLine()) != null) {
+                            response.append(inputLine);
+                     }
+                     in.close();
+                     Log.e(TAG, "response: " + response.toString());
+                     // json answer result
+                     JSONObject jsonObj = new JSONObject();
+                     jsonObj = new JSONObject(response.toString());
+                     String webhookId = jsonObj.getString("webhook_id");
+                     return webhookId;
+                 }
+
+        } catch (Exception e) {
+            return "";
+        }
+        return "";
+    }
+
+
+    @Override
+    protected void onPostExecute(String webhookId) {
+        // register mobile in home assistant /api/mobile_app/registrations
+        if (!webhookId.equals("")){
+            // TODO save webhookId
+            Log.d(TAG, "webhookId: " + webhookId);
+
+        }
+    }
+}
+
