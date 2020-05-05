@@ -280,6 +280,10 @@
 
     <string name="key_setting_app_wizard_done">setting_app_wizard_done</string>
     <string name="default_setting_app_wizard_done">false</string>
+
+    <string name="key_setting_ais_ha_access_token">ais_ha_access_token</string>
+    <string name="default_setting_ais_ha_access_token">""</string>
+
     <string name="wizard_step_1_title">Konfiguracja krok po kroku!</string>
     <string name="wizard_step_1_info">Ustaw parametry aplikacji w łatwy sposób przy pomocy kreatora..</string>
 

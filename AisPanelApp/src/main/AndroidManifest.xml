@@ -5,6 +5,10 @@
     android:installLocation="internalOnly"
     android:sharedUserId="pl.sviete.dom">
 
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_channel_id"
+        android:value="@string/default_notification_channel_id"/>
+
     <uses-sdk tools:ignore="GradleOverrides" />
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />

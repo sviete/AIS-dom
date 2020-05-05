@@ -17,7 +17,6 @@ public class AisCoreUtils {
     public static String AIS_GATE_USER = "";
     public static String AIS_GATE_DESC = "";
     public static String AIS_DEVICE_TYPE = "MOB";
-    public static String AIS_PUSH_NOTIFICATION_KEY = "";
 
     // STT
     public static final String BROADCAST_ON_END_SPEECH_TO_TEXT = "BROADCAST_ON_END_SPEECH_TO_TEXT";
@@ -97,6 +96,9 @@ public class AisCoreUtils {
 
     // HA
     public static String HA_CLIENT_ID = "";
+    public static String HA_CODE = "";
+    public static String AIS_PUSH_NOTIFICATION_KEY = "";
+    public static String AIS_HA_ACCESS_TOKEN = "";
     /*
      * Check if we are on gate or phone
      *

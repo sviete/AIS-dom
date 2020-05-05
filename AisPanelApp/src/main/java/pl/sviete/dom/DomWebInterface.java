@@ -13,17 +13,13 @@ import org.json.JSONObject;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpPost;
 import com.koushikdutta.async.http.AsyncHttpResponse;
-import com.koushikdutta.async.http.BasicNameValuePair;
-import com.koushikdutta.async.http.NameValuePair;
 import com.koushikdutta.async.http.body.JSONObjectBody;
-import com.koushikdutta.async.http.body.UrlEncodedFormBody;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 import ai.picovoice.hotword.PorcupineService;
 
@@ -174,19 +170,25 @@ public class DomWebInterface {
         doCloudPost(message, topic);
     }
 
-    public static void registerAuthorizationCode(String code, String clientId) {
+    public static void registerAuthorizationCode(Context context, String code, String clientId) {
         // do the simple HTTP post in async task
-        new RetrieveTokenTaskJob().execute(code, clientId);
+        new RetrieveTokenTaskJob(context).execute(code, clientId);
     }
 
-    public static void updateRegistrationPushToken(String pushToken) {
+    public static void updateRegistrationPushToken(Context context) {
         // do the simple HTTP post in async task
-        new updateRegistrationPushTokenTaskJob().execute(pushToken);
+        new AddUpdateDeviceRegistrationTaskJob(context).execute();
     }
 }
 
 class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
-    final static String TAG = DomWebInterface.class.getName();
+    final static String TAG = RetrieveTokenTaskJob.class.getName();
+
+    private Context mContext;
+
+    public RetrieveTokenTaskJob (Context context){
+        mContext = context;
+    }
 
     @Override
     protected String doInBackground(String[] params) {
@@ -231,62 +233,13 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
 
                 // json answer result
                 JSONObject jsonObj = new JSONObject(response.toString());
-                String accessToken = jsonObj.getString("access_token");
-                JSONObject json = new JSONObject();
-                try {
-                    json.put("device_id", AisCoreUtils.AIS_GATE_ID);
-                    json.put("app_id", BuildConfig.APPLICATION_ID);
-                    json.put("app_name", "AIS dom");
-                    json.put("app_version", BuildConfig.VERSION_NAME);
-                    json.put("device_name", "AIS " + AisNetUtils.getModel());
-                    json.put("manufacturer", AisNetUtils.getManufacturer());
-                    json.put("model", AisNetUtils.getModel() + " " + AisNetUtils.getDevice() );
-                    json.put("os_name", "Android");
-                    json.put("os_version", AisNetUtils.getApiLevel() + " " + AisNetUtils.getOsVersion());
-                    json.put("supports_encryption", false);
-                    JSONObject appData = new JSONObject();
-                    appData.put("push_token", AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY);
-                    appData.put("push_url", "https://powiedz.co/ords/dom/dom/send_push");
-                    json.put("app_data", appData);
 
+                // save ha access_token in settings
+                Config config = new Config(mContext);
+                config.setAisHaAccessToken(jsonObj.getString("access_token"));
 
-                    //
-                    JSONObjectBody body = new JSONObjectBody(json);
-
-                    url = new URL(AisCoreUtils.getAisDomUrl() + "/api/mobile_app/registrations");
-                    con = (HttpURLConnection) url.openConnection();
-                    con.setRequestMethod("POST");
-                    con.setRequestProperty("Content-Type", "application/json");
-                    con.setRequestProperty("charset", "utf-8");
-                    con.setRequestProperty("Authorization", "Bearer " + accessToken);
-
-                    // For POST only - START
-                    con.setDoOutput(true);
-                    os = con.getOutputStream();
-                    os.write(json.toString().getBytes("UTF-8"));
-                    os.flush();
-                    os.close();
-
-                    responseCode = con.getResponseCode();
-                    if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
-                        in = new BufferedReader(new InputStreamReader(
-                                con.getInputStream()));
-                        response = new StringBuffer();
-
-                        while ((inputLine = in.readLine()) != null) {
-                            response.append(inputLine);
-                        }
-                        in.close();
-                        Log.e(TAG, "response: " + response.toString());
-                        // json answer result
-                        jsonObj = new JSONObject(response.toString());
-                        String webhookId = jsonObj.getString("webhook_id");
-                        return webhookId;
-                    }
-
-                } catch (Exception e) {
-                    return "";
-                }
+                // device registration
+                new AddUpdateDeviceRegistrationTaskJob(mContext).execute();
 
             } else {
                 System.out.println("request not worked");
@@ -310,13 +263,23 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
 }
 
 
-class updateRegistrationPushTokenTaskJob extends AsyncTask<String, Void, String> {
-    final static String TAG = DomWebInterface.class.getName();
+class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String> {
+    final static String TAG = AddUpdateDeviceRegistrationTaskJob.class.getName();
+
+    private Context mContext;
+
+    public AddUpdateDeviceRegistrationTaskJob (Context context){
+        mContext = context;
+    }
 
     @Override
     protected String doInBackground(String[] params) {
         URL url = null;
-        String push_token = params[0];
+        // get token
+        // save ha access_token in settings
+        Config config = new Config(mContext);
+        String accessToken = config.getHaAccessToken();
+
         try {
                 // json
                 JSONObject json = new JSONObject();
@@ -324,14 +287,14 @@ class updateRegistrationPushTokenTaskJob extends AsyncTask<String, Void, String>
                 json.put("app_id", BuildConfig.APPLICATION_ID);
                 json.put("app_name", "AIS dom");
                 json.put("app_version", BuildConfig.VERSION_NAME);
-                json.put("device_name", "AIS " + AisNetUtils.getModel());
+                json.put("device_name", "mobile_ais_" + AisCoreUtils.AIS_GATE_ID.toLowerCase().replace(" ", "_"));
                 json.put("manufacturer", AisNetUtils.getManufacturer());
                 json.put("model", AisNetUtils.getModel() + " " + AisNetUtils.getDevice() );
                 json.put("os_name", "Android");
                 json.put("os_version", AisNetUtils.getApiLevel() + " " + AisNetUtils.getOsVersion());
                 json.put("supports_encryption", false);
                 JSONObject appData = new JSONObject();
-                appData.put("push_token", push_token);
+                appData.put("push_token", AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY);
                 appData.put("push_url", "https://powiedz.co/ords/dom/dom/send_push");
                 json.put("app_data", appData);
 
@@ -343,7 +306,7 @@ class updateRegistrationPushTokenTaskJob extends AsyncTask<String, Void, String>
                  con.setRequestMethod("POST");
                  con.setRequestProperty("Content-Type", "application/json");
                  con.setRequestProperty("charset", "utf-8");
-                 con.setRequestProperty("Authorization", "Bearer " + "accessToken");
+                 con.setRequestProperty("Authorization", "Bearer " + accessToken);
 
                  // For POST only - START
                  con.setDoOutput(true);

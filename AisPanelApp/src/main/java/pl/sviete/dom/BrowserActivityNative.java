@@ -238,8 +238,8 @@ public class BrowserActivityNative extends BrowserActivity {
                     // ask about token using the code
                     if (request.getUrl().getQueryParameter("code") != null){
                         try {
-                            String code = request.getUrl().getQueryParameter("code");
-                            DomWebInterface.registerAuthorizationCode(code, AisCoreUtils.HA_CLIENT_ID);
+                            AisCoreUtils.HA_CODE = request.getUrl().getQueryParameter("code");
+                            DomWebInterface.registerAuthorizationCode(getApplicationContext(), AisCoreUtils.HA_CODE, AisCoreUtils.HA_CLIENT_ID);
                         } catch (Exception e) {
                             Log.e(TAG, "code - unable to register ");
                         }

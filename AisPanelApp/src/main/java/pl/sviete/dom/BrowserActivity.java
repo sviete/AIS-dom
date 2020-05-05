@@ -179,8 +179,13 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         // createRecognitionView();
 
         // tts in browse
-        mBrowserTts = new TextToSpeech(this, this);
-
+        try {
+            mBrowserTts = new TextToSpeech(this, this);
+        } catch (Exception e) {
+            mBrowserTts = null;
+            Toast.makeText(BrowserActivity.this, e.toString(), Toast.LENGTH_LONG).show();
+            Log.e(TAG, e.toString());
+        }
 
         btnSpeak.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -314,7 +319,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
                 // Log and save
                 Log.d(TAG, "FCM Token: " + token);
-
                 AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY = token;
             }
         });

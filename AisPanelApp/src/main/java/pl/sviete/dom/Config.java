@@ -292,6 +292,17 @@ public class Config {
         ed.apply();
     }
 
+    public void setAisHaAccessToken(String token){
+        AisCoreUtils.AIS_HA_ACCESS_TOKEN = token;
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putString("ais_ha_access_token", token);
+        ed.apply();
+    }
+
+    public String getHaAccessToken(){
+        return getStringPref(R.string.key_setting_ais_ha_access_token, R.string.default_setting_ais_ha_access_token);
+    }
+
     public void setAppLaunchUrl(String gate) {
         // this is executed from QR code scan or Gate history only
         SharedPreferences.Editor ed = sharedPreferences.edit();
