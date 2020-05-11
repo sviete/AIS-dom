@@ -5,18 +5,24 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import androidx.core.app.NotificationCompat;
+
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -30,9 +36,12 @@ import java.util.Map;
  *   <action android:name="com.google.firebase.MESSAGING_EVENT" />
  * </intent-filter>
  */
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class MyFirebaseMessagingService extends FirebaseMessagingService implements TextToSpeech.OnInitListener {
 
     private static final String TAG = "MyFirebaseMsgService";
+    private TextToSpeech mTts;
+    private String textToSpeak;
+    private Context context;
 
     /**
      * Called when message is received.
@@ -58,26 +67,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
         // [END_EXCLUDE]
 
-        // TODO(developer): Handle FCM messages here.
+        // Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload.
+        // We only accept data payload - to have one way of handling messages
+        Log.d(TAG, "Message ");
         Map<String, String> data = remoteMessage.getData();
-        String color;
         if (data.size() > 0) {
-            Log.d(TAG, "Message data payload: " + data);
-            color = data.get("color");
             // Handle message within 10 seconds
-            handleMessageNow();
+            handleMessageNow(remoteMessage);
         }
 
+        // this is not used by us - should be removed...
         // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
-
-        }
+        //if (remoteMessage.getNotification() != null) {
+        //    Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+        //     sendNotification(remoteMessage);
+        //}
     }
     // [END receive_message]
 
@@ -100,8 +106,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Handle time allotted to BroadcastReceivers.
      */
-    private void handleMessageNow() {
-        Log.d(TAG, "Short lived task is done.");
+    private void handleMessageNow(RemoteMessage remoteMessage) {
+        Log.d(TAG, "Handle message .");
+        this.textToSpeak = "";
+        Map<String, String> data = remoteMessage.getData();
+        String say = "";
+        if (data.size() > 0) {
+            Log.d(TAG, "Message data payload: " + data);
+            say = data.get("say");
+            String title = data.get("title");
+            String body = data.get("body");
+            // Notification
+            if (say != null && say.equals("true")) {
+                // try to say
+                processTTS(title + " " + body);
+            }
+            sendNotification(title, body, data.get("image"));
+        }
     }
 
 
@@ -109,7 +130,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Create and show a simple notification containing the received FCM message.
      *
      */
-    private void sendNotification(String messageTitle, String messageBody) {
+    private void sendNotification(String title, String body, String imageUrl) {
         Intent intent = new Intent(this, BrowserActivityNative.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -120,13 +141,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_ais_logo)
-                        .setContentTitle(messageTitle)
-                        .setContentText(messageBody)
+                        .setContentTitle(title)
+                        .setContentText(body)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent)
                         .setColor(getApplicationContext().getResources().getColor(R.color.color1));
-
+        if (imageUrl != null) {
+            Bitmap bitmap = getBitmapfromUrl(imageUrl);
+            notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap));
+            notificationBuilder.setLargeIcon(bitmap);
+        }
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -139,5 +164,74 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    /*
+     *To get a Bitmap image from the URL received
+     * */
+    public Bitmap getBitmapfromUrl(String imageUrl) {
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            return bitmap;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+
+        }
+    }
+
+    private void processTTS(String text) {
+        Log.d(TAG, "processTTS Called: " + text);
+        this.textToSpeak = text;
+
+        if (mTts != null) {
+            mTts.shutdown();
+            mTts.stop();
+            mTts = null;
+        }
+
+        if (mTts == null) {
+            // currently can\'t change Locale until speech ends
+            try {
+                // Initialize text-to-speech. This is an asynchronous operation.
+                // The OnInitListener (second argument) is called after
+                // initialization completes.
+                mTts = new TextToSpeech(getApplicationContext(), this);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onInit(int initStatus) {
+        if (initStatus == TextToSpeech.SUCCESS) {
+            mTts.setSpeechRate(1.0f);
+            Config mConfig = new Config(getApplicationContext());
+            String ttsVoice = mConfig.getAppTtsVoice();
+            Voice voiceobj = new Voice(
+                    ttsVoice, new Locale("pl_PL"),
+                    Voice.QUALITY_HIGH,
+                    Voice.LATENCY_NORMAL,
+                    false,
+                    null);
+            mTts.setVoice(voiceobj);
+            if(this.textToSpeak.length() >= 4000) {
+                this.textToSpeak = this.textToSpeak.substring(0, 3999);
+            }
+            mTts.speak(this.textToSpeak, TextToSpeech.QUEUE_FLUSH, null,"123456");
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

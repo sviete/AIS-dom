@@ -295,7 +295,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                 json.put("supports_encryption", false);
                 JSONObject appData = new JSONObject();
                 appData.put("push_token", AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY);
-                appData.put("push_url", "https://powiedz.co/ords/dom/dom/send_push");
+                appData.put("push_url", "https://powiedz.co/ords/dom/dom/send_push_data");
                 json.put("app_data", appData);
 
                 //
