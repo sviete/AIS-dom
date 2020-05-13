@@ -16,7 +16,7 @@ public class AisPanel extends Application {
         Log.i(TAG, "-------------------------------------------");
         Log.i(TAG, "-------------------------------------------");
         Log.i(TAG, "-------------------------------------------");
-        Log.i(TAG, "---------AisPanel -> onCreate -------------");
+        Log.i(TAG, "---------AisMobClient -> onCreate ----------");
         Log.i(TAG, "-------------------------------------------");
         Log.i(TAG, "-------------------------------------------");
         Log.i(TAG, "-------------------------------------------");
@@ -32,6 +32,6 @@ public class AisPanel extends Application {
     public void onTerminate() {
         // call the superclass method first
         super.onTerminate();
-        Log.i(TAG, "mdns.Stop discover gates in local network");
+        Log.i(TAG, "onTerminate");
     }
 }

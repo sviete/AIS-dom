@@ -113,15 +113,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         String say = "";
         if (data.size() > 0) {
             Log.d(TAG, "Message data payload: " + data);
-            say = data.get("say");
-            String title = data.get("title");
             String body = data.get("body");
+
             // Notification
-            if (say != null && say.equals("true")) {
-                // try to say
-                processTTS(title + " " + body);
+            if (body != null) {
+                say = data.get("say");
+                String title = data.get("title");
+                // Say this
+                if (say != null && say.equals("true")) {
+                    // try to say
+                    processTTS(title + " " + body);
+                }
+                sendNotification(title, body, data.get("image"), data.get("notification_id"));
             }
-            sendNotification(title, body, data.get("image"));
         }
     }
 
@@ -130,7 +134,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
      * Create and show a simple notification containing the received FCM message.
      *
      */
-    private void sendNotification(String title, String body, String imageUrl) {
+    private void sendNotification(String title, String body, String imageUrl, String notification_id) {
         Intent intent = new Intent(this, BrowserActivityNative.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -158,12 +162,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    "AIS Notification Channel",
+                    NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        int l_notification_id = 0;
+        try {
+            l_notification_id = Integer.parseInt(notification_id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        notificationManager.notify(l_notification_id, notificationBuilder.build());
     }
 
     /*
