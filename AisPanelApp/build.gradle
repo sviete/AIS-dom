@@ -7,8 +7,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 114
-        versionName '1.1.7.Notify'
+        versionCode 115
+        versionName '1.1.8.Notify'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
