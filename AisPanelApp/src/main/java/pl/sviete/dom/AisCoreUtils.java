@@ -99,6 +99,7 @@ public class AisCoreUtils {
     public static String HA_CODE = "";
     public static String AIS_PUSH_NOTIFICATION_KEY = "";
     public static String AIS_HA_ACCESS_TOKEN = "";
+    public static String AIS_HA_WEBHOOK_ID = "";
     /*
      * Check if we are on gate or phone
      *

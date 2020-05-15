@@ -48,6 +48,9 @@ public class WelcomeActivity extends AppCompatActivity {
                 AisCoreUtils.AIS_DEVICE_TYPE = "MOB";
             }
 
+            // remember the ais ha webhook id
+            AisCoreUtils.AIS_HA_WEBHOOK_ID = config.getAisHaWebhookId();
+
             // run hot word service on start
             if (config.getHotWordMode()) {
                 Intent porcupineServiceIntent = new Intent(this.getApplicationContext(), PorcupineService.class);

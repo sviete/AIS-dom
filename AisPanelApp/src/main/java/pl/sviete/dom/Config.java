@@ -303,6 +303,17 @@ public class Config {
         return getStringPref(R.string.key_setting_ais_ha_access_token, R.string.default_setting_ais_ha_access_token);
     }
 
+    public void setAisHaWebhookId(String webhookId){
+        AisCoreUtils.AIS_HA_WEBHOOK_ID = webhookId;
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putString("ais_ha_webhook_id", webhookId);
+        ed.apply();
+    }
+
+    public String getAisHaWebhookId(){
+        return getStringPref(R.string.key_setting_ais_ha_webhook_id, R.string.default_setting_ais_ha_webhook_id);
+    }
+
     public void setAppLaunchUrl(String gate) {
         // this is executed from QR code scan or Gate history only
         SharedPreferences.Editor ed = sharedPreferences.edit();

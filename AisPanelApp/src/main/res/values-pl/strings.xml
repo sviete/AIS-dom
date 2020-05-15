@@ -284,6 +284,9 @@
     <string name="key_setting_ais_ha_access_token">ais_ha_access_token</string>
     <string name="default_setting_ais_ha_access_token">""</string>
 
+    <string name="key_setting_ais_ha_webhook_id">ais_ha_webhook_id</string>
+    <string name="default_setting_ais_ha_webhook_id">""</string>
+
     <string name="wizard_step_1_title">Konfiguracja krok po kroku!</string>
     <string name="wizard_step_1_info">Ustaw parametry aplikacji w łatwy sposób przy pomocy kreatora..</string>
 

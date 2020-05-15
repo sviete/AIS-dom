@@ -36,6 +36,11 @@ public class DomWebInterface {
         String url = pl.sviete.dom.AisCoreUtils.getAisDomUrl() + "/api/webhook/aisdomprocesscommandfromframe";
         AsyncHttpPost post = new AsyncHttpPost(url);
         JSONObjectBody body = new JSONObjectBody(message);
+        try {
+            message.put("ais_ha_webhook_id", AisCoreUtils.AIS_HA_WEBHOOK_ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         post.addHeader("Content-Type", "application/json");
         post.setBody(body);
         AsyncHttpClient.getDefaultInstance().executeJSONObject(post, new AsyncHttpClient.JSONObjectCallback() {
@@ -179,6 +184,12 @@ public class DomWebInterface {
         // do the simple HTTP post in async task
         new AddUpdateDeviceRegistrationTaskJob(context).execute();
     }
+
+
+    // Sending data home TODO
+    // https://developers.home-assistant.io/docs/api/native-app-integration/sending-data
+    // 1. Update device location
+    // 2. Sensors
 }
 
 class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
@@ -195,6 +206,7 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
         URL url = null;
         String code = params[0];
         String clientId = params[1];
+        String ha_access_token = "";
         try {
             // 1. get token
             url = new URL(AisCoreUtils.getAisDomUrl() + "/auth/token");
@@ -234,9 +246,11 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
                 // json answer result
                 JSONObject jsonObj = new JSONObject(response.toString());
 
+                ha_access_token = jsonObj.getString("access_token");
+
                 // save ha access_token in settings
                 Config config = new Config(mContext);
-                config.setAisHaAccessToken(jsonObj.getString("access_token"));
+                config.setAisHaAccessToken(ha_access_token);
 
                 // device registration
                 new AddUpdateDeviceRegistrationTaskJob(mContext).execute();
@@ -245,19 +259,17 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
                 System.out.println("request not worked");
             }
         } catch (Exception e) {
-            return "";
+            return ha_access_token;
         }
-        return "";
+        return ha_access_token;
     }
 
 
     @Override
-    protected void onPostExecute(String webhookId) {
-        // register mobile in home assistant /api/mobile_app/registrations
-        if (!webhookId.equals("")){
-            // TODO save webhookId
-            Log.d(TAG, "webhookId: " + webhookId);
-
+    protected void onPostExecute(String  haAccessToken) {
+        // just for debug
+        if (!haAccessToken.equals("")){
+            Log.d(TAG, "haAccessToken: " + haAccessToken);
         }
     }
 }
@@ -275,6 +287,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
     @Override
     protected String doInBackground(String[] params) {
         URL url = null;
+        String webhookId = "";
         // get token
         // save ha access_token in settings
         Config config = new Config(mContext);
@@ -325,18 +338,21 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                             response.append(inputLine);
                      }
                      in.close();
-                     Log.e(TAG, "response: " + response.toString());
                      // json answer result
                      JSONObject jsonObj = new JSONObject();
                      jsonObj = new JSONObject(response.toString());
-                     String webhookId = jsonObj.getString("webhook_id");
+                     webhookId = jsonObj.getString("webhook_id");
+
+                     // save ha Webhook Id in settings
+                     config.setAisHaWebhookId(webhookId);
+
                      return webhookId;
                  }
 
         } catch (Exception e) {
-            return "";
+            return webhookId;
         }
-        return "";
+        return webhookId;
     }
 
 
