@@ -1,6 +1,9 @@
 ais-dom-keystore.jks
 https-cert
 AisPanelApp/release/*
+AisPanelApp/gate/release/*
+AisPanelApp/gate/release/*
+AisPanelApp/market/release/*
 *.iml
 .gradle
 /local.properties

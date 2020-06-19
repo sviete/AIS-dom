@@ -34,6 +34,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:422932798058:android:5d12481d4099b667b60813",
+        "android_client_info": {
+          "package_name": "pl.sviete.dom.client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "422932798058-se7facgldrng3ik0u1102r3ibn0ofdv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5FlwwleLjVKgDTiABpPgNd4MJ-S0FL2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "422932798058-se7facgldrng3ik0u1102r3ibn0ofdv4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

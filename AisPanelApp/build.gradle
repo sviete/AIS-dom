@@ -23,7 +23,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions "version"
     productFlavors {
+        market {
+            dimension "version"
+            applicationIdSuffix ""
+            targetSdkVersion 28
+        }
+
+        gate {
+            dimension "version"
+            applicationIdSuffix "client"
+            targetSdkVersion 24
+        }
+
     }
 }
 
