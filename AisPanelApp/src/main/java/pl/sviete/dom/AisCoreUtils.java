@@ -8,6 +8,8 @@ import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.webkit.WebView;
 
+import java.io.File;
+
 import ai.picovoice.porcupinemanager.PorcupineManager;
 
 public class AisCoreUtils {
@@ -51,6 +53,9 @@ public class AisCoreUtils {
 
 
     public static String getAisDomUrl(){
+        if (onBox()){
+            return "http://127.0.0.1:8180";
+        }
         return AIS_DOM_URL;
     }
 
@@ -105,6 +110,24 @@ public class AisCoreUtils {
      *
      * @return <code>true</code> if we are on Box, otherwise <code>false</code>
      */
+    public static boolean onBox() {
+        // default for box and phone
+        File conf = new File("/data/data/pl.sviete.dom/files/home/AIS/configuration.yaml");
+        if (conf.exists()){
+            return true;
+        }
+        // during the first start on box only bootstrap exists
+        File bootstrap = new File("/data/data/pl.sviete.dom/files.tar.7z");
+        if (bootstrap.exists()){
+            return true;
+        }
+        // test on phone
+        File test_file = new File("/sdcard/test_ais_dom_iot_on_phone_on");
+        if (test_file.exists()){
+            return true;
+        }
+        return false;
+    }
 
     public static boolean onTv() {
         if (AIS_DEVICE_TYPE.equals("TV")){
@@ -127,6 +150,7 @@ public class AisCoreUtils {
 
     // whether this text has already been spoken
     public static boolean shouldIsayThis(String text, String source) {
+
 
         String text_to_say = text.trim();
         if (AIS_DOM_LAST_TTS.substring(0, Math.min(AIS_DOM_LAST_TTS.length(), 250)).equals(text_to_say.substring(0, Math.min(text_to_say.length(), 250)))){
@@ -157,4 +181,3 @@ public class AisCoreUtils {
 
 
 }
-

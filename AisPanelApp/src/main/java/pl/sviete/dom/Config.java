@@ -217,6 +217,10 @@ public class Config {
     public String getAppLaunchUrl(boolean disco) {
         String url;
 
+        if (AisCoreUtils.onBox()){
+            return AisCoreUtils.getAisDomUrl();
+        }
+
         url = getStringPref(R.string.key_setting_app_launchurl, R.string.default_setting_app_launchurl);
 
         if (url.startsWith("dom-") && disco) {

@@ -88,7 +88,7 @@
     <string name="permission_description">AI-Speaker:API needs the following permission(s):\n</string>
 
     <string name="title_activity_settings">APPLICATION SETTINGS</string>
-    <string name="title_activity_settings_smart_panel">SMART PANEL</string>
+    <string name="title_activity_settings_smart_panel">EXPERIMENTAL FUNCTIONS</string>
     <string name="title_activity_other_apps">INTEGRATIONS</string>
     <string name="title_activity_browser">AI-Speaker</string>
 
@@ -325,4 +325,6 @@
 
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="fcm_message">FCM Message</string>
+
+    <string name="pref_ais_dom_exit_title">Exit</string>
 </resources>

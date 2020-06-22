@@ -99,11 +99,15 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void redirectToActivity(){
         Log.i(TAG, "On client. Go to browser on Startup");
-        Config config = new Config(this.getApplicationContext());
-        if (config.getAppWizardDone()){
+        if (AisCoreUtils.onBox()){
             startBrowserActivity();
         } else {
-            startWizardActivity();
+            Config config = new Config(this.getApplicationContext());
+            if (config.getAppWizardDone()) {
+                startBrowserActivity();
+            } else {
+                startWizardActivity();
+            }
         }
     }
 

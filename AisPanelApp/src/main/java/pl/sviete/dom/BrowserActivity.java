@@ -122,11 +122,14 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
 
         //
-        mSwitchIconModeGesture = findViewById(R.id.switchControlModeGesture);
         mButtonModeGesture = findViewById(R.id.btnControlModeGesture);
-        mButtonModeGesture.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
+        mSwitchIconModeGesture = findViewById(R.id.switchControlModeGesture);
+        if (AisCoreUtils.onBox()){
+            mButtonModeGesture.setVisibility(View.GONE);
+        } else {
+            mButtonModeGesture.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
                     gestureOverlayView = (GestureOverlayView) findViewById(R.id.gesturesOverlay);
 
                     if (mSwitchIconModeGesture.isIconEnabled()) {
@@ -146,34 +149,39 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
                     }
 
-                return true;
-            }
-        });
+                    return true;
+                }
+            });
 
-        mButtonModeGesture.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_gesture), Toast.LENGTH_SHORT).show();
-            }
-        });
+            mButtonModeGesture.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_gesture), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
 
 
         // buton check connection
         mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
-        mButtonModeConnection.setOnLongClickListener(v -> {
-            appLaunchUrl = mConfig.getAppLaunchUrl(false);
-            if (appLaunchUrl.startsWith("dom-")) {
-                // sprawdzam połączenie
-                speakOutFromBrowser("Sprawdzam połączenie.", "app");
-                mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                appLaunchUrl = mConfig.getAppLaunchUrl(true);
-            } else {
-                speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.", "app");
-            }
-            return true;
-        });
+        if (AisCoreUtils.onBox()){
+            mButtonModeConnection.setVisibility(View.GONE);
+        } else {
+            mButtonModeConnection.setOnLongClickListener(v -> {
+                appLaunchUrl = mConfig.getAppLaunchUrl(false);
+                if (appLaunchUrl.startsWith("dom-")) {
+                    // sprawdzam połączenie
+                    speakOutFromBrowser("Sprawdzam połączenie.", "app");
+                    mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                    appLaunchUrl = mConfig.getAppLaunchUrl(true);
+                } else {
+                    speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.", "app");
+                }
+                return true;
+            });
 
-        mButtonModeConnection.setOnClickListener(v -> Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_connection), Toast.LENGTH_SHORT).show());
-
+            mButtonModeConnection.setOnClickListener(v -> Toast.makeText(BrowserActivity.this, getString(R.string.long_click_to_execute_connection), Toast.LENGTH_SHORT).show());
+        }
 
         // this is done onResume
         // createRecognitionView();
@@ -338,7 +346,11 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     }
 
     void speakOutFromBrowser(String text, String source) {
-        // dont say if the browser activity is not visible
+        // don't say in client if on box
+        if (AisCoreUtils.onBox()) {
+            return;
+        }
+        // don't say if the browser activity is not visible
         if (!isBrowserActivityVisible){
             return;
         }

@@ -111,7 +111,41 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             String versionName = BuildConfig.VERSION_NAME;
             PreferenceCategory prefCategorySettings = (PreferenceCategory) findPreference("pref_category_app_settings");
             Preference preferenceVersion = findPreference("pref_ais_dom_version");
-            preferenceVersion.setSummary(versionName + " (client app)");
+            if(AisCoreUtils.onBox()) {
+                preferenceVersion.setSummary(versionName + " (client app on iot gate)");
+                // hide some options on gate / phone
+                // remove connection url
+                PreferenceScreen preferenceMainScreen = (PreferenceScreen) findPreference("ais_dom_main_pref_screen");
+                PreferenceCategory prefCategoryConnUrl = (PreferenceCategory) findPreference("ais_dom_con_url");
+                preferenceMainScreen.removePreference(prefCategoryConnUrl);
+                // remove wizard
+                PreferenceCategory prefCategoryWizard = (PreferenceCategory) findPreference("ais_dom_wizard");
+                preferenceMainScreen.removePreference(prefCategoryWizard);
+                // pref_ais_dom_list_gesture  abd remove select tts voice
+                preferenceMainScreen.removePreference(prefCategorySettings);
+                //
+                PreferenceCategory prefCategoryExperimental = (PreferenceCategory) findPreference("pref_category_app_experimental");
+                Preference preferenceAudioDisco = findPreference("setting_app_discovery");
+                prefCategoryExperimental.removePreference(preferenceAudioDisco);
+
+                //
+
+            } else {
+                preferenceVersion.setSummary(versionName + " (client app)");
+            }
+
+            // set on exit
+            Preference preferenceExitApp = findPreference("pref_ais_dom_exit");
+            preferenceExitApp.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent startMain = new Intent(Intent.ACTION_MAIN);
+                    startMain.addCategory(Intent.CATEGORY_HOME);
+                    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(startMain);
+                    return true;
+                }
+            });
 
             // set info about HotWordSensitivity
             Preference preferenceHotWordSensitivity = findPreference("setting_app_hot_word_sensitivity");
@@ -125,7 +159,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             preferenceHotWord.setTitle(getString(R.string.title_setting_app_hot_word) + ": " + hotWord);
 
             //
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.key_setting_app_launchurl)));
+            if (!AisCoreUtils.onBox()) {
+                bindPreferenceSummaryToValue(findPreference(getString(R.string.key_setting_app_launchurl)));
+            }
 
 
 
@@ -184,44 +220,45 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             };
 
 
-            Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
-            preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
-
             Preference preferenceHotWordMode = findPreference("setting_hot_word_mode");
             preferenceHotWordMode.setOnPreferenceChangeListener(preferenceChangeListener);
 
             preferenceHotWord.setOnPreferenceChangeListener(preferenceChangeListener);
             preferenceHotWordSensitivity.setOnPreferenceChangeListener(preferenceChangeListener);
 
+            //
+            if (!AisCoreUtils.onBox()) {
+                //
+                Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
+                preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
 
-            // scanner
+                // scanner
+                PreferenceScreen prefScan = (PreferenceScreen) findPreference("button_scan_gate_id");
+                prefScan.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
-            PreferenceScreen prefScan = (PreferenceScreen) findPreference("button_scan_gate_id");
-            prefScan.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.setComponent(new ComponentName("pl.sviete.dom","pl.sviete.dom.ScannerActivity"));
-                    startActivity(intent);
-                    return false;
-                }
-            });
-
-
-            PreferenceScreen prefWizard = (PreferenceScreen) findPreference("button_run_ais_dom_wizard");
-            prefWizard.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.setComponent(new ComponentName("pl.sviete.dom","com.redbooth.wizard.MainWizardActivity"));
-                    startActivity(intent);
-                    return false;
-                }
-            });
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.setComponent(new ComponentName("pl.sviete.dom", "pl.sviete.dom.ScannerActivity"));
+                        startActivity(intent);
+                        return false;
+                    }
+                });
 
 
+                PreferenceScreen prefWizard = (PreferenceScreen) findPreference("button_run_ais_dom_wizard");
+                prefWizard.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.setComponent(new ComponentName("pl.sviete.dom", "com.redbooth.wizard.MainWizardActivity"));
+                        startActivity(intent);
+                        return false;
+                    }
+                });
+
+            }
         }
 
     }

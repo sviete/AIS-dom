@@ -109,6 +109,11 @@
                 android:title="www.ai-speaker.com"
                 android:icon="@drawable/ic_app_info">
             </PreferenceScreen>
+            <PreferenceScreen android:key="pref_ais_dom_exit"
+                android:title="@string/pref_ais_dom_exit_title"
+                android:summary="@string/pref_ais_dom_exit_summary"
+                android:icon="@drawable/ic_app_exit">
+            </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>
 
