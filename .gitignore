@@ -1,4 +1,5 @@
 ais-dom-keystore.jks
+AisPanelApp/build.gradle
 https-cert
 AisPanelApp/release/*
 AisPanelApp/gate/release/*

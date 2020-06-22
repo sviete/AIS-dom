@@ -96,6 +96,18 @@
             android:label="@string/title_activity_browser"
             android:theme="@style/AppThemeFullScreen">
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="pl.sviete.dom.BrowserActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|locale"
+            android:label="@string/title_activity_browser"
+            android:theme="@style/AppThemeFullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
