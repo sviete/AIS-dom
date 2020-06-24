@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+def apikeyPropertiesFile = rootProject.file("ais.properties");
+def apikeyProperties = new Properties()
+apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -7,8 +11,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 115
-        versionName '1.1.9.Notify'
+        versionCode 116
+        versionName '1.2.0.Clietn on Gate'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
@@ -36,7 +40,20 @@ android {
             applicationIdSuffix "client"
             targetSdkVersion 24
         }
-
+    }
+    signingConfigs {
+        debug {
+            storeFile file('../ais-dom-keystore.jks')
+            storePassword apikeyProperties['RELEASE_STORE_PASSWORD']
+            keyAlias 'key0'
+            keyPassword apikeyProperties['RELEASE_STORE_PASSWORD']
+        }
+        release {
+            storeFile file('../ais-dom-keystore.jks')
+            storePassword apikeyProperties['RELEASE_STORE_PASSWORD']
+            keyAlias 'key0'
+            keyPassword apikeyProperties['RELEASE_STORE_PASSWORD']
+        }
     }
 }
 
