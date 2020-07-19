@@ -131,7 +131,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 //
 
             } else {
-                preferenceVersion.setSummary(versionName + " (client app)");
+                preferenceVersion.setSummary(versionName + " \n(mob client id: " + AisCoreUtils.AIS_GATE_ID + ")" );
             }
 
             // set on exit

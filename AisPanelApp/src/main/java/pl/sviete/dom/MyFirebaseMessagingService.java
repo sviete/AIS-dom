@@ -129,9 +129,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         }
     }
 
+    /**
+     * Turn on microphone TODO
+     *
+     */
+
+
 
     /**
-     * Create and show a simple notification containing the received FCM message.
+     * Create and show a notification containing the received FCM message.
      *
      */
     private void sendNotification(String title, String body, String imageUrl, String notification_id) {
