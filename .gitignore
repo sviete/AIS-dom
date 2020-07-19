@@ -4,8 +4,9 @@ AisPanelApp/build.gradle
 https-cert
 AisPanelApp/release/*
 AisPanelApp/gate/release/*
-AisPanelApp/gate/release/*
+AisPanelApp/gate/debug/*
 AisPanelApp/market/release/*
+AisPanelApp/market/debug/*
 *.iml
 .gradle
 /local.properties

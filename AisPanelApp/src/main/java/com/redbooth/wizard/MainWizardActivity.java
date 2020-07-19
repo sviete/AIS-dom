@@ -29,6 +29,7 @@ import com.redbooth.wizard.animators.RocketFlightAwayAnimator;
 
 import pl.sviete.dom.AisCoreUtils;
 import pl.sviete.dom.BrowserActivityNative;
+import pl.sviete.dom.BuildConfig;
 import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
 
@@ -390,7 +391,7 @@ public class MainWizardActivity extends AppCompatActivity {
 
     private void skanGateId(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setComponent(new ComponentName("pl.sviete.dom","pl.sviete.dom.ScannerActivity"));
+        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.ScannerActivity");
         intent.putExtra(BACK_TO_WIZARD, true);
         startActivity(intent);
     }

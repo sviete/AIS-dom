@@ -239,11 +239,39 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.setComponent(new ComponentName("pl.sviete.dom", "pl.sviete.dom.ScannerActivity"));
+                        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.ScannerActivity");
                         startActivity(intent);
                         return false;
                     }
                 });
+
+                // connection history
+                PreferenceScreen preConHisto = (PreferenceScreen) findPreference("pref_ais_dom_list_history");
+                preConHisto.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.connhist.AisConnectionsHistoryActivity");
+                        startActivity(intent);
+                        return false;
+                    }
+                });
+
+                // pref_ais_dom_list_gesture
+                PreferenceScreen preGesture = (PreferenceScreen) findPreference("pref_ais_dom_list_gesture");
+                preGesture.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.gesture.GestureListActivity");
+                        startActivity(intent);
+                        return false;
+                    }
+                });
+
+
 
 
                 PreferenceScreen prefWizard = (PreferenceScreen) findPreference("button_run_ais_dom_wizard");
@@ -252,7 +280,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.setComponent(new ComponentName("pl.sviete.dom", "com.redbooth.wizard.MainWizardActivity"));
+                        intent.setClassName(BuildConfig.APPLICATION_ID, "com.redbooth.wizard.MainWizardActivity");
                         startActivity(intent);
                         return false;
                     }

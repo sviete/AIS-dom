@@ -32,10 +32,6 @@
             android:key="pref_ais_dom_list_history"
             android:summary="@string/summary_recent_connections"
             android:title="@string/title_recent_connections">
-            <intent
-                android:action="android.intent.action.MAIN"
-                android:targetClass="pl.sviete.dom.connhist.AisConnectionsHistoryActivity"
-                android:targetPackage="pl.sviete.dom" />
         </PreferenceScreen>
     </PreferenceCategory>
 
@@ -50,15 +46,11 @@
                 android:summary="@string/summary_setting_app_tts_voice"
                 android:key="@string/key_setting_app_tts_voice"
                 android:icon="@drawable/ic_tts_voice"/>
-            <PreferenceScreen android:key="pref_ais_dom_list_gesture"
+            <PreferenceScreen
+                android:key="pref_ais_dom_list_gesture"
                 android:title="@string/list_gesture"
                 android:summary="@string/summary_list_gesture"
                 android:icon="@drawable/ic_gesture_icon">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetPackage="pl.sviete.dom"
-                    android:targetClass="pl.sviete.dom.gesture.GestureListActivity"
-                    />
             </PreferenceScreen>
         </PreferenceCategory>
         <PreferenceCategory
