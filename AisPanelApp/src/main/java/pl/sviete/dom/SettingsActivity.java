@@ -1,7 +1,6 @@
 package pl.sviete.dom;
 
 import android.annotation.TargetApi;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,9 +11,6 @@ import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.util.Log;
-
-import androidx.core.content.ContextCompat;
 
 import ai.picovoice.hotword.PorcupineService;
 

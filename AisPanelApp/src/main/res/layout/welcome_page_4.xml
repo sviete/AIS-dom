@@ -70,4 +70,18 @@
         android:scaleX="0"
         android:scaleY="0" />
 
+    <TextView
+        android:id="@+id/wizard_info_page4_demo_gate"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="30dp"
+        android:text="@string/wizard_step_4_demo_info"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="#FFEB3B"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
 </com.redbooth.WelcomePageLayout>

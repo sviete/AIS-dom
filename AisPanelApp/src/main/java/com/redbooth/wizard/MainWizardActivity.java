@@ -3,7 +3,6 @@ package com.redbooth.wizard;
 import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -18,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.redbooth.WelcomeCoordinatorLayout;
 import com.redbooth.wizard.animators.ChatAvatarsAnimator;
@@ -360,6 +360,9 @@ public class MainWizardActivity extends AppCompatActivity {
         } else {
             setGateIsOFF(appLaunchUrl);
         }
+
+        TextView demoText = findViewById(R.id.wizard_info_page4_demo_gate);
+        demoText.setOnClickListener(v -> setDemoGateId());
     }
 
     private void setGateIsON(String appLaunchUrl){
@@ -387,6 +390,17 @@ public class MainWizardActivity extends AppCompatActivity {
         } else {
             qrText.setText(getString(R.string.wizard_step_4_title));
         }
+    }
+
+    private void setDemoGateId(){
+        String demoGateId = "https://demo.ai-speaker.com/";
+        Toast.makeText(getApplicationContext(), demoGateId, Toast.LENGTH_SHORT).show();
+        // save code and go to next step in wizard
+        final Config config = new Config(this.getApplicationContext());
+        config.setAppLaunchUrl(demoGateId);
+
+        TextView qrText = findViewById(R.id.gate_id_from_qr_code);
+        qrText.setText(demoGateId);
     }
 
     private void skanGateId(){
