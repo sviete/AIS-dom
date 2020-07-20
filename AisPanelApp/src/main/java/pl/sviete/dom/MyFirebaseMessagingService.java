@@ -11,7 +11,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
@@ -24,6 +26,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
+
+import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 
 /**
  * NOTE: There can only be one service in each app that receives FCM messages. If multiple
@@ -41,7 +45,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     private static final String TAG = "MyFirebaseMsgService";
     private TextToSpeech mTts;
     private String textToSpeak;
-    private Context context;
 
     /**
      * Called when message is received.
@@ -126,14 +129,40 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                 }
                 sendNotification(title, body, data.get("image"), data.get("notification_id"));
             }
+
+            //
+            String request = data.get("request");
+            if (request != null) {
+                sendRequest(request, data);
+            }
         }
     }
 
     /**
-     * Turn on microphone TODO
+     * Turn on microphone etc
      *
      */
+    private void sendRequest(String request, Map<String, String> data) {
+            // 1. check if service is runing
+            if (!isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {
+                // service is NOT running - start it!
+                Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
+                serviceIntent.putExtra("aisRequest", request);
+                this.getApplicationContext().startService(serviceIntent);
+                // 2. execute after 2 seconds
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
+        Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
+        requestIntent.putExtra("aisRequest", request);
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+        bm.sendBroadcast(requestIntent);
+
+    }
 
 
     /**

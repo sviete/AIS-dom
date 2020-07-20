@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
@@ -94,6 +95,7 @@ import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 public class AisPanelService extends Service implements TextToSpeech.OnInitListener, ExoPlayer.EventListener {
     public static final String BROADCAST_EVENT_DO_STOP_TTS = "BROADCAST_EVENT_DO_STOP_TTS";
     public static final String BROADCAST_EVENT_CHANGE_CONTROLLER_MODE = "BROADCAST_EVENT_CHANGE_CONTROLLER_MODE";
+    public static final String  BROADCAST_ON_AIS_REQUEST = "BROADCAST_ON_AIS_REQUEST";
 
     // Spotify
     public static final String  BROADCAST_SPOTIFY_PLAY_AUDIO = "BROADCAST_SPOTIFY_PLAY_AUDIO";
@@ -274,33 +276,33 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 new Intent(this, BrowserActivityNative.class),
                 0);
 
+        String aisTitle = "Player";
+        if (intent.hasExtra("aisRequest")){
+            aisTitle = intent.getStringExtra("aisRequest");
+        }
 
-//        androidx.media.app.NotificationCompat.MediaStyle style = new androidx.media.app.NotificationCompat.MediaStyle();
-//        style.setShowActionsInCompactView(0,1);
-//        style.setMediaSession(mediaSession.getSessionToken());
 
         Notification serviceNotification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)
-                .setContentTitle("Player")
-                .setContentText("AIS dom")
+                .setContentTitle("AIS dom")
+                .setContentText(aisTitle)
                 .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
                 .setSound(null)
-//                .setShowWhen(true)
-//                .setWhen(0)
-//                .setStyle(style)
                 .build();
 
         startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, serviceNotification);
 
+
         // play join intro
         playAudio("asset:///1-second-of-silence.mp3", false, 0);
 
-
-        // player auto discovery on gate
-        JSONObject json = new JSONObject();
-        json = getDeviceInfo();
-        DomWebInterface.publishJson(json, "player_auto_discovery", getApplicationContext());
-        Log.i(TAG, "player_auto_discovery");
+        if (mConfig.getAppDiscoveryMode()) {
+            // player auto discovery on gate
+            JSONObject json = new JSONObject();
+            json = getDeviceInfo();
+            DomWebInterface.publishJson(json, "player_auto_discovery", getApplicationContext());
+            Log.i(TAG, "player_auto_discovery");
+        }
         //
         return super.onStartCommand(intent, flags, startId);
     }
@@ -378,6 +380,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         filter.addAction(BROADCAST_SPOTIFY_PLAY_AUDIO);
         filter.addAction((BROADCAST_EXO_PLAYER_COMMAND));
         filter.addAction(BROADCAST_SERVICE_SAY_IT);
+        filter.addAction(BROADCAST_ON_AIS_REQUEST);
         filter.addAction("com.spotify.music.playbackstatechanged");
         filter.addAction("com.spotify.music.metadatachanged");
         filter.addAction("com.spotify.music.queuechanged");
@@ -513,9 +516,53 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             } else if (action.equals(BROADCAST_EXO_PLAYER_COMMAND)){
                 final String command = intent.getStringExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT);
                 executeExoPlayerCommand(command, m_media_content_id);
+            } else if (action.equals(BROADCAST_ON_AIS_REQUEST)) {
+                Log.d(TAG, BROADCAST_ON_AIS_REQUEST);
+                if (intent.hasExtra("aisRequest")){
+                    String aisRequest = intent.getStringExtra("aisRequest");
+                    if (aisRequest.equals("micOn")) {
+                        onStartStt();
+                    }
+                }
             }
         }
     };
+
+    private void onStartStt() {
+        try {
+            AisCoreUtils.mRecognizerIntent = null;
+            AisCoreUtils.mRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toString());
+            AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, new Long(5000));
+            AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "pl.sviete.dom");
+            AisCoreUtils.mRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+
+        } catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
+
+        try {
+            AisCoreUtils.mSpeech.cancel();
+            AisCoreUtils.mSpeech.destroy();
+            AisCoreUtils.mSpeech = null;
+        } catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
+
+        try {
+            AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
+            AisRecognitionListener listener = new AisRecognitionListener(getApplicationContext(), AisCoreUtils.mSpeech);
+            AisCoreUtils.mSpeech.setRecognitionListener(listener);
+        } catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
+
+
+        AisCoreUtils.mSpeechIsRecording = true;
+        stopTextToSpeech();
+        AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
+    }
 
 
     //******** HTTP Related Functions
