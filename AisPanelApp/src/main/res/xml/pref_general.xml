@@ -57,6 +57,12 @@
             android:title="@string/title_activity_settings_smart_panel"
             android:key="pref_category_app_experimental">
             <SwitchPreference
+                android:defaultValue="@string/default_setting_report_location"
+                android:title="@string/title_setting_report_location"
+                android:summary="@string/summary_setting_report_location"
+                android:key="@string/key_setting_report_location"
+                android:icon="@drawable/ic_report_location_to_ais_gate"/>
+            <SwitchPreference
                 android:defaultValue="@string/default_setting_app_discovery"
                 android:title="@string/title_setting_app_discovery"
                 android:summary="@string/summary_setting_app_discovery"

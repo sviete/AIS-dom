@@ -92,6 +92,11 @@
     <string name="title_activity_other_apps">INTEGRATIONS</string>
     <string name="title_activity_browser">AI-Speaker</string>
 
+    <string name="key_setting_report_location">setting_report_location</string>
+    <string name="default_setting_report_location">false</string>
+    <string name="title_setting_report_location">Location reports</string>
+    <string name="summary_setting_report_location">start sending location to the gateway. Note this functionality requires running a website tracking device location, it will have a negative impact on battery life.</string>
+
     <string name="key_setting_app_discovery">setting_app_discovery</string>
     <string name="default_setting_app_discovery">false</string>
     <string name="title_setting_app_discovery">Player discovery</string>
@@ -302,6 +307,8 @@
 
     <string name="wizard_step_4_title">Unique gate ID </string>
     <string name="wizard_step_4_info">Scan the unique ID of your gateway.</string>
+    <string name="wizard_step_4_demo_info">Connect with a demo gate.</string>
+
 
     <string name="welcome_page_5">Welcome on board\nAI-Speaker.com</string>
     <string name="todo">TODO</string>
