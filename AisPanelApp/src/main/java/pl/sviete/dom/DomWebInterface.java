@@ -2,11 +2,13 @@ package pl.sviete.dom;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +20,7 @@ import com.koushikdutta.async.http.body.JSONObjectBody;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -190,6 +193,11 @@ public class DomWebInterface {
     // https://developers.home-assistant.io/docs/api/native-app-integration/sending-data
     // 1. Update device location
     // 2. Sensors
+
+    public static void updateDeviceLocation(Context context, Location location) {
+        // do the simple HTTP post in async task
+        new AddUpdateDeviceLocationTaskJob(context, location).execute();
+    }
 }
 
 class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
@@ -312,7 +320,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                 json.put("app_data", appData);
 
                 //
-                JSONObjectBody body = new JSONObjectBody(json);
+                // JSONObjectBody body = new JSONObjectBody(json);
 
                  url = new URL(AisCoreUtils.getAisDomUrl() + "/api/mobile_app/registrations");
                  HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -324,7 +332,6 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                  // For POST only - START
                  con.setDoOutput(true);
                  OutputStream os = con.getOutputStream();
-                 os = con.getOutputStream();
                  os.write(json.toString().getBytes("UTF-8"));
                  os.flush();
                  os.close();
@@ -367,3 +374,79 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
     }
 }
 
+
+class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
+    final static String TAG = AddUpdateDeviceRegistrationTaskJob.class.getName();
+
+    private Context mContext;
+    private Location mLocation;
+
+    public AddUpdateDeviceLocationTaskJob (Context context, Location location){
+        mContext = context;
+        mLocation = location;
+    }
+
+    @Override
+    protected String doInBackground(String[] params) {
+        // save ha access_token in settings
+        Config config = new Config(mContext);
+        String accessToken = config.getHaAccessToken();
+        String webhookId = config.getAisHaWebhookId();
+
+        if (!accessToken.equals("") && !webhookId.equals("")) {
+            try {
+                // json
+                JSONObject json = new JSONObject();
+                json.put("type", "update_location");
+                JSONObject data = new JSONObject();
+                JSONArray gps = new JSONArray();
+                gps.put(mLocation.getLatitude());
+                gps.put(mLocation.getLongitude());
+                data.put("gps", gps);
+                data.put("gps_accuracy", mLocation.getAccuracy());
+                json.put("data", data);
+
+                //
+                // JSONObjectBody body = new JSONObjectBody(json);
+
+                URL url = new URL(AisCoreUtils.getAisDomUrl() + "/api/webhook/" + webhookId);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setRequestProperty("charset", "utf-8");
+                con.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+                // For POST only - START
+                con.setDoOutput(true);
+                OutputStream os = con.getOutputStream();
+                os.write(json.toString().getBytes("UTF-8"));
+                os.flush();
+                os.close();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    StringBuffer response = new StringBuffer();
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+
+
+                    // TODO answer result
+                    return "";
+                }
+            } catch (Exception e) {
+                return e.getMessage();
+            }
+        }
+        return "no access token";
+    }
+
+
+    @Override
+    protected void onPostExecute(String gateAnswer) {
+         Log.d(TAG, "gateAnswer: " + gateAnswer);
+    }
+}

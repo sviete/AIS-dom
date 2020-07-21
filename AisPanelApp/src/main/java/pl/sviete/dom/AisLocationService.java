@@ -54,7 +54,7 @@ public class AisLocationService extends Service {
             Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
             // report location to AIS gate
-            
+            DomWebInterface.updateDeviceLocation(getApplicationContext(), location);
             //
         }
 
@@ -117,7 +117,7 @@ public class AisLocationService extends Service {
             subText = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " " + sensitivity;
         }
 
-        subText = subText + getString(R.string.title_notification_report_location) ;
+        subText = subText + " " + getString(R.string.title_notification_report_location) ;
 
 
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
