@@ -329,6 +329,8 @@
     <string name="playback_channel_name">AIS cast</string>
     <string name="playback_channel_descr">AIS cast channel</string>
 
+    <string name="report_location_notification_info">Raportowanie lokalizacji urządzenia</string>
+
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="fcm_message">FCM Message</string>
 

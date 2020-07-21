@@ -25,7 +25,6 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -60,17 +59,13 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
+
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1245,16 +1240,21 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             } else if (action.equals("ais_stop")) {
                 //
                 mConfig.setAppDiscoveryMode(false);
-                // stop service
+
+                // 1. stop hot word service
                 if(AisCoreUtils.isServiceRunning(getApplicationContext(), PorcupineService.class)){
-
                     mConfig.setHotWordMode(false);
-
                     Intent startAisApp = new Intent(getApplicationContext(), BrowserActivityNative.class);
                     startAisApp.setAction("exit_mic_service");
                     startAisApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(startAisApp);
                 }
+                // 2. stop location service
+                if(AisCoreUtils.isServiceRunning(getApplicationContext(), AisLocationService.class)){
+                    mConfig.setReportLocationMode(false);
+                }
+
+                // 3. stop audio service
                 Intent stopIntent = new Intent(getApplicationContext(), AisPanelService.class);
                 getApplicationContext().stopService(stopIntent);
 
@@ -1294,5 +1294,3 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     }
 
 }
-
-

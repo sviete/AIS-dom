@@ -105,6 +105,11 @@ public class AisCoreUtils {
     public static String AIS_PUSH_NOTIFICATION_KEY = "";
     public static String AIS_HA_ACCESS_TOKEN = "";
     public static String AIS_HA_WEBHOOK_ID = "";
+
+    // PERMISSION
+    public static final int REQUEST_RECORD_PERMISSION = 100;
+    public static final int REQUEST_HOT_WORD_MIC_PERMISSION = 200;
+    public static final int REQUEST_LOCATION_PERMISSION = 300;
     /*
      * Check if we are on gate or phone
      *

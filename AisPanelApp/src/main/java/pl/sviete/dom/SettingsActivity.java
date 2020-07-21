@@ -1,7 +1,10 @@
 package pl.sviete.dom;
 
+import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -11,8 +14,13 @@ import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import ai.picovoice.hotword.PorcupineService;
+
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -97,6 +105,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         }
 
+
+        private void setServicesStatus(Context context) {
+            // 1. stop all services
+            Intent serviceIntent = new Intent(context, AisPanelService.class);
+
+            // 2. start enabled services
+
+        }
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -159,13 +176,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 bindPreferenceSummaryToValue(findPreference(getString(R.string.key_setting_app_launchurl)));
             }
 
-
-
             Preference.OnPreferenceChangeListener preferenceChangeListener = new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String prefKey = preference.getKey();
                     if (prefKey.equals("setting_app_discovery")) {
+
+                        // TODO
+                        setServicesStatus(preference.getContext());
+
                         Intent serviceIntent = new Intent(preference.getContext(), AisPanelService.class);
                         if ((boolean) newValue) {
                             // start service
@@ -181,6 +200,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         Intent serviceHotWordIntent = new Intent(preference.getContext(), PorcupineService.class);
 
                         if ((boolean) newValue) {
+                            // ask for permission
+                            int permissionMicrophone = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.RECORD_AUDIO);
+                            if (permissionMicrophone != PackageManager.PERMISSION_GRANTED) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    requestPermissions(
+                                            new String[] { Manifest.permission.RECORD_AUDIO },
+                                            AisCoreUtils.REQUEST_RECORD_PERMISSION);
+                                }
+                            }
                             // start service
                             preference.getContext().startService(serviceHotWordIntent);
 
@@ -210,11 +238,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         }
                     }
 
+                    if (prefKey.equals("setting_report_location")) {
+                        Intent serviceReportLocationIntent = new Intent(preference.getContext(), AisLocationService.class);
+
+                        if ((boolean) newValue) {
+                            // ask for permission
+                            int permissionLocation = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+                            if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    requestPermissions(
+                                            new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                                            AisCoreUtils.REQUEST_LOCATION_PERMISSION);
+                                }
+                            }
+                            // start service
+                            preference.getContext().startService(serviceReportLocationIntent);
+                        } else {
+                            // stop service
+                            preference.getContext().stopService(serviceReportLocationIntent);
+                        }
+                    }
+
 
                     return true;
                 }
             };
 
+            Preference preferenceReportLocationMode = findPreference("setting_report_location");
+            preferenceReportLocationMode.setOnPreferenceChangeListener(preferenceChangeListener);
 
             Preference preferenceHotWordMode = findPreference("setting_hot_word_mode");
             preferenceHotWordMode.setOnPreferenceChangeListener(preferenceChangeListener);

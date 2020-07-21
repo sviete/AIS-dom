@@ -78,8 +78,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     float zoomLevel = 1.0f;
     private ToggleButton btnSpeak;
     private Button btnGoToSettings;
-    private final int REQUEST_RECORD_PERMISSION = 100;
-    private final int REQUEST_HOT_WORD_MIC_PERMISSION = 200;
     private LocalBroadcastManager localBroadcastManager;
     private Config mConfig = null;
     public RecognitionProgressView recognitionProgressView = null;
@@ -215,7 +213,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                         ActivityCompat.requestPermissions
                                 (BrowserActivity.this,
                                         new String[]{Manifest.permission.RECORD_AUDIO},
-                                        REQUEST_RECORD_PERMISSION);
+                                        AisCoreUtils.REQUEST_RECORD_PERMISSION);
                     } else {
                         startTheSpeechToText();
                     }
@@ -239,7 +237,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     ActivityCompat.requestPermissions
                             (BrowserActivity.this,
                                     new String[]{Manifest.permission.RECORD_AUDIO},
-                                    REQUEST_HOT_WORD_MIC_PERMISSION);
+                                    AisCoreUtils.REQUEST_HOT_WORD_MIC_PERMISSION);
                 } else {
                     mConfig.setHotWordMode(true);
                     speakOutFromBrowser("Nasłuchiwanie włączone.", "app");
@@ -427,7 +425,13 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
               if (intent.getAction() != null) {
                   if (intent.getAction().equals("exit_mic_service")) {
                       mConfig.setHotWordMode(false);
+                      mConfig.setReportLocationMode(false);
                     }
+
+                  if (intent.getAction().equals("exit_location_service")) {
+                      mConfig.setReportLocationMode(false);
+                      mConfig.setHotWordMode(false);
+                  }
                 }
         }
 
@@ -688,11 +692,11 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         Log.d(TAG, "onRequestPermissionsResult");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case REQUEST_RECORD_PERMISSION:
+            case AisCoreUtils.REQUEST_RECORD_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startTheSpeechToText();
                 }
-            case REQUEST_HOT_WORD_MIC_PERMISSION:
+            case AisCoreUtils.REQUEST_HOT_WORD_MIC_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mConfig.setHotWordMode(true);
                 }

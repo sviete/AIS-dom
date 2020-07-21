@@ -57,6 +57,12 @@ public class WelcomeActivity extends AppCompatActivity {
                 this.getApplicationContext().startService(porcupineServiceIntent);
             }
 
+            // run location service on start
+            if (config.getReportLocationMode()) {
+                Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisLocationService.class);
+                this.getApplicationContext().startService(reportLocationServiceIntent);
+            }
+
             // run exo player service on start
             if (config.getAppDiscoveryMode()) {
                 Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);

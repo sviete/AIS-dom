@@ -21,12 +21,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.Locale;
 
 import ai.picovoice.porcupinemanager.PorcupineManager;

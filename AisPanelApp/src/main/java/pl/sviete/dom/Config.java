@@ -285,6 +285,27 @@ public class Config {
         }
     }
 
+    public Boolean getReportLocationMode() {
+        return getBoolPref(R.string.key_setting_report_location, R.string.default_setting_report_location);
+    }
+
+    //
+    public void setReportLocationMode(Boolean mode) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putBoolean(myContext.getString(R.string.key_setting_report_location), mode);
+        ed.apply();
+
+        Intent serviceReportLocationIntent = new Intent(myContext, AisLocationService.class);
+        if (mode) {
+            // start service
+            myContext.startService(serviceReportLocationIntent);
+
+        } else {
+            // stop service
+            myContext.stopService(serviceReportLocationIntent);
+        }
+    }
+
 
     public Boolean getAppWizardDone() {
         return getBoolPref(R.string.default_setting_app_wizard_done, R.string.default_setting_app_wizard_done);
