@@ -63,7 +63,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 this.getApplicationContext().startService(reportLocationServiceIntent);
             }
 
-            // run exo player service on start
+            // run exo player service on start - this need to be done on the end
             if (config.getAppDiscoveryMode()) {
                 Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
                 this.getApplicationContext().startService(serviceIntent);

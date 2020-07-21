@@ -137,6 +137,16 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private String MEDIA_SESSION_TAG = "ais";
 
 
+    private Bitmap getSpeakerImage(){
+        Bitmap largeIcon = null;
+        try {
+            largeIcon = BitmapFactory.decodeStream(getAssets().open("speaker.jpg"));
+        } catch (Exception e) {
+            Log.e(TAG, "largeIcon: " + e.toString());
+        }
+        return largeIcon;
+    }
+
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(
@@ -305,7 +315,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     @Override
     public void onInit(int status) {
-        Log.e(TAG, "AisPanelService onInit");
+        Log.d(TAG, "AisPanelService onInit");
         if (status != TextToSpeech.ERROR) {
             int result = mTts.setLanguage(new Locale("pl_PL"));
             if (result == TextToSpeech.LANG_MISSING_DATA ||
@@ -353,6 +363,8 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate Called");
+
+        m_exo_player_large_icon = getSpeakerImage();
 
         mConfig = new Config(getApplicationContext());
         // get current url without discovery
@@ -433,9 +445,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy Called");
-
-        mConfig.stopListeningForConfigChanges();
-
         //
         try {
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
@@ -453,11 +462,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         if (mExoPlayer != null) {
             mExoPlayer.stop();
             playerNotificationManager.setPlayer(null);
-            try {
-                playerNotificationManager.notify();
-            } catch (Exception e){
-                Log.e(TAG, e.toString());
-            }
+//            try {
+//                playerNotificationManager.notify();
+//            } catch (Exception e){
+//                Log.e(TAG, e.toString());
+//            }
             mExoPlayer.release();
             mExoPlayer = null;
         }
@@ -999,50 +1008,34 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             return m_media_source;
         }
 
-        private Bitmap getSpeakerImage(){
-            Bitmap largeIcon = null;
-            try {
-                largeIcon = BitmapFactory.decodeStream(getAssets().open("speaker.jpg"));
-            } catch (Exception e) {
-                Log.e(TAG, "largeIcon: " + e.toString());
-            }
-            return largeIcon;
-        }
-
-        @Nullable
         @Override
         public Bitmap getCurrentLargeIcon(Player player,
                                           PlayerNotificationManager.BitmapCallback callback) {
             // StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
-            if (m_media_stream_image == null || !m_media_stream_image.equals(m_exo_player_last_media_stream_image)) {
+            Log.e(TAG, "1 getCurrentLargeIcon: m_media_stream_image: " + m_media_stream_image);
+            if (m_media_stream_image != null && !m_media_stream_image.equals(m_exo_player_last_media_stream_image)) {
                 try {
-                    if (m_media_stream_image == null){
-                        m_exo_player_large_icon = getSpeakerImage();
-                    } else {
-                        URL url = new URL(m_media_stream_image);
-                        Thread thread = new Thread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                try  {
-                                    m_exo_player_large_icon = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                    URL url = new URL(m_media_stream_image);
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try  {
+                                m_exo_player_large_icon = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        });
-                        thread.start();
-                    }
+                        }
+                    });
+                    thread.start();
                     m_exo_player_last_media_stream_image = m_media_stream_image;
                 } catch (Exception e) {
-                    Log.e(TAG, "getCurrentLargeIcon: " + e.toString());
+                    Log.e(TAG, "1 getCurrentLargeIcon: " + e.toString());
                 }
             }
-            if (m_exo_player_large_icon == null){
-                m_exo_player_large_icon = getSpeakerImage();
+            Log.e(TAG, "2 getCurrentLargeIcon: " + m_media_stream_image);
+            if (m_exo_player_large_icon == null) {
+                return getSpeakerImage();
             }
-
-            Log.e(TAG, "getCurrentLargeIcon: " + m_media_stream_image);
             return m_exo_player_large_icon;
         }
 
@@ -1059,19 +1052,21 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             return contentPendingIntent;
         }
 
-        @Nullable
         @Override
         public String getCurrentSubText(Player player) {
-            if (isServiceRunning(getApplicationContext(), PorcupineService.class)) {
-                Config config = new Config(getApplicationContext());
+            String subText = "";
+            Config config = new Config(getApplicationContext());
+            if (config.getHotWordMode()) {
                 String hotword = config.getSelectedHotWord();
                 int sensitivity = config.getSelectedHotWordSensitivity();
-                hotword = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " " + sensitivity;
-                return hotword;
+                subText = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " " + sensitivity;
             }
-            return null;
-        }
 
+            if (config.getReportLocationMode()) {
+                subText = subText + " " + getString(R.string.title_notification_report_location);
+            }
+            return subText;
+        }
     }
 
     private class customActionReceiver implements PlayerNotificationManager.CustomActionReceiver {

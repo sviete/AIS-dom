@@ -128,6 +128,7 @@
     <string name="key_setting_report_location">setting_report_location</string>
     <string name="default_setting_report_location">false</string>
     <string name="title_setting_report_location">Raportowanie lokalizacji</string>
+    <string name="title_notification_report_location">GPS</string>
     <string name="summary_setting_report_location">uruchom przesyłanie lokalizacji do bramki (uwaga ta funkcjonalność wymaga uruchomienia serwisu śledzącego lokalizację urządzenia, będzie to miało negatywny wpływ na żywotność baterii)</string>
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>
@@ -333,8 +334,6 @@
     <string name="hotword_selected_word_info">Nasłuchuje: </string>
     <string name="playback_channel_name">AIS cast</string>
     <string name="playback_channel_descr">AIS cast channel</string>
-
-    <string name="report_location_notification_info">Raportowanie lokalizacji urządzenia</string>
 
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="fcm_message">FCM Message</string>

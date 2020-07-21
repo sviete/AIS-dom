@@ -105,13 +105,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         }
 
+        public void updateServices(Context context, boolean enableAisAudioService, boolean enableAisLocationService, boolean enableAisHotWordService){
+            // to update notification
+            Intent aisAudioService = new Intent(context, AisPanelService.class);
+            Intent aisHotWordService = new Intent(context, PorcupineService.class);
+            Intent aisLocationService = new Intent(context, AisLocationService.class);
+            // 1. stop all
+            context.stopService(aisAudioService);
+            context.stopService(aisHotWordService);
+            context.stopService(aisLocationService);
 
-        private void setServicesStatus(Context context) {
-            // 1. stop all services
-            Intent serviceIntent = new Intent(context, AisPanelService.class);
-
-            // 2. start enabled services
-
+            // 2.start enabled
+            if (enableAisHotWordService){
+                context.startService(aisHotWordService);
+            }
+            if (enableAisLocationService){
+                context.startService(aisLocationService);
+            }
+            if (enableAisAudioService){
+                context.startService(aisAudioService);
+            }
         }
 
         @Override
@@ -180,25 +193,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String prefKey = preference.getKey();
-                    if (prefKey.equals("setting_app_discovery")) {
-
-                        // TODO
-                        setServicesStatus(preference.getContext());
-
-                        Intent serviceIntent = new Intent(preference.getContext(), AisPanelService.class);
-                        if ((boolean) newValue) {
-                            // start service
-                            preference.getContext().startService(serviceIntent);
-
-                        } else {
-                            // stop service
-                            preference.getContext().stopService(serviceIntent);
-                        }
+                    Config config = new Config(preference.getContext());
+                    boolean enableAisAudioService = false;
+                    boolean enableAisLocationService = false;
+                    boolean enableAisHotWordService = false;
+                    if (config.getHotWordMode()) {
+                        enableAisHotWordService = true;
+                    }
+                    if (config.getAppDiscoveryMode()) {
+                        enableAisAudioService = true;
+                    }
+                    if (config.getReportLocationMode()) {
+                        enableAisLocationService = true;
                     }
 
-                    if (prefKey.equals("setting_hot_word_mode")) {
-                        Intent serviceHotWordIntent = new Intent(preference.getContext(), PorcupineService.class);
-
+                    if (prefKey.equals("setting_app_discovery")) {
+                        if ((boolean) newValue) {
+                            enableAisAudioService = true;
+                        } else {
+                            enableAisAudioService = false;
+                        }
+                        updateServices(preference.getContext(),enableAisAudioService,enableAisLocationService,enableAisHotWordService);
+                    } else if (prefKey.equals("setting_hot_word_mode")) {
                         if ((boolean) newValue) {
                             // ask for permission
                             int permissionMicrophone = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.RECORD_AUDIO);
@@ -209,22 +225,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                             AisCoreUtils.REQUEST_RECORD_PERMISSION);
                                 }
                             }
-                            // start service
-                            preference.getContext().startService(serviceHotWordIntent);
+                            enableAisHotWordService = true;
 
                         } else {
-                            // stop service
-                            preference.getContext().stopService(serviceHotWordIntent);
+                            enableAisHotWordService = false;
                         }
-                    }
-
-                    if (prefKey.equals("setting_app_hot_word_sensitivity") || prefKey.equals("setting_app_hot_word")) {
-                        // restart hot word service
-                        Config config = new Config(preference.getContext());
+                        updateServices(preference.getContext(),enableAisAudioService,enableAisLocationService,enableAisHotWordService);
+                    } else if (prefKey.equals("setting_report_location")) {
+                        //
+                        if ((boolean) newValue) {
+                            // ask for permission
+                            int permissionLocation = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+                            if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    requestPermissions(
+                                            new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                                            AisCoreUtils.REQUEST_LOCATION_PERMISSION);
+                                }
+                            }
+                            enableAisLocationService = true;
+                        } else {
+                            enableAisLocationService = false;
+                        }
+                        updateServices(preference.getContext(),enableAisAudioService,enableAisLocationService,enableAisHotWordService);
+                    } else if (prefKey.equals("setting_app_hot_word_sensitivity") || prefKey.equals("setting_app_hot_word")) {
                         if (config.getHotWordMode()) {
-                            Intent serviceHotWordIntent = new Intent(preference.getContext(), PorcupineService.class);
-                            preference.getContext().stopService(serviceHotWordIntent);
-                            preference.getContext().startService(serviceHotWordIntent);
+                            // restart hot word service
+                            enableAisHotWordService = true;
+                            updateServices(preference.getContext(),enableAisAudioService,enableAisLocationService,enableAisHotWordService);
                         }
 
                         if (prefKey.equals("setting_app_hot_word_sensitivity")) {
@@ -237,28 +265,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             preference.setTitle(getString(R.string.title_setting_app_hot_word) + ": " + hotWord);
                         }
                     }
-
-                    if (prefKey.equals("setting_report_location")) {
-                        Intent serviceReportLocationIntent = new Intent(preference.getContext(), AisLocationService.class);
-
-                        if ((boolean) newValue) {
-                            // ask for permission
-                            int permissionLocation = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-                            if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    requestPermissions(
-                                            new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-                                            AisCoreUtils.REQUEST_LOCATION_PERMISSION);
-                                }
-                            }
-                            // start service
-                            preference.getContext().startService(serviceReportLocationIntent);
-                        } else {
-                            // stop service
-                            preference.getContext().stopService(serviceReportLocationIntent);
-                        }
-                    }
-
 
                     return true;
                 }

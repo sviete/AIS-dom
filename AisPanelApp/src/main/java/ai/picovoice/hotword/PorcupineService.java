@@ -28,6 +28,7 @@ import ai.picovoice.porcupinemanager.PorcupineManager;
 import ai.picovoice.porcupinemanager.PorcupineManagerException;
 
 import pl.sviete.dom.AisCoreUtils;
+import pl.sviete.dom.AisLocationService;
 import pl.sviete.dom.AisPanelService;
 import pl.sviete.dom.AisRecognitionListener;
 import pl.sviete.dom.BrowserActivityNative;
@@ -88,9 +89,16 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
                 0);
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
 
+        String subText = "";
+        if (config.getReportLocationMode()) {
+            subText = getString(R.string.title_notification_report_location);
+        }
+
+        subText = subText + " " + hotword + " " + sensitivity;
+
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
-                .setContentTitle("AIS : " + hotword + " " + sensitivity)
-                .setContentText(getString(R.string.hotword_selected_word_info) + " ...")
+                .setContentTitle(subText)
+                .setContentText("")
                 .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
                 .addAction(exitAction)
@@ -329,7 +337,7 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
     @Override
     public void onInit(int status) {
 
-        Log.e(TAG, "AisPanelService onInit");
+        Log.d(TAG, "PorcupineService onInit");
         if (status != TextToSpeech.ERROR) {
             int result = mTts.setLanguage(new Locale("pl_PL"));
             if (result == TextToSpeech.LANG_MISSING_DATA ||

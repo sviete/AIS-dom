@@ -23,21 +23,11 @@ import pl.sviete.dom.connhist.AisConnectionHistJSON;
 public class Config {
     public final Context myContext;
     private final SharedPreferences sharedPreferences;
-    private SharedPreferences.OnSharedPreferenceChangeListener prefsChangedListener;
     public static final String TAG = Context.class.getName();
 
     public Config(Context appContext) {
         myContext = appContext;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-    }
-
-    public void startListeningForConfigChanges(SharedPreferences.OnSharedPreferenceChangeListener prefsChangedListener) {
-        this.prefsChangedListener = prefsChangedListener;
-        sharedPreferences.registerOnSharedPreferenceChangeListener(prefsChangedListener);
-    }
-
-    public void stopListeningForConfigChanges() {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(prefsChangedListener);
     }
 
     private String getStringPref(int resId, int defId) {

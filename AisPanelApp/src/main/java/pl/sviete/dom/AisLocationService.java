@@ -19,6 +19,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import ai.picovoice.hotword.PorcupineService;
+
 public class AisLocationService extends Service {
     private static final String TAG = "AisLocationService";
 
@@ -51,6 +53,9 @@ public class AisLocationService extends Service {
         public void onLocationChanged(Location location) {
             Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
+            // report location to AIS gate
+            
+            //
         }
 
         @Override
@@ -104,9 +109,20 @@ public class AisLocationService extends Service {
                 0);
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
 
+        String subText = "";
+        Config config = new Config(getApplicationContext());
+        if (config.getHotWordMode()) {
+            String hotword = config.getSelectedHotWord();
+            int sensitivity = config.getSelectedHotWordSensitivity();
+            subText = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " " + sensitivity;
+        }
+
+        subText = subText + getString(R.string.title_notification_report_location) ;
+
+
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
-                .setContentTitle("AIS dom ")
-                .setContentText(getString(R.string.report_location_notification_info) + " ...")
+                .setContentTitle(subText)
+                .setContentText("")
                 .setSmallIcon(R.drawable.ic_ais_logo)
                 .setContentIntent(pendingIntent)
                 .addAction(exitAction)
