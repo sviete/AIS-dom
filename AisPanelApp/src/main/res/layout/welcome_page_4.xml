@@ -26,13 +26,28 @@
             android:contentDescription="@string/todo" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/wizard_info_page4_demo_gate"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-70dp"
+        android:layout_marginEnd="130dp"
+        android:text="@string/wizard_step_4_demo_info"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#FFEB3B"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
     <ImageView
         android:id="@+id/star_4"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="-80dp"
+        android:layout_marginTop="-100dp"
         android:layout_marginEnd="40dp"
         android:src="@drawable/wizzard_gate_id"
         android:contentDescription="@string/todo" />
@@ -69,19 +84,5 @@
         android:contentDescription="@string/todo"
         android:scaleX="0"
         android:scaleY="0" />
-
-    <TextView
-        android:id="@+id/wizard_info_page4_demo_gate"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginBottom="30dp"
-        android:text="@string/wizard_step_4_demo_info"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textColor="#FFEB3B"
-        android:textSize="12sp"
-        android:textStyle="bold" />
 
 </com.redbooth.WelcomePageLayout>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.redbooth.WelcomePageLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/welcome_page"
+    tools:background="@color/page4">
+
+    <RelativeLayout
+        android:id="@+id/card2_page2_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/todo"
+            android:src="@drawable/location_images" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/avatar1_page2_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="40dp"
+        android:scaleX="0"
+        android:scaleY="0"
+        android:src="@drawable/avatar_maggie2"
+        android:contentDescription="@string/todo" />
+
+    <ImageView
+        android:id="@+id/avatar2_page2_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="120dp"
+        android:scaleX="0"
+        android:scaleY="0"
+        android:src="@drawable/avatar_jack2"
+        android:contentDescription="@string/todo" />
+
+    <TextView
+        android:id="@+id/wizard_step_2_2_title"
+        style="@style/text_title"
+        android:layout_above="@+id/wizard_desc_page2_2"
+        android:text="@string/wizard_step_2_2_title" />
+
+    <TextView
+        android:id="@+id/wizard_desc_page2_2"
+        style="@style/text_subtitle"
+        android:layout_above="@+id/avatar_ais_logo_page2_2"
+        android:text="@string/wizard_step_2_2_info"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/wizard_info_page2_2"
+        style="@style/text_subtitle"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="6dp"
+        android:text="@string/wizard_checking"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/avatar_ais_logo_page2_2"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:contentDescription="@string/todo"
+        android:scaleX="0"
+        android:scaleY="0" />
+
+</com.redbooth.WelcomePageLayout>

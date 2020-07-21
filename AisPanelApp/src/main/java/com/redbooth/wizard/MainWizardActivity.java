@@ -23,6 +23,7 @@ import com.redbooth.WelcomeCoordinatorLayout;
 import com.redbooth.wizard.animators.ChatAvatarsAnimator;
 import com.redbooth.wizard.animators.InSyncAnimator;
 import com.redbooth.wizard.animators.InSyncAnimatorPage2_1;
+import com.redbooth.wizard.animators.InSyncAnimatorPage2_2;
 import com.redbooth.wizard.animators.InSyncAnimatorPage4;
 import com.redbooth.wizard.animators.RocketAvatarsAnimator;
 import com.redbooth.wizard.animators.RocketFlightAwayAnimator;
@@ -44,12 +45,14 @@ public class MainWizardActivity extends AppCompatActivity {
     private RocketFlightAwayAnimator rocketFlightAwayAnimator;
     private InSyncAnimator inSyncAnimator;
     private InSyncAnimatorPage2_1 inSyncAnimatorPage2_1;
+    private InSyncAnimatorPage2_2 inSyncAnimatorPage2_2;
     private InSyncAnimatorPage4 inSyncAnimatorPage4;
     private WelcomeCoordinatorLayout coordinatorLayout;
 
     private final int REQUEST_RECORD_PERMISSION = 100;
     private final int REQUEST_CAMERA_PERMISSION = 110;
     private final int REQUEST_FILES_PERMISSION = 120;
+    private final int REQUEST_LOCATION_PERMISSION = 130;
     private final String TAG = "MainWizardActivity";
 
     @Override
@@ -79,6 +82,7 @@ public class MainWizardActivity extends AppCompatActivity {
                 R.layout.welcome_page_1,
                 R.layout.welcome_page_2,
                 R.layout.welcome_page_2_1,
+                R.layout.welcome_page_2_2,
                 R.layout.welcome_page_3,
                 R.layout.welcome_page_4,
                 R.layout.welcome_page_5);
@@ -122,6 +126,14 @@ public class MainWizardActivity extends AppCompatActivity {
                         checkFileAccess();
                         break;
                     case 3:
+                        if (inSyncAnimatorPage2_2 == null) {
+                            inSyncAnimatorPage2_2 = new InSyncAnimatorPage2_2(coordinatorLayout);
+                            inSyncAnimatorPage2_2.play();
+                        }
+                        // check and set LOCATION access
+                        checkLocationAccess();
+                        break;
+                    case 4:
                         if (inSyncAnimator == null) {
                             inSyncAnimator = new InSyncAnimator(coordinatorLayout);
                             inSyncAnimator.play();
@@ -129,7 +141,7 @@ public class MainWizardActivity extends AppCompatActivity {
                         // check and set camera access
                         checkCamAccess();
                         break;
-                    case 4:
+                    case 5:
                         if (inSyncAnimatorPage4 == null) {
                             inSyncAnimatorPage4 = new InSyncAnimatorPage4(coordinatorLayout);
                             inSyncAnimatorPage4.play();
@@ -137,7 +149,7 @@ public class MainWizardActivity extends AppCompatActivity {
                         // check if gate was scanned
                         checkGateExists();
                         break;
-                    case 5:
+                    case 6:
                         if (rocketFlightAwayAnimator == null) {
                             rocketFlightAwayAnimator = new RocketFlightAwayAnimator(coordinatorLayout);
                             rocketFlightAwayAnimator.play();
@@ -153,11 +165,12 @@ public class MainWizardActivity extends AppCompatActivity {
         final int colorPage1 = ResourcesCompat.getColor(resources, R.color.page1, getTheme());
         final int colorPage2 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
         final int colorPage2_1 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
+        final int colorPage2_2 = ResourcesCompat.getColor(resources, R.color.page4, getTheme());
         final int colorPage3 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
         final int colorPage4 = ResourcesCompat.getColor(resources, R.color.page3, getTheme());
         final int colorPage5 = ResourcesCompat.getColor(resources, R.color.page3, getTheme());
         backgroundAnimator = ValueAnimator
-                .ofObject(new ArgbEvaluator(), colorPage1, colorPage2, colorPage2_1, colorPage3, colorPage4, colorPage5);
+                .ofObject(new ArgbEvaluator(), colorPage1, colorPage2, colorPage2_1, colorPage2_2, colorPage3, colorPage4, colorPage5);
 
         backgroundAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -175,7 +188,7 @@ public class MainWizardActivity extends AppCompatActivity {
         bSkip.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 int page = coordinatorLayout.getPageSelected();
-                if (page == 5) {
+                if (page == 6) {
                     go_to_browser();
                 } else {
                     coordinatorLayout.setCurrentPage(page + 1, true);
@@ -205,17 +218,24 @@ public class MainWizardActivity extends AppCompatActivity {
             }
         });
 
+        ImageView bAisNext2_2 = (ImageView) findViewById(R.id.avatar_ais_logo_page2_2);
+        bAisNext2_2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                coordinatorLayout.setCurrentPage(4, true);
+            }
+        });
+
         ImageView bAisNext3 = (ImageView) findViewById(R.id.avatar_ais_logo_page3);
         bAisNext3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                coordinatorLayout.setCurrentPage(4, true);
+                coordinatorLayout.setCurrentPage(5, true);
             }
         });
 
         ImageView bAisNext4 = (ImageView) findViewById(R.id.avatar_ais_logo_page4);
         bAisNext4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                coordinatorLayout.setCurrentPage(5, true);
+                coordinatorLayout.setCurrentPage(6, true);
             }
         });
 
@@ -226,6 +246,50 @@ public class MainWizardActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    // MIC ON PAGE 1 //
+
+    private void checkMicAccess(){
+        if (isMicOn()){
+            setMicIsON();
+
+        } else {
+            setMicIsOFF();
+        }
+    }
+
+    private boolean isMicOn(){
+        int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+        if (permissionMic != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void setMicIsON(){
+        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2);
+        TextView infoText = findViewById(R.id.wizard_info_page2);
+        infoButton.setImageResource(R.drawable.wizzard_mic_on);
+        infoText.setText(getString(R.string.wizzard_mic_on_info));
+        infoButton.setOnClickListener(v -> coordinatorLayout.setCurrentPage(2, true));
+    }
+
+    private void setMicIsOFF(){
+        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2);
+        TextView infoText = findViewById(R.id.wizard_info_page2);
+        infoButton.setImageResource(R.drawable.wizzard_mic_off);
+        infoText.setText(getString(R.string.wizzard_mic_off_info));
+        infoText.setTextColor(getResources().getColor(R.color.important_info));
+        infoButton.setOnClickListener(v -> askForMicOn());
+    }
+
+    private void askForMicOn(){
+        ActivityCompat.requestPermissions(MainWizardActivity.this,
+                new String[]{Manifest.permission.RECORD_AUDIO},
+                REQUEST_RECORD_PERMISSION);
     }
 
     // FILES ON PAGE 2 //
@@ -270,48 +334,46 @@ public class MainWizardActivity extends AppCompatActivity {
     }
 
 
-    // MIC ON PAGE 3 //
-    private void checkMicAccess(){
-        if (isMicOn()){
-            setMicIsON();
+    // LOCATION ON PAGE 3 //
+
+    private void checkLocationAccess(){
+        if (isLocationOn()){
+            setLocationON();
 
         } else {
-            setMicIsOFF();
+            setLocationOFF();
         }
     }
-
-    private boolean isMicOn(){
-        int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
-        if (permissionMic != PackageManager.PERMISSION_GRANTED) {
+    private boolean isLocationOn(){
+        int permissionFiles = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionFiles != PackageManager.PERMISSION_GRANTED) {
             return false;
         } else {
             return true;
         }
     }
-
-    private void setMicIsON(){
-        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2);
-        TextView infoText = findViewById(R.id.wizard_info_page2);
-        infoButton.setImageResource(R.drawable.wizzard_mic_on);
-        infoText.setText(getString(R.string.wizzard_mic_on_info));
-        infoButton.setOnClickListener(v -> coordinatorLayout.setCurrentPage(2, true));
+    private void setLocationON(){
+        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2_2);
+        TextView infoText = findViewById(R.id.wizard_info_page2_2);
+        infoButton.setImageResource(R.drawable.wizzard_location_on);
+        infoText.setText(getString(R.string.wizzard_location_on_info));
+        infoButton.setOnClickListener(v -> coordinatorLayout.setCurrentPage(4, true));
     }
 
-    private void setMicIsOFF(){
-        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2);
-        TextView infoText = findViewById(R.id.wizard_info_page2);
-        infoButton.setImageResource(R.drawable.wizzard_mic_off);
-        infoText.setText(getString(R.string.wizzard_mic_off_info));
+    private void setLocationOFF(){
+        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2_2);
+        TextView infoText = findViewById(R.id.wizard_info_page2_2);
+        infoButton.setImageResource(R.drawable.wizzard_location_off);
+        infoText.setText(getString(R.string.wizzard_location_off_info));
         infoText.setTextColor(getResources().getColor(R.color.important_info));
-        infoButton.setOnClickListener(v -> askForMicOn());
+        infoButton.setOnClickListener(v -> askForLocationOn());
     }
 
-    private void askForMicOn(){
+    private void askForLocationOn(){
         ActivityCompat.requestPermissions(MainWizardActivity.this,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
-                        REQUEST_RECORD_PERMISSION);
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_LOCATION_PERMISSION);
     }
-
 
     // CAM ON PAGE 4 //
 
@@ -330,7 +392,7 @@ public class MainWizardActivity extends AppCompatActivity {
         TextView infoText = findViewById(R.id.wizard_info_page3);
         infoButton.setImageResource(R.drawable.wizzard_cam_on);
         infoText.setText(getString(R.string.wizzard_cam_on_info));
-        infoButton.setOnClickListener(v -> coordinatorLayout.setCurrentPage(4, true));
+        infoButton.setOnClickListener(v -> coordinatorLayout.setCurrentPage(5, true));
     }
 
     private void setCamIsOFF(){
@@ -363,6 +425,9 @@ public class MainWizardActivity extends AppCompatActivity {
 
         TextView demoText = findViewById(R.id.wizard_info_page4_demo_gate);
         demoText.setOnClickListener(v -> setDemoGateId());
+
+        ImageView demoImage = findViewById(R.id.star_4);
+        demoImage.setOnClickListener(v -> setDemoGateId());
     }
 
     private void setGateIsON(String appLaunchUrl){
@@ -379,7 +444,7 @@ public class MainWizardActivity extends AppCompatActivity {
     private void setGateIsOFF(String appLaunchUrl){
         ImageView infoButton = findViewById(R.id.avatar_ais_logo_page4);
         TextView infoText = findViewById(R.id.wizard_info_page4);
-        infoButton.setImageResource(R.drawable.wizzard_qr_off);
+        infoButton.setImageResource(R.drawable.wizzard_qr_on);
         infoText.setText(getString(R.string.wizzard_qr_off_info));
         infoText.setTextColor(getResources().getColor(R.color.important_info));
         infoButton.setOnClickListener(v -> skanGateId());
@@ -435,6 +500,12 @@ public class MainWizardActivity extends AppCompatActivity {
                     setFilesIsON();
                 } else {
                     setFilesIsOFF();
+                }
+            case REQUEST_LOCATION_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setLocationON();
+                } else {
+                    setLocationOFF();
                 }
         }
     }
