@@ -20,7 +20,6 @@ import com.koushikdutta.async.http.body.JSONObjectBody;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -36,7 +35,7 @@ public class DomWebInterface {
 
     private static void doPost(JSONObject message, Context context) {
         // do the simple HTTP post
-        String url = pl.sviete.dom.AisCoreUtils.getAisDomUrl() + "/api/webhook/aisdomprocesscommandfromframe";
+        String url = pl.sviete.dom.AisCoreUtils.getAisDomUrl().replaceAll("/$", "") + "/api/webhook/aisdomprocesscommandfromframe";
         AsyncHttpPost post = new AsyncHttpPost(url);
         JSONObjectBody body = new JSONObjectBody(message);
         try {
@@ -217,7 +216,7 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
         String ha_access_token = "";
         try {
             // 1. get token
-            url = new URL(AisCoreUtils.getAisDomUrl() + "/auth/token");
+            url = new URL(AisCoreUtils.getAisDomUrl().replaceAll("/$", "") + "/auth/token");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -322,7 +321,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                 //
                 // JSONObjectBody body = new JSONObjectBody(json);
 
-                 url = new URL(AisCoreUtils.getAisDomUrl() + "/api/mobile_app/registrations");
+                 url = new URL(AisCoreUtils.getAisDomUrl().replaceAll("/$", "") + "/api/mobile_app/registrations");
                  HttpURLConnection con = (HttpURLConnection) url.openConnection();
                  con.setRequestMethod("POST");
                  con.setRequestProperty("Content-Type", "application/json");
@@ -410,7 +409,7 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
                 //
                 // JSONObjectBody body = new JSONObjectBody(json);
 
-                URL url = new URL(AisCoreUtils.getAisDomUrl() + "/api/webhook/" + webhookId);
+                URL url = new URL(AisCoreUtils.getAisDomUrl().replaceAll("/$", "") + "/api/webhook/" + webhookId);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Content-Type", "application/json");
