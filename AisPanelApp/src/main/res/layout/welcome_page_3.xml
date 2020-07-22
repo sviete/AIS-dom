@@ -15,7 +15,7 @@
             android:layout_alignParentStart="true"
             android:layout_marginTop="-70dp"
             android:layout_marginStart="40dp"
-            android:src="@drawable/wizzard_auto_fix"
+            android:src="@drawable/wizzard_cam_picture"
             android:contentDescription="@string/todo" />
 
     <RelativeLayout

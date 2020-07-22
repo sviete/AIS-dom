@@ -306,11 +306,12 @@
     <string name="wizard_step_2_2_info">Dostęp do lokalizacji jest potrzebny, by wysyłać lokalizacje urządzenia do Asystenta domowego.</string>
 
     <string name="wizard_step_3_title">Dostęp do kamery</string>
-    <string name="wizard_step_3_info">Dostęp do kamery jest potrzebny, by skanować identyfikator urządzenia.</string>
+    <string name="wizard_step_3_info">Dostęp do kamery jest potrzebny, by skanować identyfikator urządzenia i wysyłać zdjęcia do galerii na bramce.</string>
 
     <string name="wizard_step_4_title">Unikalny Identyfikator</string>
+    <string name="wizard_step_4_gate_info">AI-Speaker</string>
     <string name="wizard_step_4_info">Zeskanuj unikalny identyfikator swojego urządzenia.</string>
-    <string name="wizard_step_4_demo_info">POŁĄCZENIE Z BRAMKĄ DEMO. (demo/demo)</string>
+    <string name="wizard_step_4_demo_info">ZOBACZ DEMO. POŁĄCZ Z BRAMKĄ AIS (demo/demo)</string>
 
     <string name="welcome_page_5">Witamy na pokładzie\nAI-Speaker.com</string>
 

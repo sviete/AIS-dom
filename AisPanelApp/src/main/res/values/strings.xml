@@ -310,8 +310,9 @@
     <string name="wizard_step_3_info">Access to the camera is needed to scan the gate id.</string>
 
     <string name="wizard_step_4_title">Unique gate ID </string>
+    <string name="wizard_step_4_gate_info">AI-Speaker</string>
     <string name="wizard_step_4_info">Scan the unique ID of your gateway.</string>
-    <string name="wizard_step_4_demo_info">CONNECT WITH A DEMO GATE. (demo/demo)</string>
+    <string name="wizard_step_4_demo_info">TRY THE DEMO. ON AIS GATE (demo/demo)</string>
 
 
     <string name="welcome_page_5">Welcome on board\nAI-Speaker.com</string>

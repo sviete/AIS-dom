@@ -164,11 +164,11 @@ public class MainWizardActivity extends AppCompatActivity {
         final Resources resources = getResources();
         final int colorPage1 = ResourcesCompat.getColor(resources, R.color.page1, getTheme());
         final int colorPage2 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
-        final int colorPage2_1 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
+        final int colorPage2_1 = ResourcesCompat.getColor(resources, R.color.page3, getTheme());
         final int colorPage2_2 = ResourcesCompat.getColor(resources, R.color.page4, getTheme());
-        final int colorPage3 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
-        final int colorPage4 = ResourcesCompat.getColor(resources, R.color.page3, getTheme());
-        final int colorPage5 = ResourcesCompat.getColor(resources, R.color.page3, getTheme());
+        final int colorPage3 = ResourcesCompat.getColor(resources, R.color.page4, getTheme());
+        final int colorPage4 = ResourcesCompat.getColor(resources, R.color.page2, getTheme());
+        final int colorPage5 = ResourcesCompat.getColor(resources, R.color.page5, getTheme());
         backgroundAnimator = ValueAnimator
                 .ofObject(new ArgbEvaluator(), colorPage1, colorPage2, colorPage2_1, colorPage2_2, colorPage3, colorPage4, colorPage5);
 
@@ -466,6 +466,8 @@ public class MainWizardActivity extends AppCompatActivity {
 
         TextView qrText = findViewById(R.id.gate_id_from_qr_code);
         qrText.setText(demoGateId);
+
+        coordinatorLayout.setCurrentPage(6, true);
     }
 
     private void skanGateId(){
