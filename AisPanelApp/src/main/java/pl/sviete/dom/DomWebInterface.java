@@ -404,6 +404,7 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
                 gps.put(mLocation.getLongitude());
                 data.put("gps", gps);
                 data.put("gps_accuracy", mLocation.getAccuracy());
+                data.put("battery", 45);
                 json.put("data", data);
 
                 //

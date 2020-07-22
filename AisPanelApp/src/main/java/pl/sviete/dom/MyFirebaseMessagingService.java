@@ -27,6 +27,8 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 
+import ai.picovoice.hotword.PorcupineService;
+
 import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 
 /**
@@ -45,6 +47,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
     private static final String TAG = "MyFirebaseMsgService";
     private TextToSpeech mTts;
     private String textToSpeak;
+    private Handler mHandler;
+    private Context mContext;
+
+    @Override
+    public void onCreate(){
+        super.onCreate();
+        mHandler = new Handler(); // this is attached to the main thread and the main looper
+        mContext = this.getApplicationContext();
+    }
 
     /**
      * Called when message is received.
@@ -80,13 +91,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
             // Handle message within 10 seconds
             handleMessageNow(remoteMessage);
         }
-
-        // this is not used by us - should be removed...
-        // Check if message contains a notification payload.
-        //if (remoteMessage.getNotification() != null) {
-        //    Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-        //     sendNotification(remoteMessage);
-        //}
     }
     // [END receive_message]
 
@@ -143,6 +147,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
      *
      */
     private void sendRequest(String request, Map<String, String> data) {
+        Config config = new Config(getApplicationContext());
+
+        if (request.equals("micOn")) {
             // 1. check if service is runing
             if (!isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {
                 // service is NOT running - start it!
@@ -150,18 +157,55 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                 serviceIntent.putExtra("aisRequest", request);
                 this.getApplicationContext().startService(serviceIntent);
                 // 2. execute after 2 seconds
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
+                        requestIntent.putExtra("aisRequest", request);
+                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                        bm.sendBroadcast(requestIntent);
+                    }
+                }, 2000);
+            } else {
+                Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
+                requestIntent.putExtra("aisRequest", request);
+                LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                bm.sendBroadcast(requestIntent);
             }
-
-        Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
-        requestIntent.putExtra("aisRequest", request);
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-        bm.sendBroadcast(requestIntent);
-
+        } else if (request.equals("locationServiceOn")) {
+            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisLocationService.class);
+            this.getApplicationContext().startService(reportLocationServiceIntent);
+        } else if (request.equals("locationServiceOff")) {
+            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisLocationService.class);
+            this.getApplicationContext().stopService(reportLocationServiceIntent);
+        } else if (request.equals("locationUpdate")) {
+            boolean reDisable = true;
+            if (config.getReportLocationMode()) {
+                reDisable = false;
+            }
+            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisLocationService.class);
+            this.getApplicationContext().startService(reportLocationServiceIntent);
+            if (reDisable){
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mContext.stopService(reportLocationServiceIntent);
+                    }
+                }, 60000);
+            }
+        } else if (request.equals("hotWordServiceOn")) {
+            Intent porcupineServiceIntent = new Intent(this.getApplicationContext(), PorcupineService.class);
+            this.getApplicationContext().startService(porcupineServiceIntent);
+        } else if (request.equals("hotWordServiceOff")) {
+            Intent porcupineServiceIntent = new Intent(this.getApplicationContext(), PorcupineService.class);
+            this.getApplicationContext().stopService(porcupineServiceIntent);
+        } else if (request.equals("audioServiceOn")) {
+            Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
+            this.getApplicationContext().startService(serviceIntent);
+        } else if (request.equals("audioServiceOff")) {
+            Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
+            this.getApplicationContext().stopService(serviceIntent);
+        }
     }
 
 

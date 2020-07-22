@@ -25,7 +25,7 @@ public class AisLocationService extends Service {
     private static final String TAG = "AisLocationService";
 
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
+    private static final int LOCATION_INTERVAL = 60000;
     private static final float LOCATION_DISTANCE = 10f;
 
     private void createNotificationChannel() {
