@@ -376,7 +376,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
 
 
 class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
-    final static String TAG = AddUpdateDeviceRegistrationTaskJob.class.getName();
+    final static String TAG = AddUpdateDeviceLocationTaskJob.class.getName();
 
     private Context mContext;
     private Location mLocation;
