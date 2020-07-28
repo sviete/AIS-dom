@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.text.Html;
@@ -34,6 +35,9 @@ public class AisFuseLocationService extends Service {
     private static final int UPDATE_INTERVAL_IN_MILLISECONDS = 30000; // 30 sec
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
     private static final float LOCATION_DISTANCE = 10f;
+
+    private Handler mHandler;
+    private Context mContext;
 
     // fuse
     private FusedLocationProviderClient mFusedLocationClient;
@@ -79,8 +83,7 @@ public class AisFuseLocationService extends Service {
             contentText = Html.fromHtml(
                     "<b>[" + mCurrentLocation.getLatitude() + ", " + mCurrentLocation.getLongitude() + "]</b> "
                             + "<b>" + getString(R.string.txt_altitude) + "</b> " + AisCoreUtils.getDistanceDisplay(getApplicationContext(), mCurrentLocation.getAltitude(), false) + "  "
-                            + "<b>" + getString(R.string.txt_accuracy) + "</b> " + AisCoreUtils.getDistanceDisplay(getApplicationContext(), mCurrentLocation.getAccuracy(), true) + "  "
-                            + "<b>" + getString(R.string.txt_travel_duration) + "</b> " + AisCoreUtils.getDescriptiveDurationString((int) (System.currentTimeMillis() - Long.parseLong(AisCoreUtils.GPS_SERVICE_START_TIMESTAMP)) / 1000, this)
+                            + "<b>" + getString(R.string.txt_accuracy) + "</b> " + AisCoreUtils.getDistanceDisplay(getApplicationContext(), mCurrentLocation.getAccuracy(), true)
             );
         }
 
@@ -123,7 +126,8 @@ public class AisFuseLocationService extends Service {
     public void onCreate() {
         Log.d(TAG, "onCreate");
         //
-        AisCoreUtils.GPS_SERVICE_START_TIMESTAMP = String.valueOf(System.currentTimeMillis());
+        mHandler = new Handler(); // this is attached to the main thread and the main looper
+        mContext = this.getApplicationContext();
 
         initializeFuseLocationManager();
         createLocationCallback();
@@ -177,8 +181,20 @@ public class AisFuseLocationService extends Service {
                 // report location to AIS gate
                 DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation);
                 //
-
-                // update notification
+                Log.e(TAG, "xx0" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
+                // update notification after 2 sec
+                // 2. execute after 5 seconds - to check if the location report was sent
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e(TAG, "xx1" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
+                        Notification notification = getNotification();
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        assert notificationManager != null;
+                        Log.e(TAG, "xx2" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
+                        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+                    }
+                }, 5000);
 
             }
         };

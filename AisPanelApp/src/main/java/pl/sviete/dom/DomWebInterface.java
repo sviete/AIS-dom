@@ -432,8 +432,9 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
                         response.append(inputLine);
                     }
                     in.close();
-
-                    AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT ++;
+                    Log.e(TAG, "xx3" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
+                    AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
+                    Log.e(TAG, "xx4" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
 
                     // TODO answer result
                     return "";
