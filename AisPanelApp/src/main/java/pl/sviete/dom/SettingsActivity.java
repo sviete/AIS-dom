@@ -113,7 +113,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             context.stopService(aisAudioService);
             context.stopService(aisHotWordService);
 
-
             // 2.start enabled
             if (enableAisHotWordService){
                 context.startService(aisHotWordService);

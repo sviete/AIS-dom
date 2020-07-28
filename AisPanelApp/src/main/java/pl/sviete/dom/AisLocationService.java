@@ -25,6 +25,8 @@ public class AisLocationService extends Service {
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 60000;
     private static final float LOCATION_DISTANCE = 10f;
+    private int mLocationsDetected = 0;
+
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -51,6 +53,34 @@ public class AisLocationService extends Service {
         public void onLocationChanged(Location location) {
             Log.d(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
+            // update notification
+            mLocationsDetected ++;
+
+            //
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),0,
+                    new Intent(getApplicationContext(), BrowserActivityNative.class),0);
+
+            // Exit action
+            Intent exitIntent = new Intent(getApplicationContext(), BrowserActivityNative.class);
+            exitIntent.setAction("exit_location_service");
+            exitIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent exitPendingIntent = PendingIntent.getActivity(getApplicationContext(),0, exitIntent,0);
+            NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
+
+            String subText = getString(R.string.title_notification_report_location) ;
+
+
+            Notification notification = new NotificationCompat.Builder(getApplicationContext(), AisCoreUtils.AIS_LOCATION_CHANNEL_ID)
+                    .setContentTitle(subText)
+                    .setContentText("Ilość wykrytych lokacji: " + mLocationsDetected)
+                    .setSmallIcon(R.drawable.ic_ais_gps_logo)
+                    .setContentIntent(pendingIntent)
+                    .addAction(exitAction)
+                    .build();
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            assert notificationManager != null;
+            notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
             // report location to AIS gate
             DomWebInterface.updateDeviceLocation(getApplicationContext(), location);
             //
@@ -74,7 +104,8 @@ public class AisLocationService extends Service {
 
     LocationListener[] mLocationListeners = new LocationListener[]{
             new LocationListener(LocationManager.GPS_PROVIDER),
-            new LocationListener(LocationManager.NETWORK_PROVIDER)
+            new LocationListener(LocationManager.NETWORK_PROVIDER),
+            new LocationListener(LocationManager.PASSIVE_PROVIDER)
     };
 
     @Override
@@ -88,55 +119,30 @@ public class AisLocationService extends Service {
         Log.d(TAG, "onStartCommand");
         createNotificationChannel();
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                new Intent(this, BrowserActivityNative.class),
-                0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,
+                new Intent(this, BrowserActivityNative.class),0);
 
 
+        mLocationsDetected = 0;
 
         // Exit action
         Intent exitIntent = new Intent(this, BrowserActivityNative.class);
         exitIntent.setAction("exit_location_service");
         exitIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent exitPendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                exitIntent,
-                0);
+        PendingIntent exitPendingIntent = PendingIntent.getActivity(this,0,exitIntent,0);
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
 
         String subText = getString(R.string.title_notification_report_location) ;
 
-
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_LOCATION_CHANNEL_ID)
                 .setContentTitle(subText)
-                .setContentText("")
-                .setSmallIcon(R.drawable.ic_ais_logo)
+                .setContentText("Ilość wykrytych lokacji: " + mLocationsDetected)
+                .setSmallIcon(R.drawable.ic_ais_gps_logo)
                 .setContentIntent(pendingIntent)
                 .addAction(exitAction)
                 .build();
 
         startForeground(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
-
-        //
-        if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {
-            //
-            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-
-            // try to stop and start ExoPlayer
-            Intent palyIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
-            palyIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "play");
-            bm.sendBroadcast(palyIntent);
-
-            // try to stop and stop ExoPlayer
-            Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
-            pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "pause");
-            bm.sendBroadcast(pauseIntent);
-        }
-
-
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -149,27 +155,27 @@ public class AisLocationService extends Service {
 
         try {
             mLocationManager.requestLocationUpdates(
-                    LocationManager.PASSIVE_PROVIDER,
+                    LocationManager.GPS_PROVIDER,
                     LOCATION_INTERVAL,
                     LOCATION_DISTANCE,
                     mLocationListeners[0]
             );
         } catch (java.lang.SecurityException ex) {
             Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
+        } catch (Exception ex) {
             Log.d(TAG, "network provider does not exist, " + ex.getMessage());
         }
 
         try {
             mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
+                    LocationManager.NETWORK_PROVIDER,
                     LOCATION_INTERVAL,
                     LOCATION_DISTANCE,
                     mLocationListeners[1]
             );
         } catch (java.lang.SecurityException ex) {
             Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
+        } catch (Exception ex) {
             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
     }
