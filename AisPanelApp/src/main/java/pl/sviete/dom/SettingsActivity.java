@@ -224,7 +224,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         updateServices(preference.getContext(),enableAisAudioService, enableAisHotWordService);
                     } else if (prefKey.equals("setting_report_location")) {
                         //
-                        Intent aisLocationService = new Intent(preference.getContext(), AisLocationService.class);
+                        Intent aisLocationService = new Intent(preference.getContext(), AisFuseLocationService.class);
                         if ((boolean) newValue) {
                             // ask for permission
                             int permissionLocation = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.ACCESS_FINE_LOCATION);

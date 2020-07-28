@@ -285,7 +285,7 @@ public class Config {
         ed.putBoolean(myContext.getString(R.string.key_setting_report_location), mode);
         ed.apply();
 
-        Intent serviceReportLocationIntent = new Intent(myContext, AisLocationService.class);
+        Intent serviceReportLocationIntent = new Intent(myContext, AisFuseLocationService.class);
         if (mode) {
             // start service
             myContext.startService(serviceReportLocationIntent);

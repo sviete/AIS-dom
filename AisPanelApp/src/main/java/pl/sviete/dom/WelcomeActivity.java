@@ -59,7 +59,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
             // run location service on start
             if (config.getReportLocationMode()) {
-                Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisLocationService.class);
+                Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisFuseLocationService.class);
                 this.getApplicationContext().startService(reportLocationServiceIntent);
             }
 

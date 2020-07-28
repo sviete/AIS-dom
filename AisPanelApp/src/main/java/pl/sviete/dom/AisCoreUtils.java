@@ -9,6 +9,8 @@ import android.util.Log;
 import android.webkit.WebView;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 import ai.picovoice.porcupinemanager.PorcupineManager;
 
@@ -50,7 +52,10 @@ public class AisCoreUtils {
     public static final String BROADCAST_EXO_PLAYER_COMMAND = "BROADCAST_EXO_PLAYER_COMMAND";
     public static final String BROADCAST_EXO_PLAYER_COMMAND_TEXT = "BROADCAST_EXO_PLAYER_COMMAND_TEXT";
 
-
+    // GPS
+    public static String GPS_SERVICE_START_TIMESTAMP = String.valueOf(System.currentTimeMillis());
+    public static int GPS_SERVICE_LOCATIONS_DETECTED = 0;
+    public static int GPS_SERVICE_LOCATIONS_SENT = 0;
 
     public static String getAisDomUrl(){
         if (onBox()){
@@ -185,6 +190,87 @@ public class AisCoreUtils {
 //
 //        AIS_DOM_LAST_TTS = text_to_say;
 //        return true;
+    }
+
+    /**
+     * Converts seconds into friendly, understandable description of the duration.
+     *
+     * @param numberOfSeconds
+     * @return
+     */
+    public static String getDescriptiveDurationString(int numberOfSeconds,
+                                                      Context context) {
+
+        String descriptive;
+        int hours;
+        int minutes;
+        int seconds;
+
+        int remainingSeconds;
+
+        // Special cases
+        if(numberOfSeconds==0){
+            return "";
+        }
+
+        if (numberOfSeconds == 1) {
+            return context.getString(R.string.time_onesecond);
+        }
+
+        if (numberOfSeconds == 30) {
+            return context.getString(R.string.time_halfminute);
+        }
+
+        if (numberOfSeconds == 60) {
+            return context.getString(R.string.time_oneminute);
+        }
+
+        if (numberOfSeconds == 900) {
+            return context.getString(R.string.time_quarterhour);
+        }
+
+        if (numberOfSeconds == 1800) {
+            return context.getString(R.string.time_halfhour);
+        }
+
+        if (numberOfSeconds == 3600) {
+            return context.getString(R.string.time_onehour);
+        }
+
+        if (numberOfSeconds == 4800) {
+            return context.getString(R.string.time_oneandhalfhours);
+        }
+
+        if (numberOfSeconds == 9000) {
+            return context.getString(R.string.time_twoandhalfhours);
+        }
+
+        // For all other cases, calculate
+
+        hours = numberOfSeconds / 3600;
+        remainingSeconds = numberOfSeconds % 3600;
+        minutes = remainingSeconds / 60;
+        seconds = remainingSeconds % 60;
+
+        // Every 5 hours and 2 minutes
+        // XYZ-5*2*20*
+
+        descriptive = String.format(context.getString(R.string.time_hms_format),
+                String.valueOf(hours), String.valueOf(minutes), String.valueOf(seconds));
+
+        return descriptive;
+
+    }
+
+    public static String getDistanceDisplay(Context context, double meters, boolean autoscale) {
+        DecimalFormat df = new DecimalFormat("#.###");
+        String result = df.format(meters) + context.getString(R.string.meters);
+
+        if(autoscale && (meters >= 1000)) {
+            result = df.format(meters/1000) + context.getString(R.string.kilometers);
+        }
+
+        return result;
     }
 
 

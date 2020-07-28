@@ -341,4 +341,33 @@
     <string name="fcm_message">FCM Message</string>
 
     <string name="pref_ais_dom_exit_title">Exit</string>
+
+    <string name="txt_latitude">Latitude:</string>
+    <string name="txt_longitude">Longitude:</string>
+    <string name="txt_altitude">Altitude:</string>
+    <string name="txt_speed">Speed:</string>
+    <string name="txt_direction">Direction:</string>
+    <string name="txt_satellites">Satellites:</string>
+    <string name="txt_accuracy">Accuracy:</string>
+    <string name="txt_travel_distance">Travelled:</string>
+    <string name="btn_start_logging">Start Logging</string>
+    <string name="btn_stop_logging">Stop Logging</string>
+    <string name="txt_travel_duration">Duration:</string>
+
+    <string name="time_onesecond">1 second</string>
+    <string name="time_halfminute">&#189; minute</string>
+    <string name="time_oneminute">1 minute</string>
+    <string name="time_onehour">1 hour</string>
+    <string name="time_quarterhour">15 minutes</string>
+    <string name="time_halfhour">&#189; hour</string>
+    <string name="time_oneandhalfhours">1&#189; hours</string>
+    <string name="time_twoandhalfhours">2&#189; hours</string>
+    <string name="time_hms_format" formatted="false">%sh %sm %ss</string>
+    <string name="accuracy_within" formatted="false">within %s %s</string>
+    <string name="degree_symbol" translatable="false">&#176;</string>
+    <string name="gps_loc_detected">loc. changes received</string>
+    <string name="gps_loc_sent">sent </string>
+    <string name="meters">&#160;meters</string>
+    <string name="kilometers">&#160;km</string>
+
 </resources>

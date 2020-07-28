@@ -173,17 +173,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                 bm.sendBroadcast(requestIntent);
             }
         } else if (request.equals("locationServiceOn")) {
-            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisLocationService.class);
+            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisFuseLocationService.class);
             this.getApplicationContext().startService(reportLocationServiceIntent);
         } else if (request.equals("locationServiceOff")) {
-            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisLocationService.class);
+            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisFuseLocationService.class);
             this.getApplicationContext().stopService(reportLocationServiceIntent);
         } else if (request.equals("locationUpdate")) {
             boolean reDisable = true;
             if (config.getReportLocationMode()) {
                 reDisable = false;
             }
-            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisLocationService.class);
+            Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisFuseLocationService.class);
             this.getApplicationContext().startService(reportLocationServiceIntent);
             if (reDisable){
                 mHandler.postDelayed(new Runnable() {
