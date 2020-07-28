@@ -1061,10 +1061,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 int sensitivity = config.getSelectedHotWordSensitivity();
                 subText = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " " + sensitivity;
             }
-
-            if (config.getReportLocationMode()) {
-                subText = subText + " " + getString(R.string.title_notification_report_location);
-            }
             return subText;
         }
     }

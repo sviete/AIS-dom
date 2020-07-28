@@ -28,7 +28,6 @@ import ai.picovoice.porcupinemanager.PorcupineManager;
 import ai.picovoice.porcupinemanager.PorcupineManagerException;
 
 import pl.sviete.dom.AisCoreUtils;
-import pl.sviete.dom.AisLocationService;
 import pl.sviete.dom.AisPanelService;
 import pl.sviete.dom.AisRecognitionListener;
 import pl.sviete.dom.BrowserActivityNative;
@@ -88,13 +87,7 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
                 exitIntent,
                 0);
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
-
-        String subText = "";
-        if (config.getReportLocationMode()) {
-            subText = getString(R.string.title_notification_report_location);
-        }
-
-        subText = subText + " " + hotword + " " + sensitivity;
+        String subText = hotword + " " + sensitivity;
 
         Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
                 .setContentTitle(subText)

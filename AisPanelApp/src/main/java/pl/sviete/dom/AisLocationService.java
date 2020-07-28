@@ -19,8 +19,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import ai.picovoice.hotword.PorcupineService;
-
 public class AisLocationService extends Service {
     private static final String TAG = "AisLocationService";
 
@@ -31,7 +29,7 @@ public class AisLocationService extends Service {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(
-                    AisCoreUtils.AIS_DOM_CHANNEL_ID,
+                    AisCoreUtils.AIS_LOCATION_CHANNEL_ID,
                     "AI-Speaker Location",
                     NotificationManager.IMPORTANCE_LOW);
 
@@ -109,18 +107,10 @@ public class AisLocationService extends Service {
                 0);
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
 
-        String subText = "";
-        Config config = new Config(getApplicationContext());
-        if (config.getHotWordMode()) {
-            String hotword = config.getSelectedHotWord();
-            int sensitivity = config.getSelectedHotWordSensitivity();
-            subText = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " " + sensitivity;
-        }
-
-        subText = subText + " " + getString(R.string.title_notification_report_location) ;
+        String subText = getString(R.string.title_notification_report_location) ;
 
 
-        Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_LOCATION_CHANNEL_ID)
                 .setContentTitle(subText)
                 .setContentText("")
                 .setSmallIcon(R.drawable.ic_ais_logo)
@@ -128,7 +118,7 @@ public class AisLocationService extends Service {
                 .addAction(exitAction)
                 .build();
 
-        startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, notification);
+        startForeground(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
 
         //
         if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {

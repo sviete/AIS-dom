@@ -99,6 +99,9 @@ public class AisCoreUtils {
     public static String AIS_DOM_LAST_TTS = "";
     public static String AIS_DOM_LAST_TTS_SOURCE = "";
 
+    public static int AIS_LOCATION_NOTIFICATION_ID = 5678;
+    public static final String AIS_LOCATION_CHANNEL_ID = "AisServiceLocationChannelId";
+
     // HA
     public static String HA_CLIENT_ID = "";
     public static String HA_CODE = "";
