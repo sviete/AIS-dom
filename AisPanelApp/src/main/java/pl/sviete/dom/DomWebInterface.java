@@ -2,8 +2,10 @@ package pl.sviete.dom;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -29,13 +31,23 @@ import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
 import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
+import static pl.sviete.dom.DomWebInterface.getDomWsUrl;
 
 public class DomWebInterface {
     final static String TAG = DomWebInterface.class.getName();
 
+    public static String getDomWsUrl(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final String url = sharedPreferences.getString(context.getString(R.string.key_setting_app_launchurl), "");
+        if (url.startsWith("dom-")){
+            return "https://" + url + ".paczka.pro";
+        }
+        return pl.sviete.dom.AisCoreUtils.getAisDomUrl().replaceAll("/$", "");
+    }
+
     private static void doPost(JSONObject message, Context context) {
         // do the simple HTTP post
-        String url = pl.sviete.dom.AisCoreUtils.getAisDomUrl().replaceAll("/$", "") + "/api/webhook/aisdomprocesscommandfromframe";
+        String url = getDomWsUrl(context) + "/api/webhook/aisdomprocesscommandfromframe";
         AsyncHttpPost post = new AsyncHttpPost(url);
         JSONObjectBody body = new JSONObjectBody(message);
         try {
@@ -216,7 +228,7 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
         String ha_access_token = "";
         try {
             // 1. get token
-            url = new URL(AisCoreUtils.getAisDomUrl().replaceAll("/$", "") + "/auth/token");
+            url = new URL(getDomWsUrl(mContext) + "/auth/token");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -321,7 +333,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                 //
                 // JSONObjectBody body = new JSONObjectBody(json);
 
-                 url = new URL(AisCoreUtils.getAisDomUrl().replaceAll("/$", "") + "/api/mobile_app/registrations");
+                 url = new URL(getDomWsUrl(mContext) + "/api/mobile_app/registrations");
                  HttpURLConnection con = (HttpURLConnection) url.openConnection();
                  con.setRequestMethod("POST");
                  con.setRequestProperty("Content-Type", "application/json");
@@ -409,7 +421,8 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
                 //
                 // JSONObjectBody body = new JSONObjectBody(json);
 
-                URL url = new URL(AisCoreUtils.getAisDomUrl().replaceAll("/$", "") + "/api/webhook/" + webhookId);
+                URL url = new URL(getDomWsUrl(mContext) + "/api/webhook/" + webhookId);
+
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Content-Type", "application/json");
@@ -432,14 +445,14 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
                         response.append(inputLine);
                     }
                     in.close();
-                    Log.e(TAG, "xx3" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
                     AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
-                    Log.e(TAG, "xx4" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
-
-                    // TODO answer result
-                    return "";
+                    return String.valueOf(response);
+                } else {
+                    Log.e(TAG, "AddUpdateDeviceLocationTaskJob responseCode from gate: " + responseCode);
                 }
+                return String.valueOf(responseCode);
             } catch (Exception e) {
+                Log.e(TAG, "AddUpdateDeviceLocationTaskJob error: " + e.getMessage());
                 return e.getMessage();
             }
         }

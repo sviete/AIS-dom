@@ -1240,12 +1240,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     startAisApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(startAisApp);
                 }
-                // 2. stop location service
-                if(AisCoreUtils.isServiceRunning(getApplicationContext(), AisFuseLocationService.class)){
-                    mConfig.setReportLocationMode(false);
-                }
-
-                // 3. stop audio service
+                // 2. stop audio service
                 Intent stopIntent = new Intent(getApplicationContext(), AisPanelService.class);
                 getApplicationContext().stopService(stopIntent);
 

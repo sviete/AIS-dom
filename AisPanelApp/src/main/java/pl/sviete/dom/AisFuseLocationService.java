@@ -20,16 +20,18 @@ import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.concurrent.Executor;
 
 
-public class AisFuseLocationService extends Service {
+public class AisFuseLocationService extends Service{
     private static final String TAG = "AisFuseLocationService";
 
     private static final int UPDATE_INTERVAL_IN_MILLISECONDS = 30000; // 30 sec
@@ -67,7 +69,10 @@ public class AisFuseLocationService extends Service {
 
 
         // Report action button - button to report location now
-        // TODO... maybe
+        Intent reportIntent = new Intent(getApplicationContext(), AisFuseLocationService.class);
+        reportIntent.putExtra("getLastKnownLocation", true);
+        PendingIntent reportPendingIntent = PendingIntent.getService(getApplicationContext(), 0, reportIntent, 0);
+        NotificationCompat.Action reportAction = new NotificationCompat.Action.Builder(R.drawable.ic_ais_gps_logo, "REPORT", reportPendingIntent).build();
 
         // Exit action
         Intent exitIntent = new Intent(getApplicationContext(), BrowserActivityNative.class);
@@ -77,7 +82,8 @@ public class AisFuseLocationService extends Service {
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
 
         CharSequence contentTitle = getString(R.string.gps_loc_detected) + ": " + AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED;
-        contentTitle = contentTitle + ", " + getString(R.string.gps_loc_sent) + ": " + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT;;
+        contentTitle = contentTitle + ", " + getString(R.string.gps_loc_sent) + ": " + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT;
+        ;
         CharSequence contentText = getString(R.string.app_name);
         if (mCurrentLocation != null) {
             contentText = Html.fromHtml(
@@ -94,10 +100,28 @@ public class AisFuseLocationService extends Service {
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.gps_satellite))
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText).setBigContentTitle(contentTitle))
                 .setContentIntent(pendingIntent)
+                .addAction(reportAction)
                 .addAction(exitAction)
                 .build();
         return notification;
     }
+
+//    private void getLastKnownLocation() {
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            return;
+//        }
+//        mFusedLocationClient.getLastLocation()
+//                .addOnSuccessListener((Executor) this, new OnSuccessListener<Location>() {
+//                    @Override
+//                    public void onSuccess(Location location) {
+//                        // Got last known location. In some rare situations this can be null.
+//                        if (location != null) {
+//                            reportLocationToAisGate();
+//                        }
+//                    }
+//                });
+//    }
+
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -105,13 +129,14 @@ public class AisFuseLocationService extends Service {
         return null;
     }
 
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        createNotificationChannel();
+        // AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED = 0;
+        // AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT = 0;
 
-        AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED = 0;
-        AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT = 0;
+        createNotificationChannel();
 
         Notification notification = getNotification();
         startForeground(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
@@ -121,6 +146,8 @@ public class AisFuseLocationService extends Service {
 
         return super.onStartCommand(intent, flags, startId);
     }
+
+
 
     @Override
     public void onCreate() {
@@ -160,6 +187,39 @@ public class AisFuseLocationService extends Service {
     }
 
 
+    // send location info to gate and show in notification
+    private void reportLocationToAisGate(){
+        // update notification
+        AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED++;
+        Notification notification = getNotification();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+
+        // report location to AIS gate
+        DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation);
+        // update notification after 2.5 sec - to check if the location report was sent
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Notification notification = getNotification();
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                assert notificationManager != null;
+                notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+            }
+        }, 2500);
+        // update notification after 10 sec
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Notification notification = getNotification();
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                assert notificationManager != null;
+                notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+            }
+        }, 10000);
+    }
+
     /**
      * Creates a callback for receiving location events.
      */
@@ -168,34 +228,10 @@ public class AisFuseLocationService extends Service {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-
                 mCurrentLocation = locationResult.getLastLocation();
 
-                // update notification
-                AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED++;
-                Notification notification = getNotification();
-                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                assert notificationManager != null;
-                notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
-
-                // report location to AIS gate
-                DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation);
                 //
-                Log.e(TAG, "xx0" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
-                // update notification after 2 sec
-                // 2. execute after 5 seconds - to check if the location report was sent
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e(TAG, "xx1" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
-                        Notification notification = getNotification();
-                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        assert notificationManager != null;
-                        Log.e(TAG, "xx2" + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT);
-                        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
-                    }
-                }, 5000);
-
+                reportLocationToAisGate();
             }
         };
     }

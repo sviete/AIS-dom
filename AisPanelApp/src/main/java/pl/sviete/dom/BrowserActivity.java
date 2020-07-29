@@ -425,12 +425,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
               if (intent.getAction() != null) {
                   if (intent.getAction().equals("exit_mic_service")) {
                       mConfig.setHotWordMode(false);
-                      mConfig.setReportLocationMode(false);
                     }
 
                   if (intent.getAction().equals("exit_location_service")) {
                       mConfig.setReportLocationMode(false);
-                      mConfig.setHotWordMode(false);
                   }
                 }
         }
