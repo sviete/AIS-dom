@@ -526,6 +526,16 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     String aisRequest = intent.getStringExtra("aisRequest");
                     if (aisRequest.equals("micOn")) {
                         onStartStt();
+                    } else if (aisRequest.equals("playAudio")) {
+                        final String audioUrl = intent.getStringExtra("url");
+                        playAudio(audioUrl,false,0);
+                    } else if (aisRequest.equals("findPhone")) {
+                        // set audio volume to 100
+                        setVolume(100);
+                        // play
+                        playAudio("asset:///find_my_phone.mp3", false, 0);
+                    } else if (aisRequest.equals("stopAudio")) {
+                        stopAudio();
                     }
                 }
             }

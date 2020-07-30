@@ -75,10 +75,10 @@ public class AisFuseLocationService extends Service{
         NotificationCompat.Action reportAction = new NotificationCompat.Action.Builder(R.drawable.ic_ais_gps_logo, "REPORT", reportPendingIntent).build();
 
         // Exit action
-        Intent exitIntent = new Intent(getApplicationContext(), BrowserActivityNative.class);
+        Intent exitIntent = new Intent(this, BrowserActivityNative.class);
         exitIntent.setAction("exit_location_service");
         exitIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent exitPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, exitIntent, 0);
+        PendingIntent exitPendingIntent = PendingIntent.getActivity(this, 0, exitIntent, 0);
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
 
         CharSequence contentTitle = getString(R.string.gps_loc_detected) + ": " + AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED;
@@ -135,9 +135,12 @@ public class AisFuseLocationService extends Service{
         Log.d(TAG, "onStartCommand");
         // AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED = 0;
         // AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT = 0;
-
-        // TODO restart...
-        // stopLocationUpdates();
+        // restart...
+        try {
+            stopLocationUpdates();
+        } catch (Exception ex){
+            Log.e(TAG, ex.getMessage());
+        }
 
         createNotificationChannel();
 
@@ -273,9 +276,10 @@ public class AisFuseLocationService extends Service{
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-        super.onDestroy();
         // fuse
         stopLocationUpdates();
+        //
+        super.onDestroy();
     }
 
     private void initializeFuseLocationManager() {

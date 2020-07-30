@@ -4,15 +4,19 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.webkit.WebView;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 
 import ai.picovoice.porcupinemanager.PorcupineManager;
+
+import static android.content.Context.BATTERY_SERVICE;
 
 public class AisCoreUtils {
 
@@ -202,5 +206,25 @@ public class AisCoreUtils {
         return result;
     }
 
+    // get battery level
+    public static String getBatteryPercentage(Context context) {
+        try {
+            if (Build.VERSION.SDK_INT >= 21) {
+                BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+                return String.valueOf(bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY));
+            } else {
+                IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                Intent batteryStatus = context.registerReceiver(null, iFilter);
 
+                int level = batteryStatus != null ? batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) : -1;
+                int scale = batteryStatus != null ? batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1) : -1;
+
+                double batteryPct = level / (double) scale;
+                return String.valueOf(batteryPct * 100);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getBatteryPercentage error: " + e.getMessage());
+            return "100";
+        }
+    }
 }

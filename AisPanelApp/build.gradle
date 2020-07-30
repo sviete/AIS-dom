@@ -11,8 +11,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 116
-        versionName '1.3.0.Report Location'
+        versionCode 117
+        versionName '1.4.0.GPS'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true

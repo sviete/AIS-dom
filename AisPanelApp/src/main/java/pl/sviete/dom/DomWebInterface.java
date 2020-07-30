@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.BatteryManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -20,6 +21,7 @@ import com.koushikdutta.async.http.AsyncHttpResponse;
 import com.koushikdutta.async.http.body.JSONObjectBody;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -30,6 +32,7 @@ import ai.picovoice.hotword.PorcupineService;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
+import static pl.sviete.dom.AisCoreUtils.getBatteryPercentage;
 import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 import static pl.sviete.dom.DomWebInterface.getDomWsUrl;
 
@@ -189,6 +192,48 @@ public class DomWebInterface {
         doCloudPost(message, topic);
     }
 
+    // Sending data home TODO
+    // https://developers.home-assistant.io/docs/api/native-app-integration/sending-data
+    // 1. Update device location
+    // 2. Sensors
+    public static String doPostRequest(URL url, byte[] body, String accessToken) {
+        String responnse = "";
+        HttpURLConnection con = null;
+        try {
+            con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            con.setRequestProperty("charset", "utf-8");
+            if (accessToken != null){
+                con.setRequestProperty("Authorization", "Bearer " + accessToken);
+            }
+            con.setDoOutput(true);
+
+            OutputStream os = con.getOutputStream();
+            os.write(body);
+            os.flush();
+            os.close();
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                return response.toString();
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return responnse;
+    }
+
     public static void registerAuthorizationCode(Context context, String code, String clientId) {
         // do the simple HTTP post in async task
         new RetrieveTokenTaskJob(context).execute(code, clientId);
@@ -198,12 +243,6 @@ public class DomWebInterface {
         // do the simple HTTP post in async task
         new AddUpdateDeviceRegistrationTaskJob(context).execute();
     }
-
-
-    // Sending data home TODO
-    // https://developers.home-assistant.io/docs/api/native-app-integration/sending-data
-    // 1. Update device location
-    // 2. Sensors
 
     public static void updateDeviceLocation(Context context, Location location) {
         // do the simple HTTP post in async task
@@ -222,61 +261,39 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String[] params) {
+
         URL url = null;
         String code = params[0];
         String clientId = params[1];
         String ha_access_token = "";
+
         try {
             // 1. get token
+            // - create url
             url = new URL(getDomWsUrl(mContext) + "/auth/token");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            con.setRequestProperty("charset", "utf-8");
 
-            // For POST only - START
-            con.setDoOutput(true);
-            StringBuilder result = new StringBuilder();
-            result.append("grant_type=authorization_code&");
-            result.append("client_id=");
-            result.append(clientId);
-            result.append("&");
-            result.append("code");
-            result.append("=");
-            result.append(code);
+            // - create body
+            StringBuilder body = new StringBuilder();
+            body.append("grant_type=authorization_code&");
+            body.append("client_id=");
+            body.append(clientId);
+            body.append("&");
+            body.append("code");
+            body.append("=");
+            body.append(code);
 
-            OutputStream os = con.getOutputStream();
-            os.write(result.toString().getBytes());
-            os.flush();
-            os.close();
+            // call
+            String response = DomWebInterface.doPostRequest(url, body.toString().getBytes(), null);
+            // json answer result
+            JSONObject jsonObj = new JSONObject(response);
+            ha_access_token = jsonObj.getString("access_token");
+            // save ha access_token in settings
+            Config config = new Config(mContext);
+            config.setAisHaAccessToken(ha_access_token);
 
-            int responseCode = con.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        con.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
+            // 2. do the device registration
+            new AddUpdateDeviceRegistrationTaskJob(mContext).execute();
 
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                // json answer result
-                JSONObject jsonObj = new JSONObject(response.toString());
-
-                ha_access_token = jsonObj.getString("access_token");
-
-                // save ha access_token in settings
-                Config config = new Config(mContext);
-                config.setAisHaAccessToken(ha_access_token);
-
-                // device registration
-                new AddUpdateDeviceRegistrationTaskJob(mContext).execute();
-
-            } else {
-                System.out.println("request not worked");
-            }
         } catch (Exception e) {
             return ha_access_token;
         }
@@ -313,112 +330,66 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
         String accessToken = config.getHaAccessToken();
 
         try {
-                // 1. get webhook
-                JSONObject json = new JSONObject();
-                json.put("device_id", AisCoreUtils.AIS_GATE_ID);
-                json.put("app_id", BuildConfig.APPLICATION_ID);
-                json.put("app_name", "AIS dom");
-                json.put("app_version", BuildConfig.VERSION_NAME);
-                json.put("device_name", "mobile_ais_" + AisCoreUtils.AIS_GATE_ID.toLowerCase().replace(" ", "_"));
-                json.put("manufacturer", AisNetUtils.getManufacturer());
-                json.put("model", AisNetUtils.getModel() + " " + AisNetUtils.getDevice() );
-                json.put("os_name", "Android");
-                json.put("os_version", AisNetUtils.getApiLevel() + " " + AisNetUtils.getOsVersion());
-                json.put("supports_encryption", false);
-                JSONObject appData = new JSONObject();
-                appData.put("push_token", AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY);
-                appData.put("push_url", "https://powiedz.co/ords/dom/dom/send_push_data");
-                json.put("app_data", appData);
+            // 1. get webhook
+            // - create url
+            url = new URL(getDomWsUrl(mContext) + "/api/mobile_app/registrations");
 
-                //
-                // JSONObjectBody body = new JSONObjectBody(json);
-                 url = new URL(getDomWsUrl(mContext) + "/api/mobile_app/registrations");
-                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                 con.setRequestMethod("POST");
-                 con.setRequestProperty("Content-Type", "application/json");
-                 con.setRequestProperty("charset", "utf-8");
-                 con.setRequestProperty("Authorization", "Bearer " + accessToken);
+            // create body
+            JSONObject json = new JSONObject();
+            json.put("device_id", AisCoreUtils.AIS_GATE_ID);
+            json.put("app_id", BuildConfig.APPLICATION_ID);
+            json.put("app_name", "AIS dom");
+            json.put("app_version", BuildConfig.VERSION_NAME);
+            json.put("device_name", "mobile_ais_" + AisCoreUtils.AIS_GATE_ID.toLowerCase().replace(" ", "_"));
+            json.put("manufacturer", AisNetUtils.getManufacturer());
+            json.put("model", AisNetUtils.getModel() + " " + AisNetUtils.getDevice() );
+            json.put("os_name", "Android");
+            json.put("os_version", AisNetUtils.getApiLevel() + " " + AisNetUtils.getOsVersion());
+            json.put("supports_encryption", false);
+            JSONObject appData = new JSONObject();
+            appData.put("push_token", AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY);
+            appData.put("push_url", "https://powiedz.co/ords/dom/dom/send_push_data");
+            json.put("app_data", appData);
+            // call
+            String response = DomWebInterface.doPostRequest(url, json.toString().getBytes("UTF-8"), accessToken);
 
-                 // For POST only - START
-                 con.setDoOutput(true);
-                 OutputStream os = con.getOutputStream();
-                 os.write(json.toString().getBytes("UTF-8"));
-                 os.flush();
-                 os.close();
+            // json answer result
+            JSONObject jsonObjResp = new JSONObject(response);
+            webhookId = jsonObjResp.getString("webhook_id");
 
-                 int responseCode = con.getResponseCode();
-                 if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
-                     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                     StringBuffer response = new StringBuffer();
-                     String inputLine;
-                     while ((inputLine = in.readLine()) != null) {
-                            response.append(inputLine);
-                     }
-                     in.close();
-                     // json answer result
-                     JSONObject jsonObj = new JSONObject();
-                     jsonObj = new JSONObject(response.toString());
-                     webhookId = jsonObj.getString("webhook_id");
+            // save ha Webhook Id in settings
+            config.setAisHaWebhookId(webhookId);
 
-                     // save ha Webhook Id in settings
-                     config.setAisHaWebhookId(webhookId);
 
-                 }
             // 2. Registering a sensor
             // https://developers.home-assistant.io/docs/api/native-app-integration/sensors
-            // json
+            // - create url
+            URL url2 = new URL(getDomWsUrl(mContext) + "/api/webhook/" + webhookId);
+            // create body
             JSONObject jsonSensor = new JSONObject();
             jsonSensor.put("type", "register_sensor");
             JSONObject jsonSensorData = new JSONObject();
             jsonSensorData.put("device_class", "battery");
             jsonSensorData.put("icon", "mdi:battery");
-            jsonSensorData.put("name", "Status baterii");
-            jsonSensorData.put("state", "12");
+            jsonSensorData.put("name", "battery");
+            jsonSensorData.put("state", getBatteryPercentage(mContext));
             jsonSensorData.put("type", "sensor");
-            jsonSensorData.put("unique_id", "battery_state");
+            jsonSensorData.put("unique_id", "battery");
             jsonSensorData.put("unit_of_measurement", "%");
             jsonSensor.put("data", jsonSensorData);
-
-            URL url2 = new URL(getDomWsUrl(mContext) + "/api/webhook/" + webhookId);
-
-            HttpURLConnection con2 = (HttpURLConnection) url2.openConnection();
-            con2.setRequestMethod("POST");
-            con2.setRequestProperty("Content-Type", "application/json");
-            con2.setRequestProperty("charset", "utf-8");
-            con2.setRequestProperty("Authorization", "Bearer " + accessToken);
-
-            // For POST only - START
-            con2.setDoOutput(true);
-            OutputStream os2 = con.getOutputStream();
-            os2.write(json.toString().getBytes("UTF-8"));
-            os2.flush();
-            os2.close();
-
-            int responseCode2 = con.getResponseCode();
-            if (responseCode2 == HttpURLConnection.HTTP_OK || responseCode2 == HttpURLConnection.HTTP_CREATED) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                StringBuffer response = new StringBuffer();
-                String inputLine;
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-            } else {
-                Log.e(TAG, "Registering a sensor responseCode from gate: " + responseCode);
-            }
+            // call
+            String response2 = DomWebInterface.doPostRequest(url2, jsonSensor.toString().getBytes("UTF-8"), accessToken);
+            Log.d(TAG, response2);
 
         } catch (Exception e) {
-            return webhookId;
+            return e.getMessage();
         }
         return webhookId;
     }
 
-
     @Override
     protected void onPostExecute(String webhookId) {
-        // register mobile in home assistant /api/mobile_app/registrations
         if (!webhookId.equals("")){
-            // TODO save webhookId
             Log.d(TAG, "webhookId: " + webhookId);
 
         }
@@ -446,7 +417,9 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
 
         if (!accessToken.equals("") && !webhookId.equals("")) {
             try {
-                // json
+                // - create url
+                URL url = new URL(getDomWsUrl(mContext) + "/api/webhook/" + webhookId);
+                // create body
                 JSONObject json = new JSONObject();
                 json.put("type", "update_location");
                 JSONObject data = new JSONObject();
@@ -455,42 +428,35 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
                 gps.put(mLocation.getLongitude());
                 data.put("gps", gps);
                 data.put("gps_accuracy", mLocation.getAccuracy());
-                data.put("battery", 45);
+                String batteryState = getBatteryPercentage(mContext);
+                data.put("battery", batteryState);
                 json.put("data", data);
 
-                //
-                // JSONObjectBody body = new JSONObjectBody(json);
+                // call
+                String response = DomWebInterface.doPostRequest(url, json.toString().getBytes("UTF-8"), accessToken);
 
-                URL url = new URL(getDomWsUrl(mContext) + "/api/webhook/" + webhookId);
+                // json answer result - if the response is {} all is ok
+                JSONObject jsonObjResp = new JSONObject(response);
+                AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
 
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.setRequestMethod("POST");
-                con.setRequestProperty("Content-Type", "application/json");
-                con.setRequestProperty("charset", "utf-8");
-                con.setRequestProperty("Authorization", "Bearer " + accessToken);
 
-                // For POST only - START
-                con.setDoOutput(true);
-                OutputStream os = con.getOutputStream();
-                os.write(json.toString().getBytes("UTF-8"));
-                os.flush();
-                os.close();
+                // update battery state
+                // TODO this should be done in one call
+                // create body
+                JSONObject jsonUpdate = new JSONObject();
+                jsonUpdate.put("type", "update_sensor_states");
+                JSONArray sensorsDataArray = new JSONArray();
+                JSONObject batteryData = new JSONObject();
+                batteryData.put("icon", "mdi:battery");
+                batteryData.put("state", batteryState);
+                batteryData.put("type", "sensor");
+                batteryData.put("unique_id", "battery");
+                sensorsDataArray.put(batteryData);
+                jsonUpdate.put("data", sensorsDataArray);
+                // call
+                response = DomWebInterface.doPostRequest(url, jsonUpdate.toString().getBytes("UTF-8"), accessToken);
 
-                int responseCode = con.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    StringBuffer response = new StringBuffer();
-                    String inputLine;
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-                    AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
-                    return String.valueOf(response);
-                } else {
-                    Log.e(TAG, "AddUpdateDeviceLocationTaskJob responseCode from gate: " + responseCode);
-                }
-                return String.valueOf(responseCode);
+                return response;
             } catch (Exception e) {
                 Log.e(TAG, "AddUpdateDeviceLocationTaskJob error: " + e.getMessage());
                 return e.getMessage();

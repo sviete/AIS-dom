@@ -142,6 +142,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         }
     }
 
+    private void brodcastToPanelService(String request, String extraUrl){
+        // 1. check if service is runing
+        if (!isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {
+            // service is NOT running - start it!
+            Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
+            serviceIntent.putExtra("aisRequest", request);
+            this.getApplicationContext().startService(serviceIntent);
+            // 2. execute after 2 seconds
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
+                    requestIntent.putExtra("aisRequest", request);
+                    requestIntent.putExtra("url", extraUrl);
+                    LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                    bm.sendBroadcast(requestIntent);
+                }
+            }, 2000);
+        } else {
+            Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
+            requestIntent.putExtra("aisRequest", request);
+            requestIntent.putExtra("url", extraUrl);
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+            bm.sendBroadcast(requestIntent);
+        }
+    }
+
     /**
      * Turn on microphone etc
      *
@@ -150,28 +177,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         Config config = new Config(getApplicationContext());
 
         if (request.equals("micOn")) {
-            // 1. check if service is runing
-            if (!isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {
-                // service is NOT running - start it!
-                Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
-                serviceIntent.putExtra("aisRequest", request);
-                this.getApplicationContext().startService(serviceIntent);
-                // 2. execute after 2 seconds
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
-                        requestIntent.putExtra("aisRequest", request);
-                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                        bm.sendBroadcast(requestIntent);
-                    }
-                }, 2000);
-            } else {
-                Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
-                requestIntent.putExtra("aisRequest", request);
-                LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                bm.sendBroadcast(requestIntent);
-            }
+            brodcastToPanelService("micOn", null);
         } else if (request.equals("locationServiceOn")) {
             Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisFuseLocationService.class);
             this.getApplicationContext().startService(reportLocationServiceIntent);
@@ -191,7 +197,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                     public void run() {
                         mContext.stopService(reportLocationServiceIntent);
                     }
-                }, 60000);
+                }, 30000);
             }
         } else if (request.equals("hotWordServiceOn")) {
             Intent porcupineServiceIntent = new Intent(this.getApplicationContext(), PorcupineService.class);
@@ -205,6 +211,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         } else if (request.equals("audioServiceOff")) {
             Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
             this.getApplicationContext().stopService(serviceIntent);
+        } else if (request.equals("sayIt")) {
+            // try to say
+            if (data.size() > 0) {
+                String text = data.get("text");
+                if (text != null) {
+                    processTTS(text);
+                }
+            }
+        } else if (request.equals("playAudio")) {
+            // try to play
+            if (data.size() > 0) {
+                String url = data.get("url");
+                if (url != null) {
+                    brodcastToPanelService("playAudio", url);
+                }
+            }
+        } else if (request.equals("stopAudio")) {
+            // try to stop audio
+            brodcastToPanelService("stopAudio", null);
+        } else if (request.equals("findPhone")) {
+            // try to say
+            processTTS("Hej. Tu jestem!");
+            // try to play
+            brodcastToPanelService("findPhone", null);
         }
     }
 
