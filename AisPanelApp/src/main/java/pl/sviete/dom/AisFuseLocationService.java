@@ -136,6 +136,9 @@ public class AisFuseLocationService extends Service{
         // AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED = 0;
         // AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT = 0;
 
+        // TODO restart...
+        // stopLocationUpdates();
+
         createNotificationChannel();
 
         Notification notification = getNotification();
@@ -180,10 +183,13 @@ public class AisFuseLocationService extends Service{
         // application will never receive updates faster than this value.
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
 
+        // Request the most precise location possible
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         // No location updates if the device does not move or cross that distance.
         mLocationRequest.setSmallestDisplacement(LOCATION_DISTANCE);
+
+        //
     }
 
 
@@ -230,7 +236,7 @@ public class AisFuseLocationService extends Service{
                 super.onLocationResult(locationResult);
                 mCurrentLocation = locationResult.getLastLocation();
 
-                //
+                // TODO drop message if it's not precise...?
                 reportLocationToAisGate();
             }
         };

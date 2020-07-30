@@ -313,7 +313,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
         String accessToken = config.getHaAccessToken();
 
         try {
-                // json
+                // 1. get webhook
                 JSONObject json = new JSONObject();
                 json.put("device_id", AisCoreUtils.AIS_GATE_ID);
                 json.put("app_id", BuildConfig.APPLICATION_ID);
@@ -332,7 +332,6 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
 
                 //
                 // JSONObjectBody body = new JSONObjectBody(json);
-
                  url = new URL(getDomWsUrl(mContext) + "/api/mobile_app/registrations");
                  HttpURLConnection con = (HttpURLConnection) url.openConnection();
                  con.setRequestMethod("POST");
@@ -364,8 +363,49 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                      // save ha Webhook Id in settings
                      config.setAisHaWebhookId(webhookId);
 
-                     return webhookId;
                  }
+            // 2. Registering a sensor
+            // https://developers.home-assistant.io/docs/api/native-app-integration/sensors
+            // json
+            JSONObject jsonSensor = new JSONObject();
+            jsonSensor.put("type", "register_sensor");
+            JSONObject jsonSensorData = new JSONObject();
+            jsonSensorData.put("device_class", "battery");
+            jsonSensorData.put("icon", "mdi:battery");
+            jsonSensorData.put("name", "Status baterii");
+            jsonSensorData.put("state", "12");
+            jsonSensorData.put("type", "sensor");
+            jsonSensorData.put("unique_id", "battery_state");
+            jsonSensorData.put("unit_of_measurement", "%");
+            jsonSensor.put("data", jsonSensorData);
+
+            URL url2 = new URL(getDomWsUrl(mContext) + "/api/webhook/" + webhookId);
+
+            HttpURLConnection con2 = (HttpURLConnection) url2.openConnection();
+            con2.setRequestMethod("POST");
+            con2.setRequestProperty("Content-Type", "application/json");
+            con2.setRequestProperty("charset", "utf-8");
+            con2.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            // For POST only - START
+            con2.setDoOutput(true);
+            OutputStream os2 = con.getOutputStream();
+            os2.write(json.toString().getBytes("UTF-8"));
+            os2.flush();
+            os2.close();
+
+            int responseCode2 = con.getResponseCode();
+            if (responseCode2 == HttpURLConnection.HTTP_OK || responseCode2 == HttpURLConnection.HTTP_CREATED) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                StringBuffer response = new StringBuffer();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+            } else {
+                Log.e(TAG, "Registering a sensor responseCode from gate: " + responseCode);
+            }
 
         } catch (Exception e) {
             return webhookId;
