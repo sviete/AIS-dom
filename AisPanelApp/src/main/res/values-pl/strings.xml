@@ -347,7 +347,7 @@
     <string name="txt_speed">Szybkość:</string>
     <string name="txt_direction">Kierunek:</string>
     <string name="txt_satellites">Satelity:</string>
-    <string name="txt_accuracy">Dokładność:</string>
+    <string name="txt_accuracy">dokładność:</string>
     <string name="txt_travel_distance">Łączna odległość:</string>
     <string name="btn_start_logging">Rozpocznij logowanie</string>
     <string name="btn_stop_logging">Zatrzymaj logowanie</string>
@@ -363,8 +363,9 @@
     <string name="time_twoandhalfhours">2½ godzin</string>
     <string name="time_hms_format" formatted="false">%sh %sm %ss</string>
     <string name="accuracy_within" formatted="false">wewnątrz %s %s</string>
-    <string name="gps_loc_detected">Zmiany lokacji wykryte</string>
+    <string name="gps_loc_detected">Lokalizacje wykryte</string>
     <string name="gps_loc_sent">wysłane </string>
     <string name="meters">&#160;metrów</string>
     <string name="kilometers">&#160;km</string>
+    <string name="report_button">RAPORTUJ</string>
 </resources>

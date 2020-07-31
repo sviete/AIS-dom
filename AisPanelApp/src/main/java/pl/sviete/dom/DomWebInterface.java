@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.json.JSONArray;
@@ -244,9 +246,9 @@ public class DomWebInterface {
         new AddUpdateDeviceRegistrationTaskJob(context).execute();
     }
 
-    public static void updateDeviceLocation(Context context, Location location) {
+    public static void updateDeviceLocation(Context context, Location location, String address) {
         // do the simple HTTP post in async task
-        new AddUpdateDeviceLocationTaskJob(context, location).execute();
+        new AddUpdateDeviceLocationTaskJob(context, location, address).execute();
     }
 }
 
@@ -402,10 +404,12 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
 
     private Context mContext;
     private Location mLocation;
+    private String mAddress;
 
-    public AddUpdateDeviceLocationTaskJob (Context context, Location location){
+    public AddUpdateDeviceLocationTaskJob (Context context, Location location, String address){
         mContext = context;
         mLocation = location;
+        mAddress = address;
     }
 
     @Override
@@ -430,6 +434,11 @@ class AddUpdateDeviceLocationTaskJob extends AsyncTask<String, Void, String> {
                 data.put("gps_accuracy", mLocation.getAccuracy());
                 String batteryState = getBatteryPercentage(mContext);
                 data.put("battery", batteryState);
+                data.put("speed", mLocation.getSpeed());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    data.put("course", mLocation.getVerticalAccuracyMeters());
+                }
+                data.put("location_name", mAddress);
                 json.put("data", data);
 
                 // call
