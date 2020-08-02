@@ -6,13 +6,19 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,12 +36,12 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Executor;
+
+import static android.graphics.BitmapFactory.decodeResource;
 
 
 public class AisFuseLocationService extends Service{
@@ -54,6 +60,8 @@ public class AisFuseLocationService extends Service{
     private Location mCurrentLocation;
     private String mCurrentAddress;
     private LocationRequest mLocationRequest;
+    //
+    private BroadcastReceiver mBroadcastReceiver;
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -71,6 +79,23 @@ public class AisFuseLocationService extends Service{
     }
 
     private Notification getNotification() {
+
+        // check if wifi is connected
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        boolean bWifiIsOn = mWifi.isConnected();
+
+        if (bWifiIsOn) {
+            // report location
+            stopLocationUpdates();
+        } else {
+            // wifi connection was lost
+            // update location
+            initializeFuseLocationManager();
+            createLocationCallback();
+            createLocationRequest();
+            buildLocationSettingsRequest();
+        }
         // Go to frame
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
                 new Intent(getApplicationContext(), BrowserActivityNative.class), 0);
@@ -101,12 +126,16 @@ public class AisFuseLocationService extends Service{
             );
         }
 
+        Bitmap bImage = BitmapFactory.decodeResource(getResources(), ((bWifiIsOn == true) ? R.drawable.gps_wifi_off : R.drawable.gps_wifi_on));
+        contentTitle = contentTitle + ", " + ((bWifiIsOn == true) ? "WiFi": "No WiFi");
+
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), AisCoreUtils.AIS_LOCATION_CHANNEL_ID)
                 .setContentTitle(contentTitle)
                 .setSmallIcon(R.drawable.ic_ais_gps_logo)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.gps_satellite))
+                .setLargeIcon(bImage)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText).setBigContentTitle(contentTitle))
+                .setColor(getResources().getColor(R.color.black))
                 .setContentIntent(pendingIntent)
                 .addAction(reportAction)
                 .addAction(exitAction)
@@ -157,7 +186,35 @@ public class AisFuseLocationService extends Service{
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
+
+        //
+        createWifiBrodcastReceiver();
     }
+
+    private void createWifiBrodcastReceiver(){
+        //
+        // handler for received data from service
+        mBroadcastReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
+                if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
+                    // report location
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            reportLocationToAisGate();
+                        }
+                    }, 3500);
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        registerReceiver(mBroadcastReceiver, intentFilter);
+    }
+
 
     private void buildLocationSettingsRequest() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
@@ -270,6 +327,8 @@ public class AisFuseLocationService extends Service{
         Log.d(TAG, "onDestroy");
         // fuse
         stopLocationUpdates();
+        //
+        unregisterReceiver(mBroadcastReceiver);
         //
         super.onDestroy();
     }
