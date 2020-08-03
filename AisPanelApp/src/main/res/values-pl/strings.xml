@@ -347,7 +347,8 @@
     <string name="txt_speed">Szybkość:</string>
     <string name="txt_direction">Kierunek:</string>
     <string name="txt_satellites">Satelity:</string>
-    <string name="txt_accuracy">dokładność:</string>
+    <string name="txt_accuracy_ok">dokładność:</string>
+    <string name="txt_accuracy_nok">za mała dokładność:</string>
     <string name="txt_travel_distance">Łączna odległość:</string>
     <string name="btn_start_logging">Rozpocznij logowanie</string>
     <string name="btn_stop_logging">Zatrzymaj logowanie</string>

@@ -41,15 +41,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import static android.graphics.BitmapFactory.decodeResource;
-
 
 public class AisFuseLocationService extends Service{
     private static final String TAG = "AisFuseLocationService";
 
     private static final int UPDATE_INTERVAL_IN_MILLISECONDS = 30000; // 30 sec
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-    private static final float LOCATION_DISTANCE = 10f;
+    private static final float LOCATION_CHANGE_IN_DISTANCE_TO_NOTIFY = 10f;
+    private static final int LOCATION_ACCURACY_SUITABLE_TO_REPORT = 30;
 
     private Handler mHandler;
     private Context mContext;
@@ -119,15 +118,26 @@ public class AisFuseLocationService extends Service{
         ;
         CharSequence contentText = getString(R.string.app_name);
         if (mCurrentLocation != null) {
-            contentText = Html.fromHtml(
-                    ((mCurrentAddress == "") ? "" : "<b>" + mCurrentAddress + "</b> "  + "  ")
-                    + ((mCurrentAddress == "") ? "<b>[" + mCurrentLocation.getLatitude() + ", " + mCurrentLocation.getLongitude() + "]</b> " : " ")
-                    + "(" + getString(R.string.txt_accuracy) + " " + AisCoreUtils.getDistanceDisplay(getApplicationContext(), mCurrentLocation.getAccuracy(), true) + ")"
-            );
+
+            if (mCurrentLocation.hasAccuracy() && mCurrentLocation.getAccuracy() <= LOCATION_ACCURACY_SUITABLE_TO_REPORT) {
+                contentText = Html.fromHtml(
+                        ((mCurrentAddress == "") ? "" : "<b>" + mCurrentAddress + "</b> "  + "  ")
+                                + ((mCurrentAddress == "") ? "<b>[" + mCurrentLocation.getLatitude() + ", " + mCurrentLocation.getLongitude() + "]</b> " : " ")
+                                + "(" + getString(R.string.txt_accuracy_ok) + " " + AisCoreUtils.getDistanceDisplay(getApplicationContext(), mCurrentLocation.getAccuracy(), true) + ")"
+                );
+            } else {
+                contentText = Html.fromHtml(
+                        ((mCurrentAddress == "") ? "" : "<b>" + mCurrentAddress + "</b> "  + "  ")
+                                + ((mCurrentAddress == "") ? "<b>[" + mCurrentLocation.getLatitude() + ", " + mCurrentLocation.getLongitude() + "]</b> " : " ")
+                                + "(<span style='color:red'>" + getString(R.string.txt_accuracy_nok) + " " + AisCoreUtils.getDistanceDisplay(getApplicationContext(), mCurrentLocation.getAccuracy(), true) + "</span>)"
+                );
+            }
         }
 
+
+
         Bitmap bImage = BitmapFactory.decodeResource(getResources(), ((bWifiIsOn == true) ? R.drawable.gps_wifi_off : R.drawable.gps_wifi_on));
-        contentTitle = contentTitle + ", " + ((bWifiIsOn == true) ? "WiFi": "No WiFi");
+        contentTitle = Html.fromHtml(contentTitle + ", " + ((bWifiIsOn == true) ? "WiFi": "<span style='text-decoration: line-through;'>WiFi</span>"));
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), AisCoreUtils.AIS_LOCATION_CHANNEL_ID)
                 .setContentTitle(contentTitle)
@@ -238,14 +248,14 @@ public class AisFuseLocationService extends Service{
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         // No location updates if the device does not move or cross that distance.
-        mLocationRequest.setSmallestDisplacement(LOCATION_DISTANCE);
+        mLocationRequest.setSmallestDisplacement(LOCATION_CHANGE_IN_DISTANCE_TO_NOTIFY);
 
         //
     }
 
 
     // send location info to gate and show in notification
-    private void reportLocationToAisGate(){
+    private void reportLocationToAisGate() {
         // update notification
         AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED++;
         Notification notification = getNotification();
@@ -253,28 +263,30 @@ public class AisFuseLocationService extends Service{
         assert notificationManager != null;
         notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
 
-        // report location to AIS gate
-        DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation, mCurrentAddress);
-        // update notification after 2.5 sec - to check if the location report was sent
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Notification notification = getNotification();
-                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                assert notificationManager != null;
-                notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
-            }
-        }, 2500);
-        // update notification after 10 sec
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Notification notification = getNotification();
-                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                assert notificationManager != null;
-                notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
-            }
-        }, 10000);
+        // report location to AIS gate only if it's precise 30m
+        if (mCurrentLocation.hasAccuracy() && mCurrentLocation.getAccuracy() <= LOCATION_ACCURACY_SUITABLE_TO_REPORT) {
+            DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation, mCurrentAddress);
+            // update notification after 2.5 sec - to check if the location report was sent
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Notification notification = getNotification();
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    assert notificationManager != null;
+                    notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+                }
+            }, 2500);
+            // update notification after 10 sec
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Notification notification = getNotification();
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    assert notificationManager != null;
+                    notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+                }
+            }, 10000);
+        }
     }
 
     /**
@@ -285,10 +297,9 @@ public class AisFuseLocationService extends Service{
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
+                // This is your most accurate location.
                 mCurrentLocation = locationResult.getLastLocation();
-
-                // TODO drop message if it's not precise...?
-                // get address from location
+                // get the address from location
                 getAddressFromLocation(mCurrentLocation, getApplicationContext(), new GeocoderHandler());
             }
         };
@@ -318,7 +329,6 @@ public class AisFuseLocationService extends Service{
         } catch (Exception ex) {
             Log.e(TAG, "fail to stopLocationUpdates", ex);
         }
-
     }
 
 
@@ -334,7 +344,7 @@ public class AisFuseLocationService extends Service{
     }
 
     private void initializeFuseLocationManager() {
-        Log.d(TAG, "initializeFuseLocationManager - LOCATION_INTERVAL: "+ UPDATE_INTERVAL_IN_MILLISECONDS + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
+        Log.d(TAG, "initializeFuseLocationManager");
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 

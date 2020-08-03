@@ -348,7 +348,8 @@
     <string name="txt_speed">Speed:</string>
     <string name="txt_direction">Direction:</string>
     <string name="txt_satellites">Satellites:</string>
-    <string name="txt_accuracy">accuracy:</string>
+    <string name="txt_accuracy_ok">accuracy:</string>
+    <string name="txt_accuracy_nok">bad accuracy:</string>
     <string name="txt_travel_distance">Travelled:</string>
     <string name="btn_start_logging">Start Logging</string>
     <string name="btn_stop_logging">Stop Logging</string>
