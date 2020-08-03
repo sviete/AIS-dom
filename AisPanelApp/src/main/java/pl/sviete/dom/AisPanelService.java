@@ -282,9 +282,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 0);
 
         String aisTitle = "Player";
-        if (intent.hasExtra("aisRequest")){
-            aisTitle = intent.getStringExtra("aisRequest");
-        }
+
+        // !!! ERROR - intent can be null - see https://www.hellsoft.se/how-to-service-on-android---part-2/
+        // START_STICKY means the system will eventually restart your Service after it has been killed by the system. When it gets restarted, the Intent parameter to onStartCommand() will be null.
+        // if (intent.hasExtra("aisRequest")){
+        //    aisTitle = intent.getStringExtra("aisRequest");
+        //}
 
 
         Notification serviceNotification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)

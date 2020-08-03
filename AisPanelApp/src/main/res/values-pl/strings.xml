@@ -363,7 +363,7 @@
     <string name="time_twoandhalfhours">2½ godzin</string>
     <string name="time_hms_format" formatted="false">%sh %sm %ss</string>
     <string name="accuracy_within" formatted="false">wewnątrz %s %s</string>
-    <string name="gps_loc_detected">Lokalizacje wykryte</string>
+    <string name="gps_loc_detected">Wykryte</string>
     <string name="gps_loc_sent">wysłane </string>
     <string name="meters">&#160;metrów</string>
     <string name="kilometers">&#160;km</string>

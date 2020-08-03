@@ -365,7 +365,7 @@
     <string name="time_hms_format" formatted="false">%sh %sm %ss</string>
     <string name="accuracy_within" formatted="false">within %s %s</string>
     <string name="degree_symbol" translatable="false">&#176;</string>
-    <string name="gps_loc_detected">loc. changes received</string>
+    <string name="gps_loc_detected">Received</string>
     <string name="gps_loc_sent">sent </string>
     <string name="meters">&#160;meters</string>
     <string name="kilometers">&#160;km</string>
