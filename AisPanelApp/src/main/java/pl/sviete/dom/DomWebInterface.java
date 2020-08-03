@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.BatteryManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.json.JSONArray;
@@ -45,7 +43,7 @@ public class DomWebInterface {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         final String url = sharedPreferences.getString(context.getString(R.string.key_setting_app_launchurl), "");
         if (url.startsWith("dom-")){
-            return "https://" + url + ".paczka.pro";
+            return "http://" + url + ".paczka.pro";
         }
         return pl.sviete.dom.AisCoreUtils.getAisDomUrl().replaceAll("/$", "");
     }
