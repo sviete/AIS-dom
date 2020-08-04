@@ -205,7 +205,11 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
                         AisCoreUtils.mSpeech.setRecognitionListener(listener);
                     }
                     stopTextToSpeech();
-                    AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
+                    try {
+                        AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
+                    } catch (Exception e){
+                        Log.e(TAG, e.getMessage());
+                    }
                 }
 
                 // check if started after 20 seconds

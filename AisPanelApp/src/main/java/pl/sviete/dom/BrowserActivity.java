@@ -15,6 +15,7 @@ import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
@@ -98,7 +99,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     // browser speech
     private TextToSpeech mBrowserTts;
     private static boolean isBrowserActivityVisible;
-
+    //
+    private BroadcastReceiver mWifiBroadcastReceiver;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -113,6 +115,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         // "this" wasn't fully initialised in your constructor and a Context wasn't obtained,
         // which it why it is null and user get app crash
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        createWifiBrodcastReceiver();
         // if this will not work here, I'm going to move this further
         //
         btnSpeak = findViewById(R.id.btnSpeak);
@@ -328,6 +331,28 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }
         });
         // [END retrieve_current_token]
+    }
+
+    private void createWifiBrodcastReceiver(){
+        //
+        mWifiBroadcastReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
+                if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
+                    appLaunchUrl = mConfig.getAppLaunchUrl(false);
+                    if (appLaunchUrl.startsWith("dom-")) {
+                       // sprawdzam połączenie
+                       mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                       appLaunchUrl = mConfig.getAppLaunchUrl(true);
+                    }
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        registerReceiver(mWifiBroadcastReceiver, intentFilter);
     }
 
     // copy porcupine files
@@ -634,7 +659,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         filter.addAction(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH);
         filter.addAction(AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH);
-
         localBroadcastManager.registerReceiver(mBroadcastReceiver, filter);
 
         super.onStart();
@@ -683,6 +707,9 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         if (mBrowserTts != null){
             mBrowserTts.shutdown();
         }
+
+        //
+        unregisterReceiver(mWifiBroadcastReceiver);
     }
 
     @Override
@@ -799,6 +826,5 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     protected abstract void evaluateJavascript(final String js);
     protected abstract void clearCache();
     protected abstract void reload();
-
 
 }

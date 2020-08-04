@@ -8,6 +8,7 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
+import android.webkit.WebStorage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -334,6 +335,9 @@ public class Config {
         SharedPreferences.Editor ed = sharedPreferences.edit();
         ed.putString(myContext.getString(R.string.key_setting_app_launchurl), gate);
         ed.apply();
+
+        // deleteAllData to logout from browser on change
+        WebStorage.getInstance().deleteAllData();
     }
 
 

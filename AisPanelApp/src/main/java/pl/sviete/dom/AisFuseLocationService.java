@@ -136,7 +136,7 @@ public class AisFuseLocationService extends Service{
 
 
 
-        Bitmap bImage = BitmapFactory.decodeResource(getResources(), ((bWifiIsOn == true) ? R.drawable.gps_wifi_off : R.drawable.gps_wifi_on));
+        Bitmap bImage = BitmapFactory.decodeResource(getResources(), ((bWifiIsOn == true) ? R.drawable.gps_wifi_on : R.drawable.gps_wifi_off));
         contentTitle = Html.fromHtml(contentTitle + ", " + ((bWifiIsOn == true) ? "WiFi": "<span style='text-decoration: line-through;'>WiFi</span>"));
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), AisCoreUtils.AIS_LOCATION_CHANNEL_ID)
@@ -264,28 +264,34 @@ public class AisFuseLocationService extends Service{
         notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
 
         // report location to AIS gate only if it's precise 30m
-        if (mCurrentLocation.hasAccuracy() && mCurrentLocation.getAccuracy() <= LOCATION_ACCURACY_SUITABLE_TO_REPORT) {
-            DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation, mCurrentAddress);
-            // update notification after 2.5 sec - to check if the location report was sent
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Notification notification = getNotification();
-                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    assert notificationManager != null;
-                    notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
-                }
-            }, 2500);
-            // update notification after 10 sec
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Notification notification = getNotification();
-                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    assert notificationManager != null;
-                    notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
-                }
-            }, 10000);
+        try {
+            if (mCurrentLocation.hasAccuracy() && mCurrentLocation.getAccuracy() <= LOCATION_ACCURACY_SUITABLE_TO_REPORT) {
+                DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation, mCurrentAddress);
+                // update notification after 2.5 sec - to check if the location report was sent
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Notification notification = getNotification();
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        assert notificationManager != null;
+                        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+                    }
+                }, 2500);
+                // update notification after 10 sec
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Notification notification = getNotification();
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        assert notificationManager != null;
+                        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+                    }
+                }, 10000);
+            }
+        }
+        catch (Exception ex) {
+                // oppo report in Google Play java.lang.NullPointerException:
+                Log.e(TAG, "reportLocationToAisGate error", ex);
         }
     }
 
