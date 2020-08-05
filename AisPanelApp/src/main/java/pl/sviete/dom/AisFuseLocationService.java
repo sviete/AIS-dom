@@ -85,15 +85,11 @@ public class AisFuseLocationService extends Service{
         boolean bWifiIsOn = mWifi.isConnected();
 
         if (bWifiIsOn) {
-            // report location
-            stopLocationUpdates();
+            // wifi connection  - report location less often
+            mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS * 5);
         } else {
-            // wifi connection was lost
-            // update location
-            initializeFuseLocationManager();
-            createLocationCallback();
-            createLocationRequest();
-            buildLocationSettingsRequest();
+            // wifi connection was lost - update location mote often
+            mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
         }
         // Go to frame
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
@@ -173,11 +169,10 @@ public class AisFuseLocationService extends Service{
         }
 
         createNotificationChannel();
-
         Notification notification = getNotification();
         startForeground(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
 
-        // fuse
+        // fuse restart
         startLocationUpdates();
 
         return super.onStartCommand(intent, flags, startId);
@@ -320,7 +315,7 @@ public class AisFuseLocationService extends Service{
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.getMainLooper());
     }
 
     /**
@@ -345,6 +340,11 @@ public class AisFuseLocationService extends Service{
         stopLocationUpdates();
         //
         unregisterReceiver(mBroadcastReceiver);
+
+        // reset counters
+        AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED = 0;
+        AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT = 0;
+
         //
         super.onDestroy();
     }

@@ -329,13 +329,10 @@ public class BrowserActivityNative extends BrowserActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setDatabaseEnabled(true);
         webSettings.setAppCacheEnabled(true);
+        webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            AisCoreUtils.mWebView.setWebContentsDebuggingEnabled(true);
-        }
+        // For debug only
+        // WebView.setWebContentsDebuggingEnabled(true);
 
         Log.i(TAG, webSettings.getUserAgentString());
 
