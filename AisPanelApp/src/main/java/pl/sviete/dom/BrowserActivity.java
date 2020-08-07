@@ -2,7 +2,6 @@ package pl.sviete.dom;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,11 +13,9 @@ import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
-import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
-import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
@@ -59,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import ai.picovoice.hotword.PorcupineService;
-import ai.picovoice.porcupinemanager.PorcupineManagerException;
 import pl.sviete.dom.views.RecognitionProgressView;
 
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
@@ -208,7 +204,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     bm.sendBroadcast(SttIntent);
 
                     // volume down
-                    Intent intent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
+                    Intent intent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB);
                     bm.sendBroadcast(intent);
 
                     int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
@@ -655,8 +651,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         filter.addAction(BROADCAST_ACTION_CLEAR_BROWSER_CACHE);
         filter.addAction(BROADCAST_ACTION_RELOAD_PAGE);
         filter.addAction(BROADCAST_ACTIVITY_SAY_IT);
-        filter.addAction(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
-        filter.addAction(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
+        filter.addAction(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB);
+        filter.addAction(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB);
         filter.addAction(AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH);
         filter.addAction(AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH);
         localBroadcastManager.registerReceiver(mBroadcastReceiver, filter);
@@ -771,8 +767,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }else if (intent.getAction().equals(BROADCAST_ACTION_RELOAD_PAGE)) {
                 Log.d(TAG, "Browser page reloading.");
                 reload();
-            }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT)) {
-                Log.d(TAG, AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT + " btn speak set checked false.");
+            }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB)) {
+                Log.d(TAG, AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB + " btn speak set checked false.");
                 if (btnSpeak.isChecked()) {
                     btnSpeak.setChecked(false);
                 }
@@ -784,8 +780,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH)) {
                 Log.d(TAG, AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH + " btn speak set checked false.");
                 onEndTextToSpeech();
-            }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT)){
-                Log.d(TAG, AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT + " btn speak set checked true.");
+            }else if (intent.getAction().equals(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB)){
+                Log.d(TAG, AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB + " btn speak set checked true.");
                 if (!btnSpeak.isChecked()) {
                     btnSpeak.setChecked(true);
                 }

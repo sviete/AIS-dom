@@ -53,7 +53,7 @@ public class AisRecognitionListener implements RecognitionListener {
     @Override
     public void onBeginningOfSpeech() {
         Log.d(TAG, "AisRecognitionListener onBeginningOfSpeech");
-        Intent intent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT);
+        Intent intent = new Intent(AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
         bm.sendBroadcast(intent);
     }
@@ -69,8 +69,8 @@ public class AisRecognitionListener implements RecognitionListener {
 
     @Override
     public void onEndOfSpeech() {
-        Log.d(TAG, "AisRecognitionListener BROADCAST_ON_END_SPEECH_TO_TEXT");
-        Intent intent = new Intent(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT);
+        Log.d(TAG, "AisRecognitionListener BROADCAST_ON_END_SPEECH_TO_TEXT_MOB");
+        Intent intent = new Intent(AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
         bm.sendBroadcast(intent);
 

@@ -78,13 +78,12 @@ import ai.picovoice.hotword.PorcupineService;
 
 import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
-import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 
 
 public class AisPanelService extends Service implements TextToSpeech.OnInitListener, ExoPlayer.EventListener {
@@ -382,8 +381,8 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(BROADCAST_EVENT_DO_STOP_TTS);
-        filter.addAction(BROADCAST_ON_END_SPEECH_TO_TEXT);
-        filter.addAction(BROADCAST_ON_START_SPEECH_TO_TEXT);
+        filter.addAction(BROADCAST_ON_END_SPEECH_TO_TEXT_MOB);
+        filter.addAction(BROADCAST_ON_START_SPEECH_TO_TEXT_MOB);
         filter.addAction(BROADCAST_ON_END_TEXT_TO_SPEECH);
         filter.addAction(BROADCAST_ON_START_TEXT_TO_SPEECH);
         filter.addAction(BROADCAST_EVENT_CHANGE_CONTROLLER_MODE);
@@ -512,10 +511,10 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 Log.d(TAG, BROADCAST_SERVICE_SAY_IT + " going to processTTS");
                 final String txtMessage = intent.getStringExtra(BROADCAST_SAY_IT_TEXT);
                 processTTS(txtMessage);
-            } else if (action.equals(BROADCAST_ON_START_SPEECH_TO_TEXT)) {
-                Log.d(TAG, BROADCAST_ON_START_SPEECH_TO_TEXT + " turnDownVolume");
-            } else if (action.equals(BROADCAST_ON_END_SPEECH_TO_TEXT)) {
-                Log.d(TAG, BROADCAST_ON_END_SPEECH_TO_TEXT + " turnUpVolume");
+            } else if (action.equals(BROADCAST_ON_START_SPEECH_TO_TEXT_MOB)) {
+                Log.d(TAG, BROADCAST_ON_START_SPEECH_TO_TEXT_MOB + " turnDownVolume");
+            } else if (action.equals(BROADCAST_ON_END_SPEECH_TO_TEXT_MOB)) {
+                Log.d(TAG, BROADCAST_ON_END_SPEECH_TO_TEXT_MOB + " turnUpVolume");
             } else if (action.equals(BROADCAST_ON_START_TEXT_TO_SPEECH)) {
                 Log.d(TAG, BROADCAST_ON_START_TEXT_TO_SPEECH + " turnDownVolume");
             } else if (action.equals(BROADCAST_ON_END_TEXT_TO_SPEECH)) {
