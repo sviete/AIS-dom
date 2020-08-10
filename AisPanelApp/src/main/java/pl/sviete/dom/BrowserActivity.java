@@ -616,13 +616,16 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
 
 
-
-        ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f,
-                Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
-        scaleAnimation.setDuration(500);
-        BounceInterpolator bounceInterpolator = new BounceInterpolator();
-        scaleAnimation.setInterpolator(bounceInterpolator);
-        btnSpeak.startAnimation(scaleAnimation);
+        try {
+            ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f,
+                    Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
+            scaleAnimation.setDuration(500);
+            BounceInterpolator bounceInterpolator = new BounceInterpolator();
+            scaleAnimation.setInterpolator(bounceInterpolator);
+            btnSpeak.startAnimation(scaleAnimation);
+        } catch (Exception e) {
+            Log.e(TAG, "startTheSpeechToText -> scaleAnimation -> e: " + e.getMessage());
+        }
 
         // to stop the TTS
         Intent intent = new Intent(AisPanelService.BROADCAST_EVENT_DO_STOP_TTS);

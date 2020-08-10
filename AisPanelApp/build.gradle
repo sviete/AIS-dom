@@ -11,8 +11,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 122
-        versionName '1.4.4.WiFi.SCCA'
+        versionCode 123
+        versionName '1.4.5.Where.is.Jolka'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true

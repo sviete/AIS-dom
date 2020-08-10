@@ -150,6 +150,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 prefCategoryExperimental.removePreference(preferenceAudioDisco);
 
                 //
+                Preference preferenceReportLocation = findPreference("setting_report_location");
+                prefCategoryExperimental.removePreference(preferenceReportLocation);
+
+                //
 
             } else {
                 preferenceVersion.setSummary(versionName + " \n(mob client id: " + AisCoreUtils.AIS_GATE_ID + ")" );
@@ -261,9 +265,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
             };
 
-            Preference preferenceReportLocationMode = findPreference("setting_report_location");
-            preferenceReportLocationMode.setOnPreferenceChangeListener(preferenceChangeListener);
-
             Preference preferenceHotWordMode = findPreference("setting_hot_word_mode");
             preferenceHotWordMode.setOnPreferenceChangeListener(preferenceChangeListener);
 
@@ -272,6 +273,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             //
             if (!AisCoreUtils.onBox()) {
+                //
+                Preference preferenceReportLocationMode = findPreference("setting_report_location");
+                preferenceReportLocationMode.setOnPreferenceChangeListener(preferenceChangeListener);
+
                 //
                 Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
                 preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
