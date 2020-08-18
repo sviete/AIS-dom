@@ -17,7 +17,9 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import android.os.Message;
 import android.text.Html;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -81,14 +84,20 @@ public class AisFuseLocationService extends Service{
 
         // check if wifi is connected
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        boolean bWifiIsOn = mWifi.isConnected();
-
-        if (bWifiIsOn) {
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        int activeNetworkType = -1;
+        if (null != activeNetwork) {
+            activeNetworkType = activeNetwork.getType();
+        }
+        // no connection - try to report location very often
+        if (activeNetworkType == -1) {
+            mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS * 10);
+        }
+        else if (activeNetworkType == ConnectivityManager.TYPE_WIFI) {
             // wifi connection  - report location less often
             mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS * 5);
-        } else {
-            // wifi connection was lost - update location mote often
+        } else if (activeNetworkType == ConnectivityManager.TYPE_MOBILE) {
+            // mobile connection - we are moving - update location more often
             mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
         }
         // Go to frame
@@ -132,8 +141,8 @@ public class AisFuseLocationService extends Service{
 
 
 
-        Bitmap bImage = BitmapFactory.decodeResource(getResources(), ((bWifiIsOn == true) ? R.drawable.gps_wifi_on : R.drawable.gps_wifi_off));
-        contentTitle = Html.fromHtml(contentTitle + ", " + ((bWifiIsOn == true) ? "WiFi": "<span style='text-decoration: line-through;'>WiFi</span>"));
+        Bitmap bImage = BitmapFactory.decodeResource(getResources(), ((activeNetworkType == ConnectivityManager.TYPE_WIFI) ? R.drawable.gps_wifi_on : (activeNetworkType == ConnectivityManager.TYPE_MOBILE) ? R.drawable.gps_mobile_on :  R.drawable.gps_no_network));
+        contentTitle = Html.fromHtml(contentTitle + ", " + ((activeNetworkType == ConnectivityManager.TYPE_WIFI) ? "WIFI": (activeNetworkType == ConnectivityManager.TYPE_MOBILE) ? "MOBILE": "<span style='text-decoration: line-through;'>CONNECTION</span>"));
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), AisCoreUtils.AIS_LOCATION_CHANNEL_ID)
                 .setContentTitle(contentTitle)
@@ -175,9 +184,10 @@ public class AisFuseLocationService extends Service{
         // fuse restart
         startLocationUpdates();
 
-        return super.onStartCommand(intent, flags, startId);
+        // Return START_STICKY so we can ensure that if the
+        // service dies for some reason, it should start back.
+        return Service.START_STICKY;
     }
-
 
 
     @Override
@@ -213,13 +223,17 @@ public class AisFuseLocationService extends Service{
                         }
                     }, 3500);
                 }
+                else if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+                    // update notification
+                    updateNotification();
+                }
             }
         };
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(mBroadcastReceiver, intentFilter);
     }
-
 
     private void buildLocationSettingsRequest() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
@@ -248,15 +262,20 @@ public class AisFuseLocationService extends Service{
         //
     }
 
+    // update notification
+    private void updateNotification() {
+        Notification notification = getNotification();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+    }
+
 
     // send location info to gate and show in notification
     private void reportLocationToAisGate() {
         // update notification
         AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED++;
-        Notification notification = getNotification();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        assert notificationManager != null;
-        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+        updateNotification();
 
         // report location to AIS gate only if it's precise 30m
         try {
@@ -266,20 +285,14 @@ public class AisFuseLocationService extends Service{
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Notification notification = getNotification();
-                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        assert notificationManager != null;
-                        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+                        updateNotification();
                     }
                 }, 2500);
                 // update notification after 10 sec
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Notification notification = getNotification();
-                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        assert notificationManager != null;
-                        notificationManager.notify(AisCoreUtils.AIS_LOCATION_NOTIFICATION_ID, notification);
+                        updateNotification();
                     }
                 }, 10000);
             }

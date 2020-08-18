@@ -54,19 +54,31 @@ public class WelcomeActivity extends AppCompatActivity {
             // run hot word service on start
             if (config.getHotWordMode()) {
                 Intent porcupineServiceIntent = new Intent(this.getApplicationContext(), PorcupineService.class);
-                this.getApplicationContext().startService(porcupineServiceIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(porcupineServiceIntent);
+                } else {
+                    this.getApplicationContext().startService(porcupineServiceIntent);
+                }
             }
 
             // run location service on start
             if (config.getReportLocationMode()) {
                 Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisFuseLocationService.class);
-                this.getApplicationContext().startService(reportLocationServiceIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(reportLocationServiceIntent);
+                } else {
+                    this.getApplicationContext().startService(reportLocationServiceIntent);
+                }
             }
 
             // run exo player service on start - this need to be done on the end
             if (config.getAppDiscoveryMode()) {
                 Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
-                this.getApplicationContext().startService(serviceIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent);
+                } else {
+                    this.getApplicationContext().startService(serviceIntent);
+                }
             }
         }
 

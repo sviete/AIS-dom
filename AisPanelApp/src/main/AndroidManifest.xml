@@ -117,8 +117,18 @@
             android:exported="true"
             android:stopWithTask="false">
         </service>
-        <service android:name="ai.picovoice.hotword.PorcupineService" android:enabled="true" android:exported="true"></service>
-        <service android:name="pl.sviete.dom.AisFuseLocationService" android:enabled="true" android:exported="true"></service>
+        <service
+            android:name="ai.picovoice.hotword.PorcupineService"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false">
+        </service>
+        <service
+            android:name="pl.sviete.dom.AisFuseLocationService"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false">
+        </service>
         <service android:name=".MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
