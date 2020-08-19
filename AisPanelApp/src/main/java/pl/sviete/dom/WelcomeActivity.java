@@ -54,8 +54,11 @@ public class WelcomeActivity extends AppCompatActivity {
             // run hot word service on start
             if (config.getHotWordMode()) {
                 Intent porcupineServiceIntent = new Intent(this.getApplicationContext(), PorcupineService.class);
+                // Starting from API 26 you have to to use Context.startForegroundService(Intent) instead of the former startService(Intent)
+                // The service must then call startForeground(int, Notification) within first 5 seconds after it has started,
+                // otherwise system will stop the service.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(porcupineServiceIntent);
+                    this.getApplicationContext().startForegroundService(porcupineServiceIntent);
                 } else {
                     this.getApplicationContext().startService(porcupineServiceIntent);
                 }
@@ -65,7 +68,7 @@ public class WelcomeActivity extends AppCompatActivity {
             if (config.getReportLocationMode()) {
                 Intent reportLocationServiceIntent = new Intent(this.getApplicationContext(), AisFuseLocationService.class);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(reportLocationServiceIntent);
+                    this.getApplicationContext().startForegroundService(reportLocationServiceIntent);
                 } else {
                     this.getApplicationContext().startService(reportLocationServiceIntent);
                 }
@@ -75,7 +78,7 @@ public class WelcomeActivity extends AppCompatActivity {
             if (config.getAppDiscoveryMode()) {
                 Intent serviceIntent = new Intent(this.getApplicationContext(), AisPanelService.class);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(serviceIntent);
+                    this.getApplicationContext().startForegroundService(serviceIntent);
                 } else {
                     this.getApplicationContext().startService(serviceIntent);
                 }
