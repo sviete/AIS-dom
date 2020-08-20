@@ -236,6 +236,7 @@ public class DomWebInterface {
 
     public static void registerAuthorizationCode(Context context, String code, String clientId) {
         // do the simple HTTP post in async task
+        Log.i(TAG, "AIS auth  HTTP post in async task");
         new RetrieveTokenTaskJob(context).execute(code, clientId);
     }
 
@@ -271,6 +272,7 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
             // 1. get token
             // - create url
             url = new URL(getDomWsUrl(mContext) + "/auth/token");
+            Log.i(TAG, "AIS auth url " + url);
 
             // - create body
             StringBuilder body = new StringBuilder();
@@ -282,11 +284,15 @@ class RetrieveTokenTaskJob extends AsyncTask<String, Void, String> {
             body.append("=");
             body.append(code);
 
+            Log.i(TAG, "AIS auth body " + body);
+
             // call
             String response = DomWebInterface.doPostRequest(url, body.toString().getBytes(), null);
+            Log.i(TAG, "AIS auth body " + body);
             // json answer result
             JSONObject jsonObj = new JSONObject(response);
             ha_access_token = jsonObj.getString("access_token");
+            Log.i(TAG, "AIS auth access_token " + ha_access_token);
             // save ha access_token in settings
             Config config = new Config(mContext);
             config.setAisHaAccessToken(ha_access_token);
@@ -328,12 +334,13 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
         // save ha access_token in settings
         Config config = new Config(mContext);
         String accessToken = config.getHaAccessToken();
+        Log.i(TAG, "AIS auth access_token 2 " + accessToken);
 
         try {
             // 1. get webhook
             // - create url
             url = new URL(getDomWsUrl(mContext) + "/api/mobile_app/registrations");
-
+            Log.i(TAG, "AIS auth url 2 " + url);
             // create body
             JSONObject json = new JSONObject();
             json.put("device_id", AisCoreUtils.AIS_GATE_ID);
@@ -352,7 +359,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
             json.put("app_data", appData);
             // call
             String response = DomWebInterface.doPostRequest(url, json.toString().getBytes("UTF-8"), accessToken);
-
+            Log.i(TAG, "AIS auth response 2 " + response);
             // json answer result
             JSONObject jsonObjResp = new JSONObject(response);
             webhookId = jsonObjResp.getString("webhook_id");
@@ -361,7 +368,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
             config.setAisHaWebhookId(webhookId);
 
 
-            // 2. Registering a sensor
+            // 2. Registering a sensor - battery
             // https://developers.home-assistant.io/docs/api/native-app-integration/sensors
             // - create url
             URL url2 = new URL(getDomWsUrl(mContext) + "/api/webhook/" + webhookId);
@@ -381,7 +388,10 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
             String response2 = DomWebInterface.doPostRequest(url2, jsonSensor.toString().getBytes("UTF-8"), accessToken);
             Log.d(TAG, response2);
 
+            // TODO 2. Registering a sensor - geocoded_location
+
         } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
             return e.getMessage();
         }
         return webhookId;

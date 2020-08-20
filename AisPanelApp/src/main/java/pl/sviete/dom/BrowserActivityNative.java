@@ -229,17 +229,20 @@ public class BrowserActivityNative extends BrowserActivity {
 
                 // check if this is login request
                 if (request.getUrl().toString().contains("auth_callback")) {
+                    Log.i(TAG, "AIS auth auth_callback ");
                     // store client
                     if (request.getUrl().getQueryParameter("client_id") != null){
                         AisCoreUtils.HA_CLIENT_ID = request.getUrl().getQueryParameter("client_id");
+                        Log.i(TAG, "AIS auth client_id " + AisCoreUtils.HA_CLIENT_ID );
                     }
                     // ask about token using the code
                     if (request.getUrl().getQueryParameter("code") != null){
                         try {
                             AisCoreUtils.HA_CODE = request.getUrl().getQueryParameter("code");
+                            Log.i(TAG, "AIS auth code " + AisCoreUtils.HA_CODE);
                             DomWebInterface.registerAuthorizationCode(getApplicationContext(), AisCoreUtils.HA_CODE, AisCoreUtils.HA_CLIENT_ID);
                         } catch (Exception e) {
-                            Log.e(TAG, "code - unable to register ");
+                            Log.e(TAG, "AIS auth code - unable to register ");
                         }
                     }
                 }
@@ -460,8 +463,9 @@ public class BrowserActivityNative extends BrowserActivity {
     @Override
     protected void evaluateJavascript(final String js) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            AisCoreUtils.mWebView.evaluateJavascript(js, null);
+            AisCoreUtils.mWebView.evaluateJavascript(js, s -> Log.e(TAG, "evaluateJavascript callback: " + s));
         }
+        Log.e(TAG, "evaluateJavascript: " + js);
     }
 
     @Override
@@ -493,7 +497,7 @@ public class BrowserActivityNative extends BrowserActivity {
                 }
 
                 if (AisCoreUtils.mWebView.canGoBack() && !historyUrl.equals("file:///android_asset/web/ais_loading.html")) {
-                    AisCoreUtils.mWebView.evaluateJavascript("window.history.back()", null);
+                    evaluateJavascript("window.history.back()");
                     return true;
                 } else {
                     // exit on back in not on box
@@ -524,7 +528,7 @@ public class BrowserActivityNative extends BrowserActivity {
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             if (action == KeyEvent.ACTION_DOWN) {
                 // click action
-                AisCoreUtils.mWebView.evaluateJavascript("hass.callService(\"media_player\", \"volume_up\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})", null);
+                evaluateJavascript("document.querySelector(\"home-assistant\").hass.callService(\"media_player\", \"volume_up\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})");
                 Toast.makeText(this, "Vol +", Toast.LENGTH_SHORT).show();
             }
             // to Override standard vol up action
@@ -532,7 +536,7 @@ public class BrowserActivityNative extends BrowserActivity {
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
             if (action == KeyEvent.ACTION_DOWN) {
                 // click action
-                AisCoreUtils.mWebView.evaluateJavascript("hass.callService(\"media_player\", \"volume_down\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})", null);
+                evaluateJavascript("document.querySelector(\"home-assistant\").hass.callService(\"media_player\", \"volume_down\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})");
                 Toast.makeText(this, "Vol -", Toast.LENGTH_SHORT).show();
             }
             // to Override standard vol down action
