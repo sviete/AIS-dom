@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
+
 
 public class AisFuseLocationService extends Service{
     private static final String TAG = "AisFuseLocationService";
@@ -101,9 +103,11 @@ public class AisFuseLocationService extends Service{
             mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
         }
         // Go to frame
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
-                new Intent(getApplicationContext(), BrowserActivityNative.class), 0);
-
+        Intent goToAppView = new Intent(getApplicationContext(), BrowserActivityNative.class);
+        int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
+        goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, "/map");
+        goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Report action button - button to report location now
         Intent reportIntent = new Intent(getApplicationContext(), AisFuseLocationService.class);

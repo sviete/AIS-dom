@@ -60,6 +60,9 @@ public class AisCoreUtils {
     public static int GPS_SERVICE_LOCATIONS_DETECTED = 0;
     public static int GPS_SERVICE_LOCATIONS_SENT = 0;
 
+    // GO TO VIEW FROM NOTIFICATION
+    public static final String GO_TO_HA_APP_VIEW_INTENT_EXTRA = "GO_TO_HA_APP_VIEW_INTENT_EXTRA";
+
     public static String getAisDomUrl(){
         if (onBox()){
             return "http://127.0.0.1:8180";

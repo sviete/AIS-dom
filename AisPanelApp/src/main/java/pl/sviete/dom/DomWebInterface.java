@@ -82,11 +82,11 @@ public class DomWebInterface {
                 if (e != null) {
                     // try to discover gate or inform about connection problem
                     Config config = new Config(context.getApplicationContext());
-                    String appLaunchUrl = config.getAppLaunchUrl(false);
+                    String appLaunchUrl = config.getAppLaunchUrl(false, "");
                     if (appLaunchUrl.startsWith("dom-")) {
                         // sprawdzam połączenie
                         // say("Sprawdzam połączenie.");
-                        appLaunchUrl = config.getAppLaunchUrl(true);
+                        appLaunchUrl = config.getAppLaunchUrl(true, "");
                     } else {
                         // say("Sprawdz połączenie z bramką.");
                     }

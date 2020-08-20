@@ -143,6 +143,7 @@ public class Config {
             String localIpHist = params[1];
             String userHist = params[2];
             String descHist = params[3];
+            String goToHaView = params[4];
             String urlToGo = "";
 
             // Check if the local IP from history is still OK
@@ -150,7 +151,7 @@ public class Config {
             if (!localIpHist.equals("") && canUseLocalConnection(localIpHist, gateID)){
                     urlToGo = "http://" + localIpHist + ":8180";
                     saveConnToHistory(localIpHist, urlToGo, gateID, userHist, descHist);
-                    return urlToGo;
+                    return urlToGo  + goToHaView;
             } else {
                     // Get the new local IP from the Cloud
                     String localIpFromCloud = getLocalIpFromCloud(gateID);
@@ -159,18 +160,18 @@ public class Config {
                         if (canUseLocalConnection(localIpFromCloud, gateID)){
                             urlToGo = "http://" + localIpFromCloud + ":8180";
                             saveConnToHistory(localIpFromCloud, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
-                            return urlToGo;
+                            return urlToGo + goToHaView;
                         } else {
                             // try the tunnel connection
                             urlToGo = "https://" + gateID + ".paczka.pro";
                             saveConnToHistory(localIpFromCloud, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
-                            return urlToGo;
+                            return urlToGo + goToHaView;
                         }
                     } else {
                         // try tunnel
                         urlToGo = "https://" + gateID + ".paczka.pro";
                         saveConnToHistory(localIpHist, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
-                        return urlToGo;
+                        return urlToGo + goToHaView;
                     }
             }
         }
@@ -205,7 +206,7 @@ public class Config {
         }
     }
 
-    public String getAppLaunchUrl(boolean disco) {
+    public String getAppLaunchUrl(boolean disco, String goToHaView) {
         String url;
 
         if (AisCoreUtils.onBox()){
@@ -220,11 +221,11 @@ public class Config {
             String userHist = AisConnectionHistJSON.getUserForGate(myContext, gateID);
             String descHist = AisConnectionHistJSON.getDescForGate(myContext, gateID);
             checkConnectionUrlJob checkConnectionUrlJob = new checkConnectionUrlJob();
-            checkConnectionUrlJob.execute(gateID, localIpHist, userHist, descHist);
+            checkConnectionUrlJob.execute(gateID, localIpHist, userHist, descHist, goToHaView);
         } else {
             // save it for interface communication with gate
             if (url.startsWith("dom-")) {
-                AisCoreUtils.setAisDomUrl("https://" + url + ".paczka.pro");
+                AisCoreUtils.setAisDomUrl("https://" + url + ".paczka.pro" + goToHaView);
             } else {
                 // the url is set by hand,
                 AisCoreUtils.setAisDomUrl(url);

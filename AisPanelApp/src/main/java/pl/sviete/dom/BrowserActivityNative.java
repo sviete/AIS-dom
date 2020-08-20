@@ -29,6 +29,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.os.Bundle;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.github.zagum.switchicon.SwitchIconView;
 
@@ -37,6 +38,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 
 
 public class BrowserActivityNative extends BrowserActivity {
@@ -223,11 +226,6 @@ public class BrowserActivityNative extends BrowserActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 view.loadUrl(request.getUrl().toString());
-                try {
-                    String code = request.getUrl().getQueryParameter("client_id");
-                } catch (Exception e) {
-                    Log.e(TAG, "client_id - no info ");
-                }
 
                 // check if this is login request
                 if (request.getUrl().toString().contains("auth_callback")) {
@@ -398,9 +396,38 @@ public class BrowserActivityNative extends BrowserActivity {
         AisCoreUtils.mWebView.restoreState(savedInstanceState);
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.e(TAG, "onNewIntent loadUrl");
+        String goToViewFromIntent = "";
+        try {
+            Log.e(TAG, "loadUrl viewIntent getPackage" + intent.toString());
+
+
+            if (intent.hasExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA)) {
+                goToViewFromIntent = intent.getStringExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA);
+                if (goToViewFromIntent != "") {
+                    Log.e(TAG, "loadUrl goToViewFromIntent" + goToViewFromIntent);
+                    // get app url with discovery
+                    appLaunchUrl = mConfig.getAppLaunchUrl(true, goToViewFromIntent);
+
+//                    if (appLaunchUrl.startsWith("dom-")) {
+//                        loadUrl(appLaunchUrl, true, goToViewFromIntent);
+//                        Log.e(TAG, "loadUrl " + appLaunchUrl + goToViewFromIntent);
+//                    } else {
+//                        loadUrl(appLaunchUrl, false, goToViewFromIntent);
+//                        Log.e(TAG, "loadUrl " + appLaunchUrl + goToViewFromIntent);
+//                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "loadUrl onNewIntent error: " + e.toString());
+        }
+    }
 
     @Override
-    protected void loadUrl(final String url, Boolean syncIcon) {
+    protected void loadUrl(final String url, Boolean syncIcon, String goToHaView) {
         if (zoomLevel != 1.0) { AisCoreUtils.mWebView.setInitialScale((int)(zoomLevel * 100)); }
         if (url.equals("")) {
             // go to settings
@@ -412,7 +439,7 @@ public class BrowserActivityNative extends BrowserActivity {
         if (url.startsWith("dom-")) {
             AisCoreUtils.mWebView.loadUrl("file:///android_asset/web/ais_loading.html");
         } else {
-            AisCoreUtils.mWebView.loadUrl(url);
+            AisCoreUtils.mWebView.loadUrl(url + goToHaView);
         }
         SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
         View mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
@@ -453,12 +480,13 @@ public class BrowserActivityNative extends BrowserActivity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-
-        if(event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+        int keyCode = event.getKeyCode();
+        int action = event.getAction();
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             // Back in browser
-            if (event.getAction() == KeyEvent.ACTION_UP){
+            if (action == KeyEvent.ACTION_UP) {
                 Log.i(TAG, "Back button pressed in on display mode");
-                String historyUrl="";
+                String historyUrl = "";
                 WebBackForwardList mWebBackForwardList = AisCoreUtils.mWebView.copyBackForwardList();
                 if (mWebBackForwardList.getCurrentIndex() > 0) {
                     historyUrl = mWebBackForwardList.getItemAtIndex(mWebBackForwardList.getCurrentIndex() - 1).getUrl();
@@ -493,6 +521,22 @@ public class BrowserActivityNative extends BrowserActivity {
 //                            }
                 }
             }
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            if (action == KeyEvent.ACTION_DOWN) {
+                // click action
+                AisCoreUtils.mWebView.evaluateJavascript("hass.callService(\"media_player\", \"volume_up\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})", null);
+                Toast.makeText(this, "Vol +", Toast.LENGTH_SHORT).show();
+            }
+            // to Override standard vol up action
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            if (action == KeyEvent.ACTION_DOWN) {
+                // click action
+                AisCoreUtils.mWebView.evaluateJavascript("hass.callService(\"media_player\", \"volume_down\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})", null);
+                Toast.makeText(this, "Vol -", Toast.LENGTH_SHORT).show();
+            }
+            // to Override standard vol down action
+            return true;
         }
         // return to parent
         return super.dispatchKeyEvent(event);

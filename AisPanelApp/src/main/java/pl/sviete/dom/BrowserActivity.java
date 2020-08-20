@@ -76,7 +76,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     private ToggleButton btnSpeak;
     private Button btnGoToSettings;
     private LocalBroadcastManager localBroadcastManager;
-    private Config mConfig = null;
+    Config mConfig = null;
     public RecognitionProgressView recognitionProgressView = null;
     //
     public static GestureLibrary gestureLibrary;
@@ -164,12 +164,12 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             mButtonModeConnection.setVisibility(View.GONE);
         } else {
             mButtonModeConnection.setOnLongClickListener(v -> {
-                appLaunchUrl = mConfig.getAppLaunchUrl(false);
+                appLaunchUrl = mConfig.getAppLaunchUrl(false, "");
                 if (appLaunchUrl.startsWith("dom-")) {
                     // sprawdzam połączenie
                     speakOutFromBrowser("Sprawdzam połączenie.", "app");
                     mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                    appLaunchUrl = mConfig.getAppLaunchUrl(true);
+                    appLaunchUrl = mConfig.getAppLaunchUrl(true, "");
                 } else {
                     speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.", "app");
                 }
@@ -273,14 +273,15 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN;
         }
-
         decorView.setSystemUiVisibility(uiOptions);
+
         // get app url with discovery
-        appLaunchUrl = mConfig.getAppLaunchUrl(true);
+        appLaunchUrl = mConfig.getAppLaunchUrl(true, "");
+
         if (appLaunchUrl.startsWith("dom-")) {
-            loadUrl(appLaunchUrl, true);
+            loadUrl(appLaunchUrl, true, "");
         } else {
-            loadUrl(appLaunchUrl, false);
+            loadUrl(appLaunchUrl, false, "");
         }
 
 
@@ -337,11 +338,11 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             public void onReceive(Context context, Intent intent) {
                 final String action = intent.getAction();
                 if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
-                    appLaunchUrl = mConfig.getAppLaunchUrl(false);
+                    appLaunchUrl = mConfig.getAppLaunchUrl(false, "");
                     if (appLaunchUrl.startsWith("dom-")) {
                        // sprawdzam połączenie
                        mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                       appLaunchUrl = mConfig.getAppLaunchUrl(true);
+                       appLaunchUrl = mConfig.getAppLaunchUrl(true, "");
                     }
                 }
             }
@@ -513,8 +514,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
         //
         createRecognitionView();
-
-        //
     }
 
     @Override
@@ -759,7 +758,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             if (intent.getAction().equals(BROADCAST_ACTION_LOAD_URL)) {
                 final String url = intent.getStringExtra(BROADCAST_ACTION_LOAD_URL);
                 Log.d(TAG, "Browsing to " + url);
-                loadUrl(url, false);
+                loadUrl(url, false, "");
             }else if (intent.getAction().equals(BROADCAST_ACTION_JS_EXEC)) {
                 final String js = intent.getStringExtra(BROADCAST_ACTION_JS_EXEC);
                 Log.d(TAG, "Executing javascript in current browser: " +js);
@@ -821,7 +820,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         recognitionProgressView.stop();
     }
 
-    protected abstract void loadUrl(final String url, Boolean syncIcon);
+    protected abstract void loadUrl(final String url, Boolean syncIcon, String goToHaView);
     protected abstract void evaluateJavascript(final String js);
     protected abstract void clearCache();
     protected abstract void reload();

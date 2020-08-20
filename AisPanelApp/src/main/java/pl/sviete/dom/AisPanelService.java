@@ -84,6 +84,7 @@ import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
+import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 
 
 public class AisPanelService extends Service implements TextToSpeech.OnInitListener, ExoPlayer.EventListener {
@@ -274,11 +275,13 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         createNotificationChannel();
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                new Intent(this, BrowserActivityNative.class),
-                0);
+        // Go to frame
+        Intent goToAppView = new Intent(getApplicationContext(), BrowserActivityNative.class);
+        int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
+        goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, "/aisaudio");
+        goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         String aisTitle = "Player";
 
@@ -370,7 +373,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         mConfig = new Config(getApplicationContext());
         // get current url without discovery
-        currentUrl = mConfig.getAppLaunchUrl(false);
+        currentUrl = mConfig.getAppLaunchUrl(false, "");
 
         // prepare the lock types we may use
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -1054,13 +1057,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         @Nullable
         @Override
         public PendingIntent createCurrentContentIntent(Player player) {
-            //  open AIS app by clicking on notification
-            Intent intent = new Intent(AisPanelService.this, BrowserActivityNative.class);
-            PendingIntent contentPendingIntent = PendingIntent.getActivity(
-                    AisPanelService.this,
-                    0,
-                    intent,
-                    0);
+            // Go to frame - open AIS app by clicking on notification
+            Intent goToAppView = new Intent(AisPanelService.this, BrowserActivityNative.class);
+            int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
+            goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, "/aisaudio");
+            goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent contentPendingIntent = PendingIntent.getActivity(AisPanelService.this,iUniqueId, goToAppView,PendingIntent.FLAG_UPDATE_CURRENT);
             return contentPendingIntent;
         }
 

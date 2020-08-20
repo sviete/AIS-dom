@@ -23,12 +23,15 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 
 import ai.picovoice.hotword.PorcupineService;
 
+import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 
 /**
@@ -131,7 +134,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
                     // try to say
                     processTTS(title + " " + body);
                 }
-                sendNotification(title, body, data.get("image"), data.get("notification_id"));
+
+                String clickAction = data.get("click_action");
+                sendNotification(title, body, data.get("image"), data.get("notification_id"), clickAction);
             }
 
             //
@@ -243,11 +248,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
      * Create and show a notification containing the received FCM message.
      *
      */
-    private void sendNotification(String title, String body, String imageUrl, String notification_id) {
-        Intent intent = new Intent(this, BrowserActivityNative.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+    private void sendNotification(String title, String body, String imageUrl, String notification_id, String clickAction) {
+        // Go to frame
+        Intent goToAppView = new Intent(getApplicationContext(), BrowserActivityNative.class);
+        int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
+        if (clickAction != null && clickAction != "") {
+            final URI actionLink;
+            boolean isAbsoluteUri = false;
+            try {
+                actionLink = new URI(clickAction);
+                isAbsoluteUri = actionLink.isAbsolute();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            if (isAbsoluteUri) {
+                // open in broser
+                goToAppView = new Intent(Intent.ACTION_VIEW);
+                goToAppView.setData(Uri.parse(clickAction));
+            } else {
+                // go to view in app
+                if (!clickAction.startsWith("/")) {
+                    clickAction = "/" + clickAction;
+                }
+                goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, clickAction);
+            }
+        }
+        goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
