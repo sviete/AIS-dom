@@ -1027,7 +1027,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         public Bitmap getCurrentLargeIcon(Player player,
                                           PlayerNotificationManager.BitmapCallback callback) {
             // StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
-            Log.e(TAG, "1 getCurrentLargeIcon: m_media_stream_image: " + m_media_stream_image);
             if (m_media_stream_image != null && !m_media_stream_image.equals(m_exo_player_last_media_stream_image)) {
                 try {
                     URL url = new URL(m_media_stream_image);

@@ -412,16 +412,14 @@ public class BrowserActivityNative extends BrowserActivity {
                 goToViewFromIntent = intent.getStringExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA);
                 if (goToViewFromIntent != "") {
                     Log.e(TAG, "loadUrl goToViewFromIntent" + goToViewFromIntent);
-                    // get app url with discovery
-                    appLaunchUrl = mConfig.getAppLaunchUrl(true, goToViewFromIntent);
+                    // get app url no discovery...
+                    appLaunchUrl = mConfig.getAppLaunchUrl(false, "");
 
-//                    if (appLaunchUrl.startsWith("dom-")) {
-//                        loadUrl(appLaunchUrl, true, goToViewFromIntent);
-//                        Log.e(TAG, "loadUrl " + appLaunchUrl + goToViewFromIntent);
-//                    } else {
-//                        loadUrl(appLaunchUrl, false, goToViewFromIntent);
-//                        Log.e(TAG, "loadUrl " + appLaunchUrl + goToViewFromIntent);
-//                    }
+                    if (appLaunchUrl.startsWith("dom-")) {
+                        loadUrl(appLaunchUrl, true, goToViewFromIntent);
+                    } else {
+                        loadUrl(appLaunchUrl, false, goToViewFromIntent);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -463,9 +461,8 @@ public class BrowserActivityNative extends BrowserActivity {
     @Override
     protected void evaluateJavascript(final String js) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            AisCoreUtils.mWebView.evaluateJavascript(js, s -> Log.e(TAG, "evaluateJavascript callback: " + s));
+            AisCoreUtils.mWebView.evaluateJavascript(js, s -> Log.d(TAG, "evaluateJavascript callback: " + s));
         }
-        Log.e(TAG, "evaluateJavascript: " + js);
     }
 
     @Override

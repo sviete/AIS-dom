@@ -15,6 +15,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpPost;
 import com.koushikdutta.async.http.AsyncHttpResponse;
@@ -26,8 +33,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import ai.picovoice.hotword.PorcupineService;
+
 
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
@@ -389,6 +399,34 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
             Log.d(TAG, response2);
 
             // TODO 2. Registering a sensor - geocoded_location
+            JSONObject jsonSensor2 = new JSONObject();
+            jsonSensor.put("type", "geocoded_location");
+            JSONObject jsonSensorData2 = new JSONObject();
+            jsonSensorData.put("device_class", "None");
+            jsonSensorData.put("icon", "mdi:map");
+            jsonSensorData.put("name", "geocoded location");
+            jsonSensorData.put("state", "");
+            jsonSensorData.put("type", "sensor");
+            jsonSensorData.put("unique_id", "geocoded_location");
+            jsonSensor.put("data", jsonSensorData);
+
+            RequestQueue queue = Volley.newRequestQueue(mContext);
+            // Request a string response from the provided URL.
+            JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, getDomWsUrl(mContext) + "/api/webhook/" + webhookId, jsonSensor2,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.e(TAG, "AIS auth response: " + response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e(TAG, "AIS auth error: " + error);
+                        }
+                    });
+            queue.add(postRequest);
+
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
