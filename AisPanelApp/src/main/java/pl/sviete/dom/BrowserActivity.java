@@ -164,12 +164,12 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             mButtonModeConnection.setVisibility(View.GONE);
         } else {
             mButtonModeConnection.setOnLongClickListener(v -> {
-                appLaunchUrl = mConfig.getAppLaunchUrl(false, "");
+                appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
                 if (appLaunchUrl.startsWith("dom-")) {
                     // sprawdzam połączenie
                     speakOutFromBrowser("Sprawdzam połączenie.", "app");
                     mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                    appLaunchUrl = mConfig.getAppLaunchUrl(true, "");
+                    appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
                 } else {
                     speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.", "app");
                 }
@@ -276,7 +276,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         decorView.setSystemUiVisibility(uiOptions);
 
         // get app url with discovery
-        appLaunchUrl = mConfig.getAppLaunchUrl(true, "");
+        appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
 
         if (appLaunchUrl.startsWith("dom-")) {
             loadUrl(appLaunchUrl, true, "");
@@ -338,11 +338,11 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             public void onReceive(Context context, Intent intent) {
                 final String action = intent.getAction();
                 if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
-                    appLaunchUrl = mConfig.getAppLaunchUrl(false, "");
+                    appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
                     if (appLaunchUrl.startsWith("dom-")) {
                        // sprawdzam połączenie
                        mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                       appLaunchUrl = mConfig.getAppLaunchUrl(true, "");
+                       appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
                     }
                 }
             }

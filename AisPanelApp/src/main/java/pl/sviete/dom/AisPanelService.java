@@ -373,7 +373,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         mConfig = new Config(getApplicationContext());
         // get current url without discovery
-        currentUrl = mConfig.getAppLaunchUrl(false, "");
+        currentUrl = mConfig.getAppLaunchUrl(0, "");
 
         // prepare the lock types we may use
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);

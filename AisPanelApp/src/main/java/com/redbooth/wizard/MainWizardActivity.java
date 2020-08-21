@@ -416,7 +416,7 @@ public class MainWizardActivity extends AppCompatActivity {
     private void checkGateExists(){
         Config config = new Config(this.getApplicationContext());
         // get app url without discovery
-        String appLaunchUrl = config.getAppLaunchUrl(false, "");
+        String appLaunchUrl = config.getAppLaunchUrl(0, "");
         if (appLaunchUrl.startsWith("dom-")){
             setGateIsON(appLaunchUrl);
         } else {

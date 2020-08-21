@@ -4,9 +4,12 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
@@ -413,10 +416,19 @@ public class BrowserActivityNative extends BrowserActivity {
                 if (goToViewFromIntent != "") {
                     Log.e(TAG, "loadUrl goToViewFromIntent" + goToViewFromIntent);
                     // get app url no discovery...
-                    appLaunchUrl = mConfig.getAppLaunchUrl(false, "");
-
+                    appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
                     if (appLaunchUrl.startsWith("dom-")) {
-                        loadUrl(appLaunchUrl, true, goToViewFromIntent);
+                        // check if wifi connection
+                        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+                        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                        if (null != activeNetwork) {
+                            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                                // quick check if we can connect with gate
+                                appLaunchUrl = mConfig.getAppLaunchUrl(1, goToViewFromIntent);
+                                return;
+                            }
+                        }
+                        loadUrl("https://" + appLaunchUrl + ".paczka.pro", true, goToViewFromIntent);
                     } else {
                         loadUrl(appLaunchUrl, false, goToViewFromIntent);
                     }

@@ -90,10 +90,11 @@ public class Config {
 
 
 
-    public boolean canUseLocalConnection(String localIP, String gateId) {
+    public boolean canUseLocalConnection(String localIP, String gateId, int tmeoutSec) {
         // check local IP
+        int tmeoutMiliSec = tmeoutSec * 1000;
         String url = "http://" + localIP + ":8122";
-        String severAnswer = getResponseFromServer(url, 3000);
+        String severAnswer = getResponseFromServer(url, tmeoutMiliSec);
         if (!severAnswer.equals("")) {
             try {
                 JSONObject jsonAnswer = new JSONObject(severAnswer);
@@ -144,11 +145,13 @@ public class Config {
             String userHist = params[2];
             String descHist = params[3];
             String goToHaView = params[4];
+            String discoTimeoutInSec = params[5];
             String urlToGo = "";
+
 
             // Check if the local IP from history is still OK
 
-            if (!localIpHist.equals("") && canUseLocalConnection(localIpHist, gateID)){
+            if (!localIpHist.equals("") && canUseLocalConnection(localIpHist, gateID, Integer.valueOf(discoTimeoutInSec))){
                     urlToGo = "http://" + localIpHist + ":8180";
                     saveConnToHistory(localIpHist, urlToGo, gateID, userHist, descHist);
                     return urlToGo  + goToHaView;
@@ -157,7 +160,7 @@ public class Config {
                     String localIpFromCloud = getLocalIpFromCloud(gateID);
                     if (!localIpFromCloud.equals("")) {
                         // check if new local IP from cloud is now OK
-                        if (canUseLocalConnection(localIpFromCloud, gateID)){
+                        if (canUseLocalConnection(localIpFromCloud, gateID, Integer.valueOf(discoTimeoutInSec))){
                             urlToGo = "http://" + localIpFromCloud + ":8180";
                             saveConnToHistory(localIpFromCloud, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
                             return urlToGo + goToHaView;
@@ -206,7 +209,7 @@ public class Config {
         }
     }
 
-    public String getAppLaunchUrl(boolean disco, String goToHaView) {
+    public String getAppLaunchUrl(int disco, String goToHaView) {
         String url;
 
         if (AisCoreUtils.onBox()){
@@ -215,13 +218,13 @@ public class Config {
 
         url = getStringPref(R.string.key_setting_app_launchurl, R.string.default_setting_app_launchurl);
 
-        if (url.startsWith("dom-") && disco) {
+        if (url.startsWith("dom-") && disco > 0) {
             String gateID = url;
             String localIpHist = AisConnectionHistJSON.getLocalIpForGate(myContext, gateID);
             String userHist = AisConnectionHistJSON.getUserForGate(myContext, gateID);
             String descHist = AisConnectionHistJSON.getDescForGate(myContext, gateID);
             checkConnectionUrlJob checkConnectionUrlJob = new checkConnectionUrlJob();
-            checkConnectionUrlJob.execute(gateID, localIpHist, userHist, descHist, goToHaView);
+            checkConnectionUrlJob.execute(gateID, localIpHist, userHist, descHist, goToHaView, String.valueOf(disco));
         } else {
             // save it for interface communication with gate
             if (url.startsWith("dom-")) {
