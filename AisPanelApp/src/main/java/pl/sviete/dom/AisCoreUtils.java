@@ -11,6 +11,9 @@ import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.webkit.WebView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
 import java.io.File;
 import java.text.DecimalFormat;
 
@@ -62,6 +65,7 @@ public class AisCoreUtils {
 
     // GO TO VIEW FROM NOTIFICATION
     public static final String GO_TO_HA_APP_VIEW_INTENT_EXTRA = "GO_TO_HA_APP_VIEW_INTENT_EXTRA";
+
 
     public static String getAisDomUrl(){
         if (onBox()){
@@ -124,6 +128,9 @@ public class AisCoreUtils {
     public static final int REQUEST_RECORD_PERMISSION = 100;
     public static final int REQUEST_HOT_WORD_MIC_PERMISSION = 200;
     public static final int REQUEST_LOCATION_PERMISSION = 300;
+
+    // REQUEST
+    private static RequestQueue mRequestQueue;
     /*
      * Check if we are on gate or phone
      *
@@ -229,5 +236,13 @@ public class AisCoreUtils {
             Log.e(TAG, "getBatteryPercentage error: " + e.getMessage());
             return "100";
         }
+    }
+
+    //
+    public static RequestQueue getRequestQueue(Context appCtx) {
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(appCtx);
+        }
+        return mRequestQueue;
     }
 }

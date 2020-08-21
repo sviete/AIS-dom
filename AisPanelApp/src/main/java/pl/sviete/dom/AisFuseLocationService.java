@@ -284,7 +284,7 @@ public class AisFuseLocationService extends Service{
         // report location to AIS gate only if it's precise 30m
         try {
             if (mCurrentLocation.hasAccuracy() && mCurrentLocation.getAccuracy() <= LOCATION_ACCURACY_SUITABLE_TO_REPORT) {
-                DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation, mCurrentAddress);
+                DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation);
                 // update notification after 2.5 sec - to check if the location report was sent
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -317,6 +317,8 @@ public class AisFuseLocationService extends Service{
                 super.onLocationResult(locationResult);
                 // This is your most accurate location.
                 mCurrentLocation = locationResult.getLastLocation();
+                reportLocationToAisGate();
+
                 // get the address from location
                 getAddressFromLocation(mCurrentLocation, getApplicationContext(), new GeocoderHandler());
             }
@@ -423,12 +425,11 @@ public class AisFuseLocationService extends Service{
                 case 1:
                     Bundle bundle = message.getData();
                     mCurrentAddress = bundle.getString("address");
+                    DomWebInterface.updateDeviceAddress(getApplicationContext(), mCurrentAddress);
                     break;
                 default:
                     mCurrentAddress = "";
             }
-            //
-            reportLocationToAisGate();
         }
     }
 

@@ -11,8 +11,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 123
-        versionName '1.4.5.Where.is.Jolka'
+        versionCode 124
+        versionName '1.4.6.NFC'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true

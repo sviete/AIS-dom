@@ -2,10 +2,8 @@ package pl.sviete.dom;
 import android.app.UiModeManager;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -83,6 +81,9 @@ public class WelcomeActivity extends AppCompatActivity {
                     this.getApplicationContext().startService(serviceIntent);
                 }
             }
+
+            // get request Queue
+            AisCoreUtils.getRequestQueue(this.getApplicationContext());
         }
 
 
