@@ -12,6 +12,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -38,6 +40,7 @@ import com.github.zagum.switchicon.SwitchIconView;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -89,7 +92,7 @@ public class BrowserActivityNative extends BrowserActivity {
     @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        Log.d(TAG, "onCreate");
         if (AisCoreUtils.mWebView != null){
             AisCoreUtils.mWebView.clearHistory();
             AisCoreUtils.mWebView.clearCache(false);
@@ -337,10 +340,39 @@ public class BrowserActivityNative extends BrowserActivity {
 
         // For debug only
         // WebView.setWebContentsDebuggingEnabled(true);
-
-        Log.i(TAG, webSettings.getUserAgentString());
+        Log.i(TAG, "xxx" + webSettings.getUserAgentString());
 
         super.onCreate(savedInstanceState);
+
+        // NFC
+        String action = getIntent().getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            NdefMessage[] msgs = null;
+            if (rawMsgs != null) {
+                msgs = new NdefMessage[rawMsgs.length];
+                for (int i = 0; i < rawMsgs.length; i++) {
+                    msgs[i] = (NdefMessage) rawMsgs[i];
+                }
+            }
+            if (msgs == null || msgs.length == 0) return;
+
+            String text = "";
+            byte[] payload = msgs[0].getRecords()[0].getPayload();
+            String textEncoding = ((payload[0] & 128) == 0) ? "UTF-8" : "UTF-16"; // Get the Text Encoding
+            int languageCodeLength = payload[0] & 0063; // Get the Language Code, e.g. "en"
+
+            try {
+                // Get the Text
+                text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
+                Toast.makeText(getApplicationContext(), text,Toast.LENGTH_LONG).show();
+                DomWebInterface.publishMessage(text,"process",getApplicationContext());
+            } catch (UnsupportedEncodingException e) {
+                Log.e("UnsupportedEncoding", e.toString());
+            }
+        }
     }
 
 
@@ -405,16 +437,12 @@ public class BrowserActivityNative extends BrowserActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.e(TAG, "onNewIntent loadUrl");
+
         String goToViewFromIntent = "";
         try {
-            Log.e(TAG, "loadUrl viewIntent getPackage" + intent.toString());
-
-
             if (intent.hasExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA)) {
                 goToViewFromIntent = intent.getStringExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA);
                 if (goToViewFromIntent != "") {
-                    Log.e(TAG, "loadUrl goToViewFromIntent" + goToViewFromIntent);
                     // get app url no discovery...
                     appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
                     if (appLaunchUrl.startsWith("dom-")) {
