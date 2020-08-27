@@ -106,8 +106,7 @@
         <activity
             android:name="pl.sviete.dom.AisNfcActivity"
             android:exported="true"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:label="@string/title_activity_browser"
             android:theme="@style/AppThemeFullScreen">
             <intent-filter>

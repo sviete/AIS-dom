@@ -13,8 +13,8 @@
         android:gravity="center">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="216dp"
+            android:layout_width="131dp"
+            android:layout_height="153dp"
             android:layout_gravity="right"
             android:src="@drawable/ic_ais_logo" />
         <ImageView

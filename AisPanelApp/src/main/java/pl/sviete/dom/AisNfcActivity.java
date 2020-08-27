@@ -1,6 +1,7 @@
 package pl.sviete.dom;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.MifareClassic;
@@ -80,6 +81,13 @@ public class AisNfcActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // do not resend command to gate
+        super.onConfigurationChanged(newConfig);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
