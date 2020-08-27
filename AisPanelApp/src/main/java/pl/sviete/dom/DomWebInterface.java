@@ -19,10 +19,6 @@ import org.json.JSONObject;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.koushikdutta.async.http.AsyncHttpClient;
-import com.koushikdutta.async.http.AsyncHttpPost;
-import com.koushikdutta.async.http.AsyncHttpResponse;
-import com.koushikdutta.async.http.body.JSONObjectBody;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,61 +48,38 @@ public class DomWebInterface {
 
     private static void doPost(JSONObject message, Context context) {
         // do the simple HTTP post
-        String url = getDomWsUrl(context) + "/api/webhook/aisdomprocesscommandfromframe";
-        AsyncHttpPost post = new AsyncHttpPost(url);
-        JSONObjectBody body = new JSONObjectBody(message);
         try {
             message.put("ais_ha_webhook_id", AisCoreUtils.AIS_HA_WEBHOOK_ID);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        post.addHeader("Content-Type", "application/json");
-        post.setBody(body);
-        AsyncHttpClient.getDefaultInstance().executeJSONObject(post, new AsyncHttpClient.JSONObjectCallback() {
-
-            void say(String text) {
-                Intent intent = null;
-                if (isServiceRunning(context, AisPanelService.class) || isServiceRunning(context, PorcupineService.class)) {
-                    // service is runing
-                    intent = new Intent(BROADCAST_SERVICE_SAY_IT);
-                } else {
-                    //  pl.sviete.dom.BrowserActivityNative
-                    intent = new Intent(BROADCAST_ACTIVITY_SAY_IT);
-                }
-                intent.putExtra(BROADCAST_SAY_IT_TEXT, text);
-                LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
-                bm.sendBroadcast(intent);
-            }
-
-            // Callback is invoked with any exceptions/errors, and the result, if available.
+        String webHookUrl = getDomWsUrl(context) + "/api/webhook/aisdomprocesscommandfromframe";
+        DomCustomRequest jsObjRequest = new DomCustomRequest(Request.Method.POST, webHookUrl, message.toString(), new Response.Listener<JSONObject>() {
             @Override
-            public void onCompleted(Exception e, AsyncHttpResponse response, JSONObject result) {
-                if (e != null) {
-                    // try to discover gate or inform about connection problem
-                    Config config = new Config(context.getApplicationContext());
-                    String appLaunchUrl = config.getAppLaunchUrl(0, "");
-                    if (appLaunchUrl.startsWith("dom-")) {
-                        // sprawdzam połączenie
-                        // say("Sprawdzam połączenie.");
-                        appLaunchUrl = config.getAppLaunchUrl(3, "");
-                    } else {
-                        // say("Sprawdz połączenie z bramką.");
-                    }
-                    return;
-                }
+            public void onResponse(JSONObject response) {
                 // say the response
-                if (result.has("say_it")) {
+                if (response.has("say_it")) {
                     try {
-                        String text = result.getString("say_it").trim();
-                        say(text);
+                        String text = response.getString("say_it").trim();
+                        Intent intent = null;
+                        if (isServiceRunning(context, AisPanelService.class) || isServiceRunning(context, PorcupineService.class)) {
+                            // service is runing
+                            intent = new Intent(BROADCAST_SERVICE_SAY_IT);
+                        } else {
+                            //  pl.sviete.dom.BrowserActivityNative
+                            intent = new Intent(BROADCAST_ACTIVITY_SAY_IT);
+                        }
+                        intent.putExtra(BROADCAST_SAY_IT_TEXT, text);
+                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
+                        bm.sendBroadcast(intent);
                     } catch (JSONException ex) {
                         ex.printStackTrace();
                     }
                 }
                 //
-                if (result.has("player_status")) {
+                if (response.has("player_status")) {
                     try {
-                        JSONObject player_status = result.getJSONObject("player_status");
+                        JSONObject player_status = response.getJSONObject("player_status");
                         AisPanelService.m_media_title = player_status.getString("media_title");
                         AisPanelService.m_media_source = player_status.getString("media_source");
                         AisPanelService.m_media_album_name = player_status.getString("media_album_name");
@@ -115,9 +88,24 @@ public class DomWebInterface {
                         ex.printStackTrace();
                     }
                 }
-
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError response) {
+                Log.e("AIS auth: ", response.toString());
+                // try to discover gate or inform about connection problem
+                Config config = new Config(context.getApplicationContext());
+                String appLaunchUrl = config.getAppLaunchUrl(0, "");
+                if (appLaunchUrl.startsWith("dom-")) {
+                    // sprawdzam połączenie
+                    // say("Sprawdzam połączenie.");
+                    appLaunchUrl = config.getAppLaunchUrl(3, "");
+                } else {
+                    // say("Sprawdz połączenie z bramką.");
+                }
             }
         });
+        AisCoreUtils.getRequestQueue(context.getApplicationContext()).add(jsObjRequest);
     }
 
     public static void publishMessage(String message, String topicPostfix, Context context) {
@@ -166,37 +154,9 @@ public class DomWebInterface {
         doPost(json, context);
     }
 
-    // -------------------------------------------------------------
-    // Message to Cloud
-    private static void doCloudPost(JSONObject message, String url) {
-        // do the simple HTTP post
-        AsyncHttpPost post = new AsyncHttpPost(url);
-        JSONObjectBody body = new JSONObjectBody(message);
-        post.addHeader("Content-Type", "application/json");
-        post.setBody(body);
-        AsyncHttpClient.getDefaultInstance().executeJSONObject(post, new AsyncHttpClient.JSONObjectCallback() {
-
-            // Callback is invoked with any exceptions/errors, and the result, if available.
-            @Override
-            public void onCompleted(Exception e, AsyncHttpResponse response, JSONObject result) {
-                if (e != null) {
-                    return;
-                }
-                // TODO say the response
-
-            }
-        });
-    }
-
-    public static void publishJsonToCloud(JSONObject message, String topic) {
-        // message to cloud
-        String url = AisCoreUtils.getAisDomCloudWsUrl(true) + topic;
-        doCloudPost(message, topic);
-    }
-
     // Sending data home
     // https://developers.home-assistant.io/docs/api/native-app-integration/sending-data
-    public static void doPostDomWebHockRequest(String url, JSONObject body, Context appContext){
+    public static void doPostDomWebHoockRequest(String url, JSONObject body, Context appContext){
         DomCustomRequest jsObjRequest = new DomCustomRequest(Request.Method.POST, url, body.toString(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {Log.d("AIS auth: ", response.toString());}
@@ -238,7 +198,7 @@ public class DomWebInterface {
                 sensorsDataArray.put(addressData);
                 jsonUpdate.put("data", sensorsDataArray);
                 // call
-                DomWebInterface.doPostDomWebHockRequest(webHookUrl, jsonUpdate, context.getApplicationContext());
+                DomWebInterface.doPostDomWebHoockRequest(webHookUrl, jsonUpdate, context.getApplicationContext());
             } catch (Exception e) {
                 Log.e(TAG, "updateDeviceAddress error: " + e.getMessage());
             }
@@ -272,7 +232,7 @@ public class DomWebInterface {
                 json.put("data", data);
 
                 // call
-                DomWebInterface.doPostDomWebHockRequest(webHookUrl, json, context.getApplicationContext());
+                DomWebInterface.doPostDomWebHoockRequest(webHookUrl, json, context.getApplicationContext());
                 AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
 
                 // update battery state
@@ -288,7 +248,7 @@ public class DomWebInterface {
                 sensorsDataArray.put(batteryData);
                 jsonUpdate.put("data", sensorsDataArray);
                 // call
-                DomWebInterface.doPostDomWebHockRequest(webHookUrl, jsonUpdate, context.getApplicationContext());
+                DomWebInterface.doPostDomWebHoockRequest(webHookUrl, jsonUpdate, context.getApplicationContext());
             } catch (Exception e) {
                 Log.e(TAG, "updateDeviceLocation error: " + e.getMessage());
             }
@@ -442,7 +402,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                         jsonSensorData.put("unit_of_measurement", "%");
                         jsonSensor.put("data", jsonSensorData);
                         // call
-                        DomWebInterface.doPostDomWebHockRequest(webHookUrl, jsonSensor, mContext.getApplicationContext());
+                        DomWebInterface.doPostDomWebHoockRequest(webHookUrl, jsonSensor, mContext.getApplicationContext());
 
                         // 3. Registering a sensor - geocoded_location
                         JSONObject jsonSensor2 = new JSONObject();
@@ -454,7 +414,7 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                         jsonSensorData2.put("unique_id", "geocoded_location");
                         jsonSensor2.put("data", jsonSensorData2);
                         // call
-                        DomWebInterface.doPostDomWebHockRequest(webHookUrl, jsonSensor2,mContext.getApplicationContext());
+                        DomWebInterface.doPostDomWebHoockRequest(webHookUrl, jsonSensor2,mContext.getApplicationContext());
                     } catch (Exception e) {
                         Log.e(TAG, "AIS auth: " + e.getMessage());
                     }
