@@ -2,6 +2,7 @@ package pl.sviete.dom;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -38,6 +39,8 @@ import com.github.zagum.switchicon.SwitchIconView;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -226,22 +229,39 @@ public class BrowserActivityNative extends BrowserActivity {
 
         AisCoreUtils.mWebView.setWebViewClient(new WebViewClient(){
             //If you will not use this method url links are open in new browser not in webview
+            @SuppressWarnings("deprecation")
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                final Uri uri = Uri.parse(url);
+                handleUriLoading(view, uri);
+                // do not handle by default action
+                return false;
+            }
+
+            @TargetApi(Build.VERSION_CODES.N)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(request.getUrl().toString());
+                final Uri uri = request.getUrl();
+                handleUriLoading(view, uri);
+                // do not handle by default action
+                return false;
+            }
 
+            private void handleUriLoading(WebView view, Uri uri){
+                //If you will not use this method url links are open in new browser not in webview
+                view.loadUrl(uri.toString());
                 // check if this is login request
-                if (request.getUrl().toString().contains("auth_callback")) {
+                if (uri.toString().contains("auth_callback")) {
                     Log.i(TAG, "AIS auth auth_callback ");
                     // store client
-                    if (request.getUrl().getQueryParameter("client_id") != null){
-                        AisCoreUtils.HA_CLIENT_ID = request.getUrl().getQueryParameter("client_id");
+                    if (uri.getQueryParameter("client_id") != null){
+                        AisCoreUtils.HA_CLIENT_ID = uri.getQueryParameter("client_id");
                         Log.i(TAG, "AIS auth client_id " + AisCoreUtils.HA_CLIENT_ID );
                     }
                     // ask about token using the code
-                    if (request.getUrl().getQueryParameter("code") != null){
+                    if (uri.getQueryParameter("code") != null){
                         try {
-                            AisCoreUtils.HA_CODE = request.getUrl().getQueryParameter("code");
+                            AisCoreUtils.HA_CODE = uri.getQueryParameter("code");
                             Log.i(TAG, "AIS auth code " + AisCoreUtils.HA_CODE);
                             DomWebInterface.registerAuthorizationCode(getApplicationContext(), AisCoreUtils.HA_CODE, AisCoreUtils.HA_CLIENT_ID);
                         } catch (Exception e) {
@@ -249,10 +269,8 @@ public class BrowserActivityNative extends BrowserActivity {
                         }
                     }
                 }
-
-                // then it is not handled by default action
-                return false;
             }
+
             //
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
