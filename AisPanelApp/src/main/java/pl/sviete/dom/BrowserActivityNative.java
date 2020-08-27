@@ -361,36 +361,6 @@ public class BrowserActivityNative extends BrowserActivity {
         Log.i(TAG, "xxx" + webSettings.getUserAgentString());
 
         super.onCreate(savedInstanceState);
-
-        // NFC
-        String action = getIntent().getAction();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-            Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs = null;
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-            }
-            if (msgs == null || msgs.length == 0) return;
-
-            String text = "";
-            byte[] payload = msgs[0].getRecords()[0].getPayload();
-            String textEncoding = ((payload[0] & 128) == 0) ? "UTF-8" : "UTF-16"; // Get the Text Encoding
-            int languageCodeLength = payload[0] & 0063; // Get the Language Code, e.g. "en"
-
-            try {
-                // Get the Text
-                text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
-                Toast.makeText(getApplicationContext(), text,Toast.LENGTH_LONG).show();
-                DomWebInterface.publishMessage(text,"process",getApplicationContext());
-            } catch (UnsupportedEncodingException e) {
-                Log.e("UnsupportedEncoding", e.toString());
-            }
-        }
     }
 
 
