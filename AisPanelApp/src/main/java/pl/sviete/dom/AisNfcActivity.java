@@ -43,11 +43,12 @@ public class AisNfcActivity extends AppCompatActivity {
         TextView nfcText = findViewById(R.id.nfcText);
 
         // NFC
-        String action = getIntent().getAction();
+        Intent intent = getIntent();
+        String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-            Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
             String[][] mTechLists = new String[][] {
                     new String[] {
@@ -64,20 +65,38 @@ public class AisNfcActivity extends AppCompatActivity {
                     msgs[i] = (NdefMessage) rawMsgs[i];
                 }
             }
-            if (msgs == null || msgs.length == 0) return;
+            if (msgs == null || msgs.length == 0) {
+                //  no message - try to get tag id
+                Bundle bundle = intent.getExtras();
+                if (bundle != null) {
+                    for (String key : bundle.keySet()) {
+                        Log.e("TEST", key + " : " + (bundle.get(key) != null ? bundle.get(key) : "NULL"));
+                    }
+                }
+                byte[] extraID = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+                StringBuilder sb = new StringBuilder();
+                for (byte b : extraID) {
+                    sb.append(String.format("%02X", b));
+                }
+                //
+                String nfcTagSerialNum = sb.toString();
+                nfcText.setText(nfcTagSerialNum);
+            }
+            else {
+                // try to get message
+                String text = "";
+                byte[] payload = msgs[0].getRecords()[0].getPayload();
+                String textEncoding = ((payload[0] & 128) == 0) ? "UTF-8" : "UTF-16"; // Get the Text Encoding
+                int languageCodeLength = payload[0] & 0063; // Get the Language Code, e.g. "en"
 
-            String text = "";
-            byte[] payload = msgs[0].getRecords()[0].getPayload();
-            String textEncoding = ((payload[0] & 128) == 0) ? "UTF-8" : "UTF-16"; // Get the Text Encoding
-            int languageCodeLength = payload[0] & 0063; // Get the Language Code, e.g. "en"
-
-            try {
-                // Get the Text
-                text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
-                nfcText.setText(text);
-                DomWebInterface.publishMessage(text,"speech_command", getApplicationContext());
-            } catch (UnsupportedEncodingException e) {
-                Log.e("UnsupportedEncoding", e.toString());
+                try {
+                    // Get the Text
+                    text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
+                    nfcText.setText(text);
+                    DomWebInterface.publishMessage(text, "speech_command", getApplicationContext());
+                } catch (UnsupportedEncodingException e) {
+                    Log.e("UnsupportedEncoding", e.toString());
+                }
             }
         }
     }
