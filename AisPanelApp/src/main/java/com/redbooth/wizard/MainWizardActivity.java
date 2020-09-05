@@ -458,7 +458,7 @@ public class MainWizardActivity extends AppCompatActivity {
     }
 
     private void setDemoGateId(){
-        String demoGateId = "https://demo.ai-speaker.com";
+        String demoGateId = "https://dom-demo.paczka.pro";
         Toast.makeText(getApplicationContext(), demoGateId, Toast.LENGTH_SHORT).show();
         // save code and go to next step in wizard
         final Config config = new Config(this.getApplicationContext());
