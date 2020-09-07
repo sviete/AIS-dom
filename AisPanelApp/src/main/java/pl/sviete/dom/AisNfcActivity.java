@@ -2,25 +2,34 @@ package pl.sviete.dom;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.Animatable;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
 public class AisNfcActivity extends AppCompatActivity {
+    private static final String TAG = "AisNfcActivity";
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -30,14 +39,12 @@ public class AisNfcActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ais_nfc);
 
-        // finish button
-        Button closeButton = (Button) findViewById(R.id.btn_nfc_ok);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        // animation
+        ImageView aisAnimationNfcLogo = findViewById(R.id.ais_logo_nfc_animation);
+        AnimatedVectorDrawableCompat animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(this, R.drawable.nfc_anim);
+        aisAnimationNfcLogo.setImageDrawable(animatedVectorDrawableCompat);
+        Animatable animatable = (Animatable) ((ImageView) aisAnimationNfcLogo).getDrawable();
+        animatable.start();
 
         //
         TextView nfcText = findViewById(R.id.nfcText);
@@ -78,9 +85,33 @@ public class AisNfcActivity extends AppCompatActivity {
                 for (byte b : extraID) {
                     sb.append(String.format("%02X", b));
                 }
-                //
-                String nfcTagSerialNum = sb.toString();
-                nfcText.setText(nfcTagSerialNum);
+                try {
+                    // Get the nfc id
+                    String nfcTagSerialNum = sb.toString();
+                    nfcText.setText(nfcTagSerialNum);
+                    JSONObject jMessage = new JSONObject();
+                    try {
+                        jMessage.put("event_type", "tag_scanned");
+                        JSONObject jData = new JSONObject();
+                        jData.put("tag_id", nfcTagSerialNum);
+                        jMessage.put("event_data", jData);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    }, 3000);
+
+                } catch (Exception e) {
+                    Log.e("Exception", e.toString());
+                }
+
             }
             else {
                 // try to get message
@@ -94,8 +125,17 @@ public class AisNfcActivity extends AppCompatActivity {
                     text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
                     nfcText.setText(text);
                     DomWebInterface.publishMessage(text, "speech_command", getApplicationContext());
-                } catch (UnsupportedEncodingException e) {
-                    Log.e("UnsupportedEncoding", e.toString());
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    }, 3000);
+
+                } catch (Exception e) {
+                    Log.e("Exception", e.toString());
                 }
             }
         }
