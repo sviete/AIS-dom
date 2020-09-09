@@ -159,11 +159,17 @@ public class DomWebInterface {
     public static void doPostDomWebHoockRequest(String url, JSONObject body, Context appContext){
         DomCustomRequest jsObjRequest = new DomCustomRequest(Request.Method.POST, url, body.toString(), new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject response) {Log.d("AIS auth: ", response.toString());}
+            public void onResponse(JSONObject response) {
+                AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
+                Log.d("AIS auth: ", response.toString());
+            }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError response) {Log.e("AIS auth: ", response.toString());}
+            public void onErrorResponse(VolleyError response) {
+                Log.e("AIS auth: ", response.toString());
+            }
         });
+        AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED++;
         AisCoreUtils.getRequestQueue(appContext).add(jsObjRequest);
     }
 
@@ -180,6 +186,7 @@ public class DomWebInterface {
     }
 
     public static void updateDeviceAddress(Context context, String address) {
+        Log.d(TAG, "updateDeviceAddress ");
         Config config = new Config(context);
         String webhookId = config.getAisHaWebhookId();
         if (!webhookId.equals("")) {
@@ -205,7 +212,38 @@ public class DomWebInterface {
         }
     }
 
+    public static void updateBatteryState(Context context) {
+        Log.d(TAG, "updateBatteryState ");
+        // do the simple HTTP post
+        // get ha webhook id from settings
+        Config config = new Config(context);
+        String webhookId = config.getAisHaWebhookId();
+        if (!webhookId.equals("")) {
+            try {
+                // - create url
+                String webHookUrl = getDomWsUrl(context) + "/api/webhook/" + webhookId;
+                // update battery state
+                JSONObject jsonUpdate = new JSONObject();
+                jsonUpdate.put("type", "update_sensor_states");
+                JSONArray sensorsDataArray = new JSONArray();
+                JSONObject batteryData = new JSONObject();
+                batteryData.put("icon", "mdi:battery");
+                batteryData.put("state", getBatteryPercentage(context));
+                batteryData.put("type", "sensor");
+                batteryData.put("unique_id", "battery");
+                sensorsDataArray.put(batteryData);
+                jsonUpdate.put("data", sensorsDataArray);
+                // call
+                DomWebInterface.doPostDomWebHoockRequest(webHookUrl, jsonUpdate, context.getApplicationContext());
+                Log.d(TAG, "updateBatteryState " + jsonUpdate.toString());
+            } catch (Exception e) {
+                Log.e(TAG, "updateBatteryState error: " + e.getMessage());
+            }
+        }
+    }
+
     public static void updateDeviceLocation(Context context, Location location) {
+        Log.d(TAG, "updateDeviceLocation ");
         // do the simple HTTP post
         // get ha webhook id from settings
         Config config = new Config(context);
@@ -223,8 +261,7 @@ public class DomWebInterface {
                 gps.put(location.getLongitude());
                 data.put("gps", gps);
                 data.put("gps_accuracy", location.getAccuracy());
-                String batteryState = getBatteryPercentage(context);
-                data.put("battery", batteryState);
+                data.put("battery", getBatteryPercentage(context));
                 data.put("speed", location.getSpeed());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     data.put("course", location.getVerticalAccuracyMeters());
@@ -233,22 +270,7 @@ public class DomWebInterface {
 
                 // call
                 DomWebInterface.doPostDomWebHoockRequest(webHookUrl, json, context.getApplicationContext());
-                AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
 
-                // update battery state
-                // create body
-                JSONObject jsonUpdate = new JSONObject();
-                jsonUpdate.put("type", "update_sensor_states");
-                JSONArray sensorsDataArray = new JSONArray();
-                JSONObject batteryData = new JSONObject();
-                batteryData.put("icon", "mdi:battery");
-                batteryData.put("state", batteryState);
-                batteryData.put("type", "sensor");
-                batteryData.put("unique_id", "battery");
-                sensorsDataArray.put(batteryData);
-                jsonUpdate.put("data", sensorsDataArray);
-                // call
-                DomWebInterface.doPostDomWebHoockRequest(webHookUrl, jsonUpdate, context.getApplicationContext());
             } catch (Exception e) {
                 Log.e(TAG, "updateDeviceLocation error: " + e.getMessage());
             }

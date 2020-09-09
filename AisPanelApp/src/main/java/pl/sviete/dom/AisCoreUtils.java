@@ -11,6 +11,8 @@ import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.webkit.WebView;
 
+import androidx.work.WorkManager;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
@@ -62,6 +64,7 @@ public class AisCoreUtils {
     // GPS
     public static int GPS_SERVICE_LOCATIONS_DETECTED = 0;
     public static int GPS_SERVICE_LOCATIONS_SENT = 0;
+    public static WorkManager GATE_SYNC_WORK_MANAGER = null;
 
     // GO TO VIEW FROM NOTIFICATION
     public static final String GO_TO_HA_APP_VIEW_INTENT_EXTRA = "GO_TO_HA_APP_VIEW_INTENT_EXTRA";

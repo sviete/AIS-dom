@@ -94,9 +94,9 @@
 
     <string name="key_setting_report_location">setting_report_location</string>
     <string name="default_setting_report_location">false</string>
-    <string name="title_setting_report_location">Location reports</string>
+    <string name="title_setting_report_location">Reports to gate</string>
     <string name="title_notification_report_location">GPS</string>
-    <string name="summary_setting_report_location">start sending location to the gateway. Note this functionality requires running a website tracking device location, it will have a negative impact on battery life.</string>
+    <string name="summary_setting_report_location">start sending data to the gateway. Note this functionality requires running a website tracking device location, it will have a negative impact on battery life.</string>
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>
     <string name="default_setting_app_discovery">false</string>
@@ -366,10 +366,10 @@
     <string name="time_hms_format" formatted="false">%sh %sm %ss</string>
     <string name="accuracy_within" formatted="false">within %s %s</string>
     <string name="degree_symbol" translatable="false">&#176;</string>
-    <string name="gps_loc_detected">Received</string>
+    <string name="gps_loc_detected">Statuses</string>
     <string name="gps_loc_sent">sent </string>
     <string name="meters">&#160;meters</string>
     <string name="kilometers">&#160;km</string>
-    <string name="report_button">REPORT</string>
+    <string name="report_button">SEND STATUS</string>
 
 </resources>

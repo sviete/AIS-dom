@@ -17,9 +17,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
-import android.net.NetworkRequest;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,9 +28,14 @@ import android.os.Message;
 import android.text.Html;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -43,6 +46,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 
@@ -54,6 +58,11 @@ public class AisFuseLocationService extends Service{
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
     private static final float LOCATION_CHANGE_IN_DISTANCE_TO_NOTIFY = 10f;
     private static final int LOCATION_ACCURACY_SUITABLE_TO_REPORT = 30;
+
+    // sync work
+    private static final String TAG_SYNC_DATA = "AIS_SYNC_WITH_GATE";
+    public static final String SYNC_DATA_WORK_NAME = "AIS_SYNC_WITH_GATE_WORK_NAME";
+
 
     private Handler mHandler;
     private Context mContext;
@@ -113,7 +122,7 @@ public class AisFuseLocationService extends Service{
         Intent reportIntent = new Intent(getApplicationContext(), AisFuseLocationService.class);
         reportIntent.putExtra("getLastKnownLocation", true);
         PendingIntent reportPendingIntent = PendingIntent.getService(getApplicationContext(), 0, reportIntent, 0);
-        NotificationCompat.Action reportAction = new NotificationCompat.Action.Builder(R.drawable.ic_ais_gps_logo, getString(R.string.report_button), reportPendingIntent).build();
+        NotificationCompat.Action reportAction = new NotificationCompat.Action.Builder(R.drawable.ic_ais_sync_logo, getString(R.string.report_button), reportPendingIntent).build();
 
         // Exit action
         Intent exitIntent = new Intent(this, BrowserActivityNative.class);
@@ -126,8 +135,8 @@ public class AisFuseLocationService extends Service{
         contentTitle = contentTitle + ", " + getString(R.string.gps_loc_sent) + ": " + AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT;
         ;
         CharSequence contentText = getString(R.string.app_name);
+        mCurrentAddress = mCurrentAddress == null ? "" : mCurrentAddress;
         if (mCurrentLocation != null) {
-
             if (mCurrentLocation.hasAccuracy() && mCurrentLocation.getAccuracy() <= LOCATION_ACCURACY_SUITABLE_TO_REPORT) {
                 contentText = Html.fromHtml(
                         ((mCurrentAddress == "") ? "" : "<b>" + mCurrentAddress + "</b> "  + "  ")
@@ -150,7 +159,7 @@ public class AisFuseLocationService extends Service{
 
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), AisCoreUtils.AIS_LOCATION_CHANNEL_ID)
                 .setContentTitle(contentTitle)
-                .setSmallIcon(R.drawable.ic_ais_gps_logo)
+                .setSmallIcon(R.drawable.ic_ais_sync_logo)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setLargeIcon(bImage)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText).setBigContentTitle(contentTitle))
@@ -188,6 +197,15 @@ public class AisFuseLocationService extends Service{
         // fuse restart
         startLocationUpdates();
 
+        // TODO update rest of the sensors
+        DomWebInterface.updateBatteryState(getApplicationContext());
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateNotification();
+            }
+        }, 2000);
+
         // Return START_STICKY so we can ensure that if the
         // service dies for some reason, it should start back.
         return Service.START_STICKY;
@@ -208,6 +226,31 @@ public class AisFuseLocationService extends Service{
 
         //
         createWifiBrodcastReceiver();
+
+        //
+        createSyncDataWithGate();
+    }
+
+    private void cancelSyncDataWithGate() {
+        try {
+            AisCoreUtils.GATE_SYNC_WORK_MANAGER.cancelAllWork();
+            AisCoreUtils.GATE_SYNC_WORK_MANAGER = null;
+        } catch (Exception ex) {
+            Log.e(TAG, ex.getMessage());
+        }
+    }
+
+    private void createSyncDataWithGate() {
+        Log.i(TAG, "createSyncDataWithGate AisSyncGateWorker");
+        if (AisCoreUtils.GATE_SYNC_WORK_MANAGER == null) {
+            Log.i(TAG, "createSyncDataWithGate AisSyncGateWorker GATE_SYNC_WORK_MANAGER is null");
+            AisCoreUtils.GATE_SYNC_WORK_MANAGER = WorkManager.getInstance(getApplication());
+            // Create Network constraint
+            Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
+            PeriodicWorkRequest periodicSyncDataWork = new PeriodicWorkRequest.Builder(
+                    AisSyncGateWorker.class, 15, TimeUnit.MINUTES).setConstraints(constraints).addTag(TAG_SYNC_DATA).build();
+            AisCoreUtils.GATE_SYNC_WORK_MANAGER.enqueueUniquePeriodicWork(SYNC_DATA_WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, periodicSyncDataWork);
+        }
     }
 
     private void createWifiBrodcastReceiver(){
@@ -277,14 +320,14 @@ public class AisFuseLocationService extends Service{
 
     // send location info to gate and show in notification
     private void reportLocationToAisGate() {
-        // update notification
-        AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED++;
+        //
         updateNotification();
 
         // report location to AIS gate only if it's precise 30m
         try {
             if (mCurrentLocation.hasAccuracy() && mCurrentLocation.getAccuracy() <= LOCATION_ACCURACY_SUITABLE_TO_REPORT) {
                 DomWebInterface.updateDeviceLocation(getApplicationContext(), mCurrentLocation);
+
                 // update notification after 2.5 sec - to check if the location report was sent
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -365,6 +408,9 @@ public class AisFuseLocationService extends Service{
         AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT = 0;
 
         //
+        cancelSyncDataWithGate();
+
+        //
         super.onDestroy();
     }
 
@@ -426,6 +472,12 @@ public class AisFuseLocationService extends Service{
                     Bundle bundle = message.getData();
                     mCurrentAddress = bundle.getString("address");
                     DomWebInterface.updateDeviceAddress(getApplicationContext(), mCurrentAddress);
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateNotification();
+                        }
+                    }, 2000);
                     break;
                 default:
                     mCurrentAddress = "";
