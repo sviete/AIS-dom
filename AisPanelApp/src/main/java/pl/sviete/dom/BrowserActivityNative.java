@@ -554,7 +554,7 @@ public class BrowserActivityNative extends BrowserActivity {
             if (action == KeyEvent.ACTION_DOWN) {
                 // click action
                 evaluateJavascript("document.querySelector(\"home-assistant\").hass.callService(\"media_player\", \"volume_up\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})");
-                Toast.makeText(this, "Vol +", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "AIS Vol +", Toast.LENGTH_SHORT).show();
             }
             // to Override standard vol up action
             return true;
@@ -562,7 +562,7 @@ public class BrowserActivityNative extends BrowserActivity {
             if (action == KeyEvent.ACTION_DOWN) {
                 // click action
                 evaluateJavascript("document.querySelector(\"home-assistant\").hass.callService(\"media_player\", \"volume_down\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})");
-                Toast.makeText(this, "Vol -", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "AIS Vol -", Toast.LENGTH_SHORT).show();
             }
             // to Override standard vol down action
             return true;
