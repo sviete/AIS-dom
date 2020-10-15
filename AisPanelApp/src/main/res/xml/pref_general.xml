@@ -1,43 +1,22 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="ais_dom_main_pref_screen">
-    <PreferenceCategory
-        android:key="ais_dom_wizard"
-        android:title="@string/title_ais_dom_wizard_section">
-        <PreferenceScreen
-            android:icon="@drawable/ic_run_wizard"
-            android:key="button_run_ais_dom_wizard"
-            android:summary="@string/title_setting_run_wizard_summary"
-            android:title="@string/title_setting_run_wizard_title">
-        </PreferenceScreen>
-    </PreferenceCategory>
     <PreferenceCategory
         android:key="ais_dom_con_url"
         android:title="@string/title_ais_dom_connection">
         <EditTextPreference
             android:dialogIcon="@drawable/ic_ais_logo_small_21_29"
-            android:icon="@drawable/ic_ais_logo_small_21_29"
+            android:icon="@drawable/ic_edit_gate_id_icon"
             android:key="@string/key_setting_app_launchurl"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/title_setting_app_launchurl" />
-        <PreferenceScreen
-            android:icon="@drawable/ic_scan_gate_id_icon"
-            android:key="button_scan_gate_id"
-            android:summary="@string/title_setting_app_launchurl_info_summary"
-            android:title="@string/title_setting_app_launchurl_info_title">
-        </PreferenceScreen>
-        <PreferenceScreen
-            android:icon="@drawable/ic_gate_connection_history"
-            android:key="pref_ais_dom_list_history"
-            android:summary="@string/summary_recent_connections"
-            android:title="@string/title_recent_connections">
-        </PreferenceScreen>
+        <Preference android:layout="@layout/pref_connection_buttons"/>
     </PreferenceCategory>
-
-        <PreferenceCategory
+    <PreferenceCategory
             android:title="@string/title_activity_settings"
-            android:key="pref_category_app_settings">
+            android:key="pref_category_app_settings"
+            app:initialExpandedChildrenCount="2">
             <ListPreference
                 android:defaultValue="@string/default_setting_app_tts_voice"
                 android:entries="@array/tts_voice_names"
@@ -52,10 +31,11 @@
                 android:summary="@string/summary_list_gesture"
                 android:icon="@drawable/ic_gesture_icon">
             </PreferenceScreen>
-        </PreferenceCategory>
-        <PreferenceCategory
+    </PreferenceCategory>
+    <PreferenceCategory
             android:title="@string/title_activity_settings_smart_panel"
-            android:key="pref_category_app_experimental">
+            android:key="pref_category_app_experimental"
+            app:initialExpandedChildrenCount="0">
             <SwitchPreference
                 android:defaultValue="@string/default_setting_report_location"
                 android:title="@string/title_setting_report_location"

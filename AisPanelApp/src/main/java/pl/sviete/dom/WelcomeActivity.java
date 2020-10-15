@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
+import android.view.View;
 
 import com.redbooth.wizard.MainWizardActivity;
 
@@ -19,6 +20,38 @@ public class WelcomeActivity extends AppCompatActivity {
     private final String TAG = WelcomeActivity.class.getName();
     private static boolean startup = true;
     public static final String BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE = "BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE";
+
+    // connection config
+    public void scanGateOnButtonClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.ScannerActivity");
+        startActivity(intent);
+    }
+    public void nfcGateOnButtonClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.ScannerActivity");
+        startActivity(intent);
+    }
+    public void wizardGateOnButtonClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setClassName(BuildConfig.APPLICATION_ID, "com.redbooth.wizard.MainWizardActivity");
+        startActivity(intent);
+    }
+
+
+    // connection history
+        /*PreferenceScreen preConHisto = (PreferenceScreen) findPreference("pref_ais_dom_list_history");
+        preConHisto.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.connhist.AisConnectionsHistoryActivity");
+            startActivity(intent);
+            return false;
+        }
+    }); */
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="70dp"
+    android:padding="1dp"
+    android:weightSum="3">
+
+    <Button
+        android:id="@+id/creator_gate_id_button"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:drawableTop="@drawable/ic_run_wizard"
+        android:text="@string/button_wizard_gate_id"
+        android:onClick="wizardGateOnButtonClick"
+        android:layout_weight="1"/>
+    <Button
+        android:id="@+id/nfc_gate_id_button"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:drawableTop="@drawable/ic_nfc_gate_id_icon"
+        android:text="@string/button_nfc_gate_id"
+        android:onClick="nfcGateOnButtonClick"
+        android:layout_weight="1"/>
+    <Button
+        android:id="@+id/scan_gate_id_button"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:drawableTop="@drawable/ic_scan_gate_id_icon"
+        android:text="@string/button_scan_gate_id"
+        android:onClick="scanGateOnButtonClick"
+        android:layout_weight="1"/>
+
+</LinearLayout>

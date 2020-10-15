@@ -1,22 +1,18 @@
 package pl.sviete.dom;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceScreen;
-import android.preference.SwitchPreference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
+import androidx.preference.PreferenceFragment;
+import androidx.preference.PreferenceManager;
 import androidx.core.app.ActivityCompat;
 
 import ai.picovoice.hotword.PorcupineService;
@@ -28,6 +24,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     static private int mClickNo = 0;
 
     private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
+
         String stringValue = value.toString();
 
         if(preference instanceof SwitchPreference){
@@ -89,8 +86,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         super.onCreate(savedInstance);
     }
 
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
         @Override
@@ -104,6 +99,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onStart();
 
         }
+
 
         public void updateServices(Context context, boolean enableAisAudioService, boolean enableAisHotWordService){
             // to update notification
@@ -139,9 +135,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 PreferenceScreen preferenceMainScreen = (PreferenceScreen) findPreference("ais_dom_main_pref_screen");
                 PreferenceCategory prefCategoryConnUrl = (PreferenceCategory) findPreference("ais_dom_con_url");
                 preferenceMainScreen.removePreference(prefCategoryConnUrl);
-                // remove wizard
-                PreferenceCategory prefCategoryWizard = (PreferenceCategory) findPreference("ais_dom_wizard");
-                preferenceMainScreen.removePreference(prefCategoryWizard);
+
                 // pref_ais_dom_list_gesture  abd remove select tts voice
                 preferenceMainScreen.removePreference(prefCategorySettings);
                 //
@@ -281,31 +275,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
                 preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
 
-                // scanner
-                PreferenceScreen prefScan = (PreferenceScreen) findPreference("button_scan_gate_id");
-                prefScan.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.ScannerActivity");
-                        startActivity(intent);
-                        return false;
-                    }
-                });
-
-                // connection history
-                PreferenceScreen preConHisto = (PreferenceScreen) findPreference("pref_ais_dom_list_history");
-                preConHisto.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.connhist.AisConnectionsHistoryActivity");
-                        startActivity(intent);
-                        return false;
-                    }
-                });
 
                 // pref_ais_dom_list_gesture
                 PreferenceScreen preGesture = (PreferenceScreen) findPreference("pref_ais_dom_list_gesture");
@@ -319,23 +288,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         return false;
                     }
                 });
-
-
-
-
-                PreferenceScreen prefWizard = (PreferenceScreen) findPreference("button_run_ais_dom_wizard");
-                prefWizard.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.setClassName(BuildConfig.APPLICATION_ID, "com.redbooth.wizard.MainWizardActivity");
-                        startActivity(intent);
-                        return false;
-                    }
-                });
-
             }
+        }
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            //super.onCreate(savedInstanceState);
         }
 
     }

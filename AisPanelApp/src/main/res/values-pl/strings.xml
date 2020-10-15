@@ -93,7 +93,6 @@
     <string name="title_activity_other_apps">INTEGRACJE</string>
     <string name="title_activity_browser">AI-Speaker</string>
 
-    <string name="title_ais_dom_wizard_section">KONFIGURATOR USTAWIEŃ</string>
     <string name="title_experimental_settings">EKSPERYMENTALNE</string>
     <string name="title_ais_dom_connection">POŁĄCZENIE Z BRAMKĄ</string>
     <string name="title_ais_dom_connections_history">HISTORIA POŁĄCZEŃ</string>
@@ -102,11 +101,13 @@
     <string name="key_setting_app_launchurl">setting_app_launchurl</string>
     <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
     <string name="default_setting_app_launchurl"></string>
-    <string name="title_setting_app_launchurl">Identyfikator lub URL</string>
+    <string name="title_setting_app_launchurl">Identyfikator lub URL bramki AIS dom</string>
     <string name="title_setting_app_launchurl_info_title">Skanowanie identyfikatora.</string>
     <string name="title_setting_app_launchurl_info_summary">Możesz wprowadzić identyfikator bramki skanując kod QR dostępny w aplikacji Asystent domowy za pomocą aparatu.</string>
     <string name="button_edit_gate_id">Edytuj</string>
-    <string name="button_scan_gate_id">Skanuj</string>
+    <string name="button_scan_gate_id">Skan</string>
+    <string name="button_nfc_gate_id">NFC</string>
+    <string name="button_wizard_gate_id">Kreator</string>
     <string name="title_recent_connections">Lista ostatnich połączeń</string>
     <string name="summary_recent_connections">możesz wybrać pozycję z listy by połączyć ponownie</string>
     <string name="title_setting_run_wizard_title">Uruchom kreator ustawień.</string>
