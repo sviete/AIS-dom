@@ -39,118 +39,132 @@
                 android:gestureStrokeType="multiple"
                 android:uncertainGestureColor="@color/color3" />
 
-        <Button
-            android:id="@+id/btnGoToSettings"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/ic_go_to_settings_bg"
-            android:contentDescription="@string/ais_dom_button_settings"
-            android:focusable="true"
-            android:nextFocusLeft="@+id/btnControlModeGesture"
-            android:nextFocusRight="@+id/switchControlModeConnection"
-            android:nextFocusUp="@+id/switchControlModeConnection"
-            android:nextFocusDown="@+id/btnControlModeGesture" />
+            <FrameLayout
+                android:id="@+id/exoviewGroup"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.google.android.exoplayer2.ui.PlayerView
+                    android:id="@+id/exoplayerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </com.google.android.exoplayer2.ui.PlayerView>
+            </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/btnControlModeConnection"
-            android:layout_width="76dp"
-            android:layout_height="76dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="40dp"
-            android:layout_marginBottom="-14dp"
-            android:background="?selectableItemBackgroundBorderless"
-            android:focusable="true"
-            android:gravity="center"
-            android:nextFocusLeft="@+id/ais_recognition_view"
-            android:nextFocusRight="@+id/btnGoToSettings"
-            android:nextFocusUp="@+id/btnGoToSettings"
-            android:nextFocusDown="@+id/ais_recognition_view"
-            android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/AisSystemBootomUI"
+            android:gravity="bottom">
 
-            <com.github.zagum.switchicon.SwitchIconView
-                android:id="@+id/switchControlModeConnection"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/ais_dom_button_connection"
-                android:nextFocusLeft="@+id/btnGoToSettings"
-                android:nextFocusRight="@+id/btnSpeak"
-                android:nextFocusUp="@+id/btnSpeak"
-                android:nextFocusDown="@+id/btnControlModeGesture"
-                android:padding="14dp"
-                app:si_animation_duration="500"
-                app:si_disabled_alpha=".3"
-                app:si_disabled_color="#b7b7b7"
-                app:si_enabled="true"
-                app:si_no_dash="true"
-                app:si_tint_color="#b7b7b7" />
-        </LinearLayout>
-
-        <ToggleButton
-            android:id="@+id/btnSpeak"
-            style="@style/toggleButton"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="-5dp"
-            android:background="@drawable/ic_floating_mic_button_toggle_bg"
-            android:contentDescription="@string/ais_dom_button_mic"
-            android:focusable="true"
-            android:nextFocusLeft="@+id/btnGoToSettings"
-            android:nextFocusRight="@+id/ais_recognition_view"
-            android:nextFocusUp="@+id/ais_recognition_view"
-            android:nextFocusDown="@+id/btnGoToSettings"
-            android:textOff=""
-            android:textOn="" />
-
-        <pl.sviete.dom.views.RecognitionProgressView
-            android:id="@+id/ais_recognition_view"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignStart="@+id/btnSpeak"
-            android:layout_marginStart="85dp"
-            android:layout_marginBottom="-14dp"
-            android:layout_gravity="center"
-            android:background="@drawable/ic_recognition_progress_view_bg"
-            android:focusable="true"
-            android:nextFocusLeft="@+id/btnSpeak"
-            android:nextFocusDown="@+id/btnSpeak"
-            android:nextFocusRight="@+id/btnControlModeGesture"
-            android:nextFocusUp="@+id/btnControlModeGesture"/>
+            <Button
+                android:id="@+id/btnGoToSettings"
+                android:layout_width="36dp"
+                android:layout_height="46dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/ic_go_to_settings_bg"
+                android:contentDescription="@string/ais_dom_button_settings"
+                android:focusable="true"
+                android:nextFocusLeft="@+id/btnControlModeGesture"
+                android:nextFocusRight="@+id/switchControlModeConnection"
+                android:nextFocusUp="@+id/switchControlModeConnection"
+                android:nextFocusDown="@+id/btnControlModeGesture" />
 
             <LinearLayout
-                android:id="@+id/btnControlModeGesture"
-                android:orientation="vertical"
-                android:layout_width="60dp"
-                android:layout_height="80dp"
+                android:id="@+id/btnControlModeConnection"
+                android:layout_width="76dp"
+                android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="0dp"
-                android:layout_marginBottom="-14dp"
+                android:layout_marginStart="40dp"
                 android:background="?selectableItemBackgroundBorderless"
-                android:gravity="center"
                 android:focusable="true"
-                android:nextFocusUp="@+id/btnGoToSettings"
-                android:nextFocusRight="@+id/btnGoToSettings"
+                android:gravity="center"
                 android:nextFocusLeft="@+id/ais_recognition_view"
-                android:nextFocusDown="@+id/ais_recognition_view">
+                android:nextFocusRight="@+id/btnGoToSettings"
+                android:nextFocusUp="@+id/btnGoToSettings"
+                android:nextFocusDown="@+id/ais_recognition_view"
+                android:orientation="vertical">
+
                 <com.github.zagum.switchicon.SwitchIconView
-                    android:id="@+id/switchControlModeGesture"
+                    android:id="@+id/switchControlModeConnection"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/ais_dom_button_gesture"
-                    android:padding="8dp"
+                    android:contentDescription="@string/ais_dom_button_connection"
+                    android:nextFocusLeft="@+id/btnGoToSettings"
+                    android:nextFocusRight="@+id/btnSpeak"
+                    android:nextFocusUp="@+id/btnSpeak"
+                    android:nextFocusDown="@+id/btnControlModeGesture"
+                    android:padding="14dp"
                     app:si_animation_duration="500"
-                    app:si_disabled_alpha=".7"
+                    app:si_disabled_alpha=".3"
                     app:si_disabled_color="#b7b7b7"
-                    app:si_enabled="false"
-                    app:si_no_dash="false"
-                    app:si_tint_color="#ff3c00"
-                    app:srcCompat="@drawable/ic_gestures_control_bg" />
+                    app:si_enabled="true"
+                    app:si_no_dash="true"
+                    app:si_tint_color="#b7b7b7" />
             </LinearLayout>
+
+            <ToggleButton
+                android:id="@+id/btnSpeak"
+                style="@style/toggleButton"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/ic_floating_mic_button_toggle_bg"
+                android:contentDescription="@string/ais_dom_button_mic"
+                android:focusable="true"
+                android:nextFocusLeft="@+id/btnGoToSettings"
+                android:nextFocusRight="@+id/ais_recognition_view"
+                android:nextFocusUp="@+id/ais_recognition_view"
+                android:nextFocusDown="@+id/btnGoToSettings"
+                android:textOff=""
+                android:textOn="" />
+
+            <pl.sviete.dom.views.RecognitionProgressView
+                android:id="@+id/ais_recognition_view"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignStart="@+id/btnSpeak"
+                android:layout_marginStart="85dp"
+                android:layout_marginBottom="-14dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_recognition_progress_view_bg"
+                android:focusable="true"
+                android:nextFocusLeft="@+id/btnSpeak"
+                android:nextFocusDown="@+id/btnSpeak"
+                android:nextFocusRight="@+id/btnControlModeGesture"
+                android:nextFocusUp="@+id/btnControlModeGesture"/>
+
+                <LinearLayout
+                    android:id="@+id/btnControlModeGesture"
+                    android:orientation="vertical"
+                    android:layout_width="60dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="0dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:gravity="center"
+                    android:focusable="true"
+                    android:nextFocusUp="@+id/btnGoToSettings"
+                    android:nextFocusRight="@+id/btnGoToSettings"
+                    android:nextFocusLeft="@+id/ais_recognition_view"
+                    android:nextFocusDown="@+id/ais_recognition_view">
+                    <com.github.zagum.switchicon.SwitchIconView
+                        android:id="@+id/switchControlModeGesture"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/ais_dom_button_gesture"
+                        android:padding="8dp"
+                        app:si_animation_duration="500"
+                        app:si_disabled_alpha=".7"
+                        app:si_disabled_color="#b7b7b7"
+                        app:si_enabled="false"
+                        app:si_no_dash="false"
+                        app:si_tint_color="#ff3c00"
+                        app:srcCompat="@drawable/ic_gestures_control_bg" />
+                </LinearLayout>
         </RelativeLayout>
+    </RelativeLayout>
 </merge>

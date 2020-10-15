@@ -9,21 +9,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.net.http.SslError;
-import android.nfc.NdefMessage;
-import android.nfc.NfcAdapter;
+import android.net.http.SslError;;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
@@ -35,19 +38,29 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.os.Bundle;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.github.zagum.switchicon.SwitchIconView;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static java.lang.Math.max;
 import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 
 
@@ -64,6 +77,25 @@ public class BrowserActivityNative extends BrowserActivity {
     private ValueCallback<Uri> mUploadMessage;
     private Uri mCapturedImageURI = null;
 
+    // ExoPllayer
+    private PlayerView exoPlayerView;
+    private ImageView exo_mute_icon;
+    private ImageView exo_fullscreen_icon;
+    private Boolean isConnected = false;
+    private Boolean isShowingError = false;
+    private AlertDialog alertDialog = null;
+    private Boolean isVideoFullScreen = false;
+    private int videoHeight = 0;
+    private int firstAuthTime = 0;
+    private String resourceURL = "";
+    private Boolean unlocked = false;
+    private SimpleExoPlayer exoPlayer = null;
+    private Boolean isExoFullScreen = false;
+    private int exoTop = 0; // These margins are from the DOM and scaled to screen
+    private int exoLeft = 0;
+    private int exoRight = 0;
+    private int exoBottom = 0;
+    private Boolean exoMute = true;
 
 
     /**
@@ -111,7 +143,26 @@ public class BrowserActivityNative extends BrowserActivity {
         AisCoreUtils.mWebView.setScrollContainer(true);
 
 
-        //
+        // exo view
+        exoPlayerView = findViewById(R.id.exoplayerView);
+        exo_mute_icon = findViewById(R.id.exo_mute_icon);
+        exo_fullscreen_icon = findViewById(R.id.exo_fullscreen_icon);
+        exoPlayerView.setVisibility(View.GONE);
+        exoPlayerView.setBackgroundColor(Color.BLACK);
+        exoPlayerView.setAlpha(1f);
+        exoPlayerView.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
+        exoPlayerView.setControllerHideOnTouch(true);
+        exoPlayerView.setControllerShowTimeoutMs(2000);
+        exo_fullscreen_icon.setOnClickListener(v -> {
+            isExoFullScreen = !isExoFullScreen;
+            exoResizeLayout();
+        });
+
+        exo_mute_icon.setOnClickListener(v -> {
+            isExoFullScreen = !isExoFullScreen;
+            exoToggleMute();
+        });
+
         Locale current_locale;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
             current_locale =  this.getApplicationContext().getResources().getConfiguration().getLocales().get(0);
@@ -345,6 +396,31 @@ public class BrowserActivityNative extends BrowserActivity {
             public void sayInFrame(String text) {
                 speakOutFromBrowser(text, "html");
             }
+
+            @JavascriptInterface
+            public void exoplayerPlayHls(String json) {
+                try {
+                    JSONObject obj = new JSONObject(json);
+                    exoPlayHls(obj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @JavascriptInterface
+            public void exoplayerStop() {
+                exoStopHls();
+            }
+
+            @JavascriptInterface
+            public void exoplayeResizeHls(String json) {
+                try {
+                    JSONObject obj = new JSONObject(json);
+                    exoResizeHls(obj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         AisCoreUtils.mWebView.addJavascriptInterface(new JavascriptHandler(), "JavascriptHandler");
@@ -569,6 +645,155 @@ public class BrowserActivityNative extends BrowserActivity {
         }
         // return to parent
         return super.dispatchKeyEvent(event);
+    }
+
+    // -----------------------------
+    // --- play video in WebView ---
+    // -----------------------------
+    private void exoPlayHls(JSONObject json) {
+        try {
+            Uri uri = Uri.parse(json.getString("url"));
+            exoMute = json.optBoolean("muted");
+            DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(
+                Util.getUserAgent(
+                        getApplicationContext(),
+                        getString(R.string.app_name)
+                )
+            );
+
+            HlsMediaSource hlsMediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+
+            DefaultLoadControl loadControl = new DefaultLoadControl.Builder().setBufferDurationsMs(
+                2500,
+                DefaultLoadControl.DEFAULT_MAX_BUFFER_MS,
+                2500,
+                2500
+        ).createDefaultLoadControl();
+
+        runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        exoPlayer = new SimpleExoPlayer.Builder(getApplicationContext()).setLoadControl(loadControl).build();
+                        exoPlayer.prepare(hlsMediaSource);
+                        exoPlayer.setPlayWhenReady(true);
+                        exoMute = !exoMute;
+                        exoToggleMute();
+                        exoPlayerView.setPlayer(exoPlayer);
+                        exoPlayerView.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+        });
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+    private void exoStopHls() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    exoPlayerView.setVisibility(View.GONE);
+                    exoPlayerView.setPlayer(null);
+                    exoPlayer.release();
+                    exoPlayer = null;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void  exoResizeHls(JSONObject json) {
+        try {
+            DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+            exoLeft = (int) (json.getInt("left") * displayMetrics.density);
+            exoTop = (int) (json.getInt("top") * displayMetrics.density);
+            exoRight = (int) (json.getInt("right") * displayMetrics.density);
+            exoBottom = (int) (json.getInt("bottom") * displayMetrics.density);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    exoResizeLayout();
+                }
+            });
+        } catch (Exception e) {
+             e.printStackTrace();
+        }
+    }
+
+    private void  exoToggleMute() {
+        exoMute = !exoMute;
+        if (exoMute) {
+            exoPlayer.setVolume(0f);
+            exo_mute_icon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                            getApplicationContext(),
+                            R.drawable.ic_baseline_volume_off_24
+                    )
+            );
+        } else {
+            exoPlayer.setVolume(1f);
+            exo_mute_icon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                            getApplicationContext(),
+                            R.drawable.ic_baseline_volume_up_24
+                    )
+            );
+        }
+    }
+
+    private void exoResizeLayout() {
+        FrameLayout.LayoutParams exoLayoutParams = (FrameLayout.LayoutParams) exoPlayerView.getLayoutParams();
+        if (isExoFullScreen) {
+            exoLayoutParams.setMargins(0, 0, 0, 0);
+            ViewGroup.LayoutParams layoutParams = exoPlayerView.getVideoSurfaceView().getLayoutParams();
+            layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
+            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            exoPlayerView.setLayoutParams(layoutParams);
+            exo_fullscreen_icon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                            getApplicationContext(),
+                            R.drawable.ic_baseline_fullscreen_exit_24
+                    )
+            );
+            hideSystemUI();
+        } else {
+            ViewGroup.LayoutParams layoutParams = exoPlayerView.getVideoSurfaceView().getLayoutParams();
+            layoutParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            exoPlayerView.setLayoutParams(layoutParams);
+
+            int screenWidth =  getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+            int screenHeight = getApplicationContext().getResources().getDisplayMetrics().heightPixels;
+            exoLayoutParams.setMargins(
+                    exoLeft,
+                    exoTop,
+                    max(screenWidth - exoRight, 0),
+                    max(screenHeight - exoBottom, 0)
+            );
+            exo_fullscreen_icon.setImageDrawable(
+                    ContextCompat.getDrawable(
+                            getApplicationContext(),
+                            R.drawable.ic_baseline_fullscreen_24
+                    )
+            );
+            showSystemUI();
+        }
+        exoPlayerView.requestLayout();
+    }
+
+    void hideSystemUI() {
+        View ui = findViewById(R.id.AisSystemBootomUI);
+        ui.setVisibility(View.GONE);
+    }
+
+    void showSystemUI() {
+        View ui = findViewById(R.id.AisSystemBootomUI);
+        ui.setVisibility(View.VISIBLE);
     }
 
 
