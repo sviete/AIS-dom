@@ -222,30 +222,31 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }
         });
 
-        // BTN MIC
-        btnSpeak.setOnLongClickListener(v -> {
-            if (mConfig.getHotWordMode()) {
-                // hot word off
-                speakOutFromBrowser("Nasłuchiwanie wyłączone.", "app");
-                mConfig.setHotWordMode(false);
-                btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
-
-            } else {
-                int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
-                if (permissionMic != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions
-                            (BrowserActivity.this,
-                                    new String[]{Manifest.permission.RECORD_AUDIO},
-                                    AisCoreUtils.REQUEST_HOT_WORD_MIC_PERMISSION);
-                } else {
-                    mConfig.setHotWordMode(true);
-                    speakOutFromBrowser("Nasłuchiwanie włączone.", "app");
-                    btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
-                }
-            }
-
-            return true;
-        });
+// BTN MIC - TODO long click to listen hot word
+// 15/10/2020 disabled to prevent the accidentally switch
+//        btnSpeak.setOnLongClickListener(v -> {
+//            if (mConfig.getHotWordMode()) {
+//                // hot word off
+//                speakOutFromBrowser("Nasłuchiwanie wyłączone.", "app");
+//                mConfig.setHotWordMode(false);
+//                btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg);
+//
+//            } else {
+//                int permissionMic = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+//                if (permissionMic != PackageManager.PERMISSION_GRANTED) {
+//                    ActivityCompat.requestPermissions
+//                            (BrowserActivity.this,
+//                                    new String[]{Manifest.permission.RECORD_AUDIO},
+//                                    AisCoreUtils.REQUEST_HOT_WORD_MIC_PERMISSION);
+//                } else {
+//                    mConfig.setHotWordMode(true);
+//                    speakOutFromBrowser("Nasłuchiwanie włączone.", "app");
+//                    btnSpeak.setBackgroundResource(R.drawable.ic_floating_mic_button_toggle_bg_recording);
+//                }
+//            }
+//
+//            return true;
+//        });
 
         //
         mConfig = new Config(this.getApplicationContext());
