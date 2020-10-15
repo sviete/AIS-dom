@@ -27,4 +27,9 @@
     <color name="avatar4">#65aa01</color>
     <color name="avatar5">#F50057</color>
     <color name="important_info">#f8e71d</color>
+
+    <color name="settingsGreen">#65aa01</color>
+    <color name="SettingsBlue">#303F9F</color>
+    <color name="SettingsRed">#d04400</color>
+    <color name="SettingsYellow">#FFD740</color>
 </resources>

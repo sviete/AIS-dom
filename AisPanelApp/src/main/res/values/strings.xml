@@ -122,8 +122,8 @@
     <string name="title_setting_app_launchurl_info_title">Scan your unique Gate ID.</string>
     <string name="title_setting_app_launchurl_info_summary">You can enter it via qr code scanner.</string>
     <string name="button_edit_gate_id">Edit</string>
-    <string name="button_scan_gate_id">Scan</string>
-    <string name="button_nfc_gate_id">NFC</string>
+    <string name="button_scan_gate_id">Barcode</string>
+    <string name="button_nfc_gate_id">Scan NFC</string>
     <string name="button_wizard_gate_id">Wizard</string>
 
     <string name="title_setting_run_wizard_title">Run configuration wizard.</string>
@@ -274,6 +274,7 @@
 
     <string name="ais_dom_app_name_server">AIS Server.</string>
     <string name="ais_dom_app_name_client">AIS Client.</string>
+    <string name="scan_nfc_gate_id_from_settings_info_text">Touch the gateway ID card to scan and connect</string>
 
 
     <string name="ais_dom_button_gesture">Gesture button</string>

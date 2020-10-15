@@ -3,6 +3,7 @@
     android:key="ais_dom_main_pref_screen">
     <PreferenceCategory
         android:key="ais_dom_con_url"
+        android:layout="@layout/preferences_category_red"
         android:title="@string/title_ais_dom_connection">
         <EditTextPreference
             android:dialogIcon="@drawable/ic_ais_logo_small_21_29"
@@ -16,6 +17,7 @@
     <PreferenceCategory
             android:title="@string/title_activity_settings"
             android:key="pref_category_app_settings"
+            android:layout="@layout/preferences_category_black"
             app:initialExpandedChildrenCount="2">
             <ListPreference
                 android:defaultValue="@string/default_setting_app_tts_voice"
@@ -34,6 +36,7 @@
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/title_activity_settings_smart_panel"
+        android:layout="@layout/preferences_category_black"
             android:key="pref_category_app_experimental"
             app:initialExpandedChildrenCount="0">
             <SwitchPreference
@@ -81,6 +84,7 @@
         </PreferenceCategory>
         <PreferenceCategory
             android:title="@string/pref_ais_about_app"
+            android:layout="@layout/preferences_category_black"
             android:key="pref_category_about">
             <PreferenceScreen android:key="pref_ais_dom_version"
                 android:summary="1.0"

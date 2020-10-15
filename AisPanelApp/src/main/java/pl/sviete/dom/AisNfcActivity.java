@@ -13,8 +13,6 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,7 +23,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 
 public class AisNfcActivity extends AppCompatActivity {
     private static final String TAG = "AisNfcActivity";
@@ -34,6 +31,8 @@ public class AisNfcActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
     }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +51,20 @@ public class AisNfcActivity extends AppCompatActivity {
         // NFC
         Intent intent = getIntent();
         String action = intent.getAction();
+        if (Intent.ACTION_MAIN.equals(action)){
+            String text = intent.getStringExtra("INFO_TEXT");
+            if (text != null && !text.isEmpty()) {
+                nfcText.setText(text);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                }, 5000);
+                return;
+            }
+        }
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {

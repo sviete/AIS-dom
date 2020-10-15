@@ -29,7 +29,8 @@ public class WelcomeActivity extends AppCompatActivity {
     }
     public void nfcGateOnButtonClick(View view) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.ScannerActivity");
+        intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.AisNfcActivity");
+        intent.putExtra("INFO_TEXT", getString(R.string.scan_nfc_gate_id_from_settings_info_text));
         startActivity(intent);
     }
     public void wizardGateOnButtonClick(View view) {
@@ -38,19 +39,6 @@ public class WelcomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-    // connection history
-        /*PreferenceScreen preConHisto = (PreferenceScreen) findPreference("pref_ais_dom_list_history");
-        preConHisto.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.connhist.AisConnectionsHistoryActivity");
-            startActivity(intent);
-            return false;
-        }
-    }); */
 
 
     @Override

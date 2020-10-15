@@ -88,7 +88,7 @@
     <string name="grant_permission">Udziel zgody</string>
     <string name="permission_description">AI-Speaker:API potrzebuje następujących uprawnień:\n</string>
 
-    <string name="title_activity_settings">USTAWIENIA APLIKACJA</string>
+    <string name="title_activity_settings">USTAWIENIA APLIKACJI</string>
     <string name="title_activity_settings_smart_panel">FUNKCJE EKSPERYMENTALNE</string>
     <string name="title_activity_other_apps">INTEGRACJE</string>
     <string name="title_activity_browser">AI-Speaker</string>
@@ -105,8 +105,8 @@
     <string name="title_setting_app_launchurl_info_title">Skanowanie identyfikatora.</string>
     <string name="title_setting_app_launchurl_info_summary">Możesz wprowadzić identyfikator bramki skanując kod QR dostępny w aplikacji Asystent domowy za pomocą aparatu.</string>
     <string name="button_edit_gate_id">Edytuj</string>
-    <string name="button_scan_gate_id">Skan</string>
-    <string name="button_nfc_gate_id">NFC</string>
+    <string name="button_scan_gate_id">Zdjęcie kodu</string>
+    <string name="button_nfc_gate_id">Skan NFC</string>
     <string name="button_wizard_gate_id">Kreator</string>
     <string name="title_recent_connections">Lista ostatnich połączeń</string>
     <string name="summary_recent_connections">możesz wybrać pozycję z listy by połączyć ponownie</string>
@@ -272,6 +272,7 @@
 
     <string name="ais_dom_app_name_server">Serwer AIS</string>
     <string name="ais_dom_app_name_client">Klient AIS</string>
+    <string name="scan_nfc_gate_id_from_settings_info_text">Dotknij telefonem kartę z identyfikatorem bramki żeby połączyć</string>
 
 
     <string name="ais_dom_button_gesture">Sterowanie gestami</string>

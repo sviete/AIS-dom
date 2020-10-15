@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="fill_parent"
-    android:layout_height="70dp"
+    android:layout_height="90dp"
     android:padding="1dp"
     android:weightSum="3">
 
@@ -13,6 +13,7 @@
         android:layout_height="fill_parent"
         android:drawableTop="@drawable/ic_run_wizard"
         android:text="@string/button_wizard_gate_id"
+        android:textColor="@color/SettingsRed"
         android:onClick="wizardGateOnButtonClick"
         android:layout_weight="1"/>
     <Button
@@ -22,6 +23,7 @@
         android:layout_height="fill_parent"
         android:drawableTop="@drawable/ic_nfc_gate_id_icon"
         android:text="@string/button_nfc_gate_id"
+        android:textColor="@color/SettingsYellow"
         android:onClick="nfcGateOnButtonClick"
         android:layout_weight="1"/>
     <Button
@@ -31,6 +33,7 @@
         android:layout_height="fill_parent"
         android:drawableTop="@drawable/ic_scan_gate_id_icon"
         android:text="@string/button_scan_gate_id"
+        android:textColor="@color/settingsGreen"
         android:onClick="scanGateOnButtonClick"
         android:layout_weight="1"/>
 
