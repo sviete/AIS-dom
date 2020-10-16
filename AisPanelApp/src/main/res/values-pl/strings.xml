@@ -273,6 +273,8 @@
     <string name="ais_dom_app_name_server">Serwer AIS</string>
     <string name="ais_dom_app_name_client">Klient AIS</string>
     <string name="scan_nfc_gate_id_from_settings_info_text">Dotknij telefonem kartę z identyfikatorem bramki żeby połączyć</string>
+    <string name="scan_nfc_connect_with_gate_info_text_prefix">OK, łączę z bramką</string>
+
 
 
     <string name="ais_dom_button_gesture">Sterowanie gestami</string>

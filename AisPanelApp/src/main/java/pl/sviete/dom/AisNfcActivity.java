@@ -136,16 +136,29 @@ public class AisNfcActivity extends AppCompatActivity {
                 try {
                     // Get the Text
                     text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
-                    nfcText.setText(text);
-                    DomWebInterface.publishMessage(text, "speech_command", getApplicationContext());
-
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    }, 3000);
+                    // connect with gate
+                    if (text.startsWith("dom-")){
+                        nfcText.setText(getString(R.string.scan_nfc_connect_with_gate_info_text_prefix) + " " + text);
+                        final Config config = new Config(this.getApplicationContext());
+                        config.setAppLaunchUrl(text);
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
+                            }
+                        }, 3000);
+                    } else {
+                        nfcText.setText(text);
+                        DomWebInterface.publishMessage(text, "speech_command", getApplicationContext());
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        }, 3000);
+                    }
 
                 } catch (Exception e) {
                     Log.e("Exception", e.toString());

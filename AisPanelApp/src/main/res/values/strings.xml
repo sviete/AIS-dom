@@ -275,6 +275,7 @@
     <string name="ais_dom_app_name_server">AIS Server.</string>
     <string name="ais_dom_app_name_client">AIS Client.</string>
     <string name="scan_nfc_gate_id_from_settings_info_text">Touch the gateway ID card to scan and connect</string>
+    <string name="scan_nfc_connect_with_gate_info_text_prefix">OK, connecting with gate</string>
 
 
     <string name="ais_dom_button_gesture">Gesture button</string>
