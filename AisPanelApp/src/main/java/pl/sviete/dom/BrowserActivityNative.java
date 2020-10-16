@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
@@ -551,6 +552,7 @@ public class BrowserActivityNative extends BrowserActivity {
         // display connection icon
         if (syncIcon == true){
             mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+            mButtonModeConnection.animate().rotationBy(360).setDuration(4000).setInterpolator(new AccelerateDecelerateInterpolator());
         } else {
             mButtonModeConnection.setBackgroundResource(R.drawable.ic_empty_icon);
         }
