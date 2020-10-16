@@ -58,10 +58,10 @@
 
             <Button
                 android:id="@+id/btnGoToSettings"
-                android:layout_width="36dp"
+                android:layout_width="46dp"
                 android:layout_height="46dp"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="12dp"
                 android:background="@drawable/ic_go_to_settings_bg"
                 android:contentDescription="@string/ais_dom_button_settings"
                 android:focusable="true"
@@ -75,7 +75,7 @@
                 android:layout_width="76dp"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="40dp"
+                android:layout_marginStart="52dp"
                 android:background="?selectableItemBackgroundBorderless"
                 android:focusable="true"
                 android:gravity="center"

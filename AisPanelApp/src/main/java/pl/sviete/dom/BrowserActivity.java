@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.ScaleAnimation;
@@ -168,7 +169,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 if (appLaunchUrl.startsWith("dom-")) {
                     // sprawdzam połączenie
                     speakOutFromBrowser("Sprawdzam połączenie.", "app");
-                    mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                    // mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                    mButtonModeConnection.animate().rotationBy(360).setDuration(3000).setInterpolator(new AccelerateDecelerateInterpolator());
                     appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
                 } else {
                     speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.", "app");
@@ -342,7 +344,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
                     if (appLaunchUrl.startsWith("dom-")) {
                        // sprawdzam połączenie
-                       mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                       //mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+                       mButtonModeConnection.animate().rotationBy(360).setDuration(3000).setInterpolator(new AccelerateDecelerateInterpolator());
                        appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
                     }
                 }

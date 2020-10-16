@@ -550,15 +550,17 @@ public class BrowserActivityNative extends BrowserActivity {
         SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
         View mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
         // display connection icon
-        if (syncIcon == true){
-            mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-            mButtonModeConnection.animate().rotationBy(360).setDuration(4000).setInterpolator(new AccelerateDecelerateInterpolator());
-        } else {
-            mButtonModeConnection.setBackgroundResource(R.drawable.ic_empty_icon);
-        }
+//        if (syncIcon == true){
+//            mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
+//
+//        } else {
+//            mButtonModeConnection.setBackgroundResource(R.drawable.ic_empty_icon);
+//        }
         if (url.contains("paczka.pro")) {
+            mButtonModeConnection.animate().rotationBy(360).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
             mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_cloud_connection_control_bg);
         } else {
+            mButtonModeConnection.animate().rotationBy(360).setDuration(4000).setInterpolator(new AccelerateDecelerateInterpolator());
             mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_local_connection_control_bg);
         }
     }
