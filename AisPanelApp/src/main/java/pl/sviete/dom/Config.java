@@ -19,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import ai.picovoice.hotword.PorcupineService;
-import pl.sviete.dom.connhist.AisConnectionHistJSON;
 
 public class Config {
     public final Context myContext;
@@ -45,6 +44,7 @@ public class Config {
     }
 
     // GET the answer from server
+    // TODO - switch to valley
     public String getResponseFromServer(String url, int timeout) {
         HttpURLConnection c = null;
         try {
@@ -113,16 +113,12 @@ public class Config {
     public String getLocalIpFromCloud(String gateId) {
         // ask cloud for local IP
         // https://powiedz.co/ords/dom/dom/gate_ip_full_info?id=dom-aba
-        AisCoreUtils.AIS_GATE_USER = "";
-        AisCoreUtils.AIS_GATE_DESC = "";
         String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_full_info?id=" + gateId;
         String severAnswer = getResponseFromServer(url, 10000);
         if (!severAnswer.equals("")) {
             try {
                 JSONObject jsonAnswer = new JSONObject(severAnswer);
                 String localGateIP = jsonAnswer.getString("ip");
-                AisCoreUtils.AIS_GATE_USER = jsonAnswer.getString("user");
-                AisCoreUtils.AIS_GATE_DESC = jsonAnswer.getString("desc");
                 if (!gateId.equals("ais-dom")) {
                     return localGateIP;
                 }
@@ -142,41 +138,34 @@ public class Config {
         protected String doInBackground(String[] params) {
             String gateID = params[0];
             String localIpHist = params[1];
-            String userHist = params[2];
-            String descHist = params[3];
-            String goToHaView = params[4];
-            String discoTimeoutInSec = params[5];
+            String goToHaView = params[2];
+            String discoTimeoutInSec = params[3];
             String urlToGo = "";
 
 
             // Check if the local IP from history is still OK
-
-            if (!localIpHist.equals("") && canUseLocalConnection(localIpHist, gateID, Integer.valueOf(discoTimeoutInSec))){
-                    urlToGo = "http://" + localIpHist + ":8180";
-                    saveConnToHistory(localIpHist, urlToGo, gateID, userHist, descHist);
-                    return urlToGo  + goToHaView;
-            } else {
+            if (localIpHist.equals("") || !canUseLocalConnection(localIpHist, gateID, Integer.valueOf(discoTimeoutInSec))) {
                     // Get the new local IP from the Cloud
                     String localIpFromCloud = getLocalIpFromCloud(gateID);
                     if (!localIpFromCloud.equals("")) {
                         // check if new local IP from cloud is now OK
                         if (canUseLocalConnection(localIpFromCloud, gateID, Integer.valueOf(discoTimeoutInSec))){
                             urlToGo = "http://" + localIpFromCloud + ":8180";
-                            saveConnToHistory(localIpFromCloud, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
-                            return urlToGo + goToHaView;
                         } else {
                             // try the tunnel connection
                             urlToGo = "https://" + gateID + ".paczka.pro";
-                            saveConnToHistory(localIpFromCloud, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
-                            return urlToGo + goToHaView;
                         }
+                        setAppLocalGateIp(localIpFromCloud);
                     } else {
                         // try tunnel
                         urlToGo = "https://" + gateID + ".paczka.pro";
-                        saveConnToHistory(localIpHist, urlToGo, gateID, AisCoreUtils.AIS_GATE_USER, AisCoreUtils.AIS_GATE_DESC);
-                        return urlToGo + goToHaView;
+                        setAppLocalGateIp(localIpHist);
                     }
+            } else {
+                urlToGo = "http://" + localIpHist + ":8180";
+                setAppLocalGateIp(localIpHist);
             }
+            return urlToGo  + goToHaView;
         }
 
         @Override
@@ -195,19 +184,6 @@ public class Config {
     }
 
 
-    public void saveConnToHistory(String localIP, String url, String gate, String user, String desc) {
-        try {
-            JSONObject mNewConn = new JSONObject();
-            mNewConn.put("gate", gate);
-            mNewConn.put("url", url);
-            mNewConn.put("ip", localIP);
-            mNewConn.put("user", user);
-            mNewConn.put("desc", desc);
-            AisConnectionHistJSON.addConnection(myContext, mNewConn.toString());
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-        }
-    }
 
     public String getAppLaunchUrl(int disco, String goToHaView) {
         String url;
@@ -220,11 +196,11 @@ public class Config {
 
         if (url.startsWith("dom-") && disco > 0) {
             String gateID = url;
-            String localIpHist = AisConnectionHistJSON.getLocalIpForGate(myContext, gateID);
-            String userHist = AisConnectionHistJSON.getUserForGate(myContext, gateID);
-            String descHist = AisConnectionHistJSON.getDescForGate(myContext, gateID);
+
+            String lastLocalGateIp = getAppLocalGateIp();
+
             checkConnectionUrlJob checkConnectionUrlJob = new checkConnectionUrlJob();
-            checkConnectionUrlJob.execute(gateID, localIpHist, userHist, descHist, goToHaView, String.valueOf(disco));
+            checkConnectionUrlJob.execute(gateID, lastLocalGateIp, goToHaView, String.valueOf(disco));
         } else {
             // save it for interface communication with gate
             if (url.startsWith("dom-")) {
@@ -358,6 +334,18 @@ public class Config {
     public void setAppTtsVoice(String voice) {
         SharedPreferences.Editor ed = sharedPreferences.edit();
         ed.putString(myContext.getString(R.string.key_setting_app_tts_voice), voice);
+        ed.apply();
+    }
+
+    // local gate ip
+    public String getAppLocalGateIp() {
+        return getStringPref(R.string.key_setting_local_gate_ip,
+                R.string.default_setting_local_gate_ip);
+    }
+
+    public void setAppLocalGateIp(String gateIp) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putString(myContext.getString(R.string.key_setting_local_gate_ip), gateIp);
         ed.apply();
     }
 

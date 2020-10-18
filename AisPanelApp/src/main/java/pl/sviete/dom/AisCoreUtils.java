@@ -27,8 +27,6 @@ public class AisCoreUtils {
 
     // AIS_GATE ID
     public static String AIS_GATE_ID = null;
-    public static String AIS_GATE_USER = "";
-    public static String AIS_GATE_DESC = "";
     public static String AIS_DEVICE_TYPE = "MOB";
 
     // STT
@@ -46,10 +44,10 @@ public class AisCoreUtils {
     public static final String TTS_TEXT = "TTS_TEXT";
 
     // USB
-    private static String TAG = "AisCoreUtils";
+    private static final String TAG = "AisCoreUtils";
     private static String AIS_DOM_URL = "http://127.0.0.1:8180";
-    private static String AIS_DOM_CLOUD_WS_URL = "https://powiedz.co/ords/dom/dom/";
-    private static String AIS_DOM_CLOUD_WS_URL_HTTP = "http://powiedz.co/ords/dom/dom/";
+    private static final String AIS_DOM_CLOUD_WS_URL = "https://powiedz.co/ords/dom/dom/";
+    private static final String AIS_DOM_CLOUD_WS_URL_HTTP = "http://powiedz.co/ords/dom/dom/";
 
     // HOT WORD
     public static PorcupineManager mPorcupineManager = null;
@@ -95,27 +93,16 @@ public class AisCoreUtils {
     public static SpeechRecognizer mSpeech = null;
     public static Intent mRecognizerIntent = null;
     public static boolean mSpeechIsRecording = false;
-    //
-    // Control mode
-    public static String mOnDisplay = "ON_DISPLAY";
-    public static String mByGesture = "BY_GESTURE";
 
 
     // Audio source
     public static String mAudioSourceSpotify = "Spotify";
-    public static String mAudioSourceRadio = "Radio";
-    public static String mAudioSourcePodcast = "Podcast";
-    public static String mAudioSourceMusic = "Music";
-    public static String mAudioSourceAudioBook = "AudioBook";
-    public static String mAudioSourceNews = "News";
-    public static String mAudioSourceLocal = "Local";
     public static String mAudioSourceAndroid = "Android";
 
     // Notification
     public static int AIS_DOM_NOTIFICATION_ID = 1234;
     public static final String AIS_DOM_CHANNEL_ID = "AisServiceChannelId";
     public static String AIS_DOM_LAST_TTS = "";
-    public static String AIS_DOM_LAST_TTS_SOURCE = "";
 
     public static int AIS_LOCATION_NOTIFICATION_ID = 5678;
     public static final String AIS_LOCATION_CHANNEL_ID = "AisServiceLocationChannelId";

@@ -375,4 +375,7 @@
     <string name="kilometers">&#160;km</string>
     <string name="report_button">SEND STATUS</string>
 
+    <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>g>
+    <string name="default_setting_local_gate_ip">ais-dom.local</string>
+
 </resources>
