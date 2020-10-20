@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.net.http.SslError;;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
@@ -549,36 +550,27 @@ public class BrowserActivityNative extends BrowserActivity {
         }
         SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
         View mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
-        // display connection icon
-//        if (syncIcon == true){
-//            mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-//
-//        } else {
-//            mButtonModeConnection.setBackgroundResource(R.drawable.ic_empty_icon);
-//        }
         if (url.contains("paczka.pro")) {
-            mButtonModeConnection.animate().rotationBy(360).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
             mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_cloud_connection_control_bg);
+            mButtonModeConnection.setRotation(0);
+            mButtonModeConnection.animate().rotationBy(360).setDuration(1000).setInterpolator(new AccelerateDecelerateInterpolator());
         } else {
-            mButtonModeConnection.animate().rotationBy(360).setDuration(4000).setInterpolator(new AccelerateDecelerateInterpolator());
             mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_local_connection_control_bg);
+            mButtonModeConnection.setRotation(0);
+            mButtonModeConnection.animate().rotationBy(360).setDuration(4000).setInterpolator(new AccelerateDecelerateInterpolator());
         }
     }
 
 
     @Override
     protected void evaluateJavascript(final String js) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            AisCoreUtils.mWebView.evaluateJavascript(js, s -> Log.d(TAG, "evaluateJavascript callback: " + s));
-        }
+        AisCoreUtils.mWebView.evaluateJavascript(js, s -> Log.d(TAG, "evaluateJavascript callback: " + s));
     }
 
     @Override
     protected void clearCache() {
         AisCoreUtils.mWebView.clearCache(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().removeAllCookies(null);
-        }
+        CookieManager.getInstance().removeAllCookies(null);
     }
 
     @Override

@@ -4,11 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 import android.webkit.WebStorage;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,101 +96,129 @@ public class Config {
         return "";
     }
 
-
-
-    public boolean canUseLocalConnection(String localIP, String gateId, int tmeoutSec) {
-        // check local IP
-        int tmeoutMiliSec = tmeoutSec * 1000;
-        String url = "http://" + localIP + ":8122";
-        String severAnswer = getResponseFromServer(url, tmeoutMiliSec);
-        if (!severAnswer.equals("")) {
-            try {
-                JSONObject jsonAnswer = new JSONObject(severAnswer);
-                String localGateID = jsonAnswer.getString("gate_id");
-                if (gateId.equals(localGateID)) {
-                    return true;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return false;
+    private void redirectToNewGateUrl(String localUrlToGo){
+        Intent intent = new Intent(BrowserActivity.BROADCAST_ACTION_LOAD_URL);
+        intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, localUrlToGo);
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(myContext);
+        bm.sendBroadcast(intent);
+        AisCoreUtils.setAisDomUrl(localUrlToGo);
     }
 
-    public String getLocalIpFromCloud(String gateId) {
-        // ask cloud for local IP
+    private void getTheLocalIpFromCloud(String gateID, String goToHaView) {
+        // 1. Get the new local IP from the Cloud
         // https://powiedz.co/ords/dom/dom/gate_ip_full_info?id=dom-aba
-        String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_full_info?id=" + gateId;
-        String severAnswer = getResponseFromServer(url, 10000);
-        if (!severAnswer.equals("")) {
-            try {
-                JSONObject jsonAnswer = new JSONObject(severAnswer);
-                String localGateIP = jsonAnswer.getString("ip");
-                if (!gateId.equals("ais-dom")) {
-                    return localGateIP;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return "";
-    }
-
-
-
-    private class checkConnectionUrlJob extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String[] params) {
-            String gateID = params[0];
-            String localIpHist = params[1];
-            String goToHaView = params[2];
-            String discoTimeoutInSec = params[3];
-            String urlToGo = "";
-
-
-            // Check if the local IP from history is still OK
-            if (localIpHist.equals("") || !canUseLocalConnection(localIpHist, gateID, Integer.valueOf(discoTimeoutInSec))) {
-                    // Get the new local IP from the Cloud
-                    String localIpFromCloud = getLocalIpFromCloud(gateID);
-                    if (!localIpFromCloud.equals("")) {
-                        // check if new local IP from cloud is now OK
-                        if (canUseLocalConnection(localIpFromCloud, gateID, Integer.valueOf(discoTimeoutInSec))){
-                            urlToGo = "http://" + localIpFromCloud + ":8180";
-                        } else {
-                            // try the tunnel connection
-                            urlToGo = "https://" + gateID + ".paczka.pro";
+        String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_full_info?id=" + gateID;
+        final String[] localGateIpFromCloud = {"ais-dom"};
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            localGateIpFromCloud[0] = response.getString("ip");
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        setAppLocalGateIp(localIpFromCloud);
-                    } else {
-                        // try tunnel
-                        urlToGo = "https://" + gateID + ".paczka.pro";
-                        setAppLocalGateIp(localIpHist);
-                    }
-            } else {
-                urlToGo = "http://" + localIpHist + ":8180";
-                setAppLocalGateIp(localIpHist);
-            }
-            return urlToGo  + goToHaView;
-        }
 
-        @Override
-        protected void onPostExecute(String message) {
-            //process message with url to go
-            if (!message.equals("")){
-                // call the browser url change
-                Log.w(TAG, "message " + message);
-                Intent intent = new Intent(BrowserActivity.BROADCAST_ACTION_LOAD_URL);
-                intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, message);
-                LocalBroadcastManager bm = LocalBroadcastManager.getInstance(myContext);
-                bm.sendBroadcast(intent);
-                AisCoreUtils.setAisDomUrl(message);
-            }
-        }
+                        if (!localGateIpFromCloud[0].equals("ais-dom")) {
+                            // 2. check if new local IP from cloud is now OK
+                            String localUrl = "http://" + localGateIpFromCloud[0]+ ":8122";
+                            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                                    (Request.Method.GET, localUrl, null, new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            String gateIdInNetwork = "";
+                                            try {
+                                                gateIdInNetwork = response.getString("gate_id");
+                                                if (gateID.equals(gateIdInNetwork)) {
+                                                    // The new local gate is OK to connect - do this connection locally
+                                                    String localUrlToGo = "http://" + localGateIpFromCloud[0] + ":8180" + goToHaView;
+                                                    // SUCCESS
+                                                    setAppLocalGateIp(localGateIpFromCloud[0]);
+                                                    redirectToNewGateUrl(localUrlToGo);
+                                                    return;
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            // this is not our gate - we should try the tunnel
+                                            // PLAN D
+                                            String urlToGo = "https://" + gateID + ".paczka.pro";
+                                            redirectToNewGateUrl(urlToGo);
+                                        }
+                                    }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.e(TAG, error.toString());
+                                            // no connection with gate -  try tunnel
+                                            // PLAN C
+                                            String urlToGo = "https://" + gateID + ".paczka.pro";
+                                            redirectToNewGateUrl(urlToGo);
+                                        }
+                                    });
+
+                            RequestQueue requestQueue = Volley.newRequestQueue(myContext);
+                            requestQueue.add(jsonObjectRequest);
+
+                        } else {
+                            // try tunnel
+                            // PLAN C
+                            String urlToGo = "https://" + gateID + ".paczka.pro";
+                            redirectToNewGateUrl(urlToGo);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, error.toString());
+                        // try tunnel
+                        // PLAN C
+                        String urlToGo = "https://" + gateID + ".paczka.pro";
+                        redirectToNewGateUrl(urlToGo);
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(myContext);
+        requestQueue.add(jsonObjectRequest);
     }
 
+    private void checkTheConnectionWithGate(String gateID, String localIpHist, String goToHaView) {
+        // Check if the local IP from history is still OK
+        String localUrl = "http://" + localIpHist + ":8122";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, localUrl, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String gateIdInNetwork = "";
+                        try {
+                            gateIdInNetwork = response.getString("gate_id");
+                            if (gateID.equals(gateIdInNetwork)) {
+                                // The local gate is OK to connect - do this connection locally
+                                String localUrlToGo = "http://" + localIpHist + ":8180" + goToHaView;
+                                // SUCCESS
+                                setAppLocalGateIp(localIpHist);
+                                redirectToNewGateUrl(localUrlToGo);
+                                return;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        // this is not our gate - we should try to ask cloud about new local ip
+                        // PLAN B
+                        getTheLocalIpFromCloud(gateID, goToHaView);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, error.toString());
+                        // no connection with gate - we should try to ask cloud about new local ip
+                        // PLAN B
+                        getTheLocalIpFromCloud(gateID, goToHaView);
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(myContext);
+        requestQueue.add(jsonObjectRequest);
+    }
 
 
     public String getAppLaunchUrl(int disco, String goToHaView) {
@@ -196,11 +232,8 @@ public class Config {
 
         if (url.startsWith("dom-") && disco > 0) {
             String gateID = url;
-
             String lastLocalGateIp = getAppLocalGateIp();
-
-            checkConnectionUrlJob checkConnectionUrlJob = new checkConnectionUrlJob();
-            checkConnectionUrlJob.execute(gateID, lastLocalGateIp, goToHaView, String.valueOf(disco));
+            checkTheConnectionWithGate(gateID, lastLocalGateIp, goToHaView);
         } else {
             // save it for interface communication with gate
             if (url.startsWith("dom-")) {

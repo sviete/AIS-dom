@@ -169,8 +169,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                 if (appLaunchUrl.startsWith("dom-")) {
                     // sprawdzam połączenie
                     speakOutFromBrowser("Sprawdzam połączenie.", "app");
-                    // mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                    mButtonModeConnection.animate().rotationBy(360).setDuration(3000).setInterpolator(new AccelerateDecelerateInterpolator());
+                    SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
+                    mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_cloud_connection_control_bg);
+                    mButtonModeConnection.setRotation(0);
+                    mSwitchIconModeConnection.animate().rotationBy(360).setDuration(3000).setInterpolator(new AccelerateDecelerateInterpolator());
                     appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
                 } else {
                     speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.", "app");
@@ -344,9 +346,11 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
                     if (appLaunchUrl.startsWith("dom-")) {
                        // sprawdzam połączenie
-                       //mButtonModeConnection.setBackgroundResource(R.drawable.ic_connection_sync_icon);
-                       mButtonModeConnection.animate().rotationBy(360).setDuration(3000).setInterpolator(new AccelerateDecelerateInterpolator());
-                       appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
+                        SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
+                        mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_cloud_connection_control_bg);
+                        mButtonModeConnection.setRotation(0);
+                        mSwitchIconModeConnection.animate().rotationBy(360).setDuration(3000).setInterpolator(new AccelerateDecelerateInterpolator());
+                        appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
                     }
                 }
             }
