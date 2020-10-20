@@ -96,7 +96,13 @@ public class Config {
         return "";
     }
 
-    private void redirectToNewGateUrl(String localUrlToGo){
+    private void redirectToNewGateUrl(String localUrlToGo, Boolean force){
+        if (!force){
+            // check if the url was changed
+            if (AisCoreUtils.mWebView.getUrl().startsWith(localUrlToGo)){
+                return;
+            }
+        }
         Intent intent = new Intent(BrowserActivity.BROADCAST_ACTION_LOAD_URL);
         intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, localUrlToGo);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(myContext);
@@ -104,7 +110,7 @@ public class Config {
         AisCoreUtils.setAisDomUrl(localUrlToGo);
     }
 
-    private void getTheLocalIpFromCloud(String gateID, String goToHaView) {
+    private void getTheLocalIpFromCloud(String gateID, String goToHaView, Boolean forceRefreshWeb) {
         // 1. Get the new local IP from the Cloud
         // https://powiedz.co/ords/dom/dom/gate_ip_full_info?id=dom-aba
         String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_full_info?id=" + gateID;
@@ -134,7 +140,7 @@ public class Config {
                                                     String localUrlToGo = "http://" + localGateIpFromCloud[0] + ":8180" + goToHaView;
                                                     // SUCCESS
                                                     setAppLocalGateIp(localGateIpFromCloud[0]);
-                                                    redirectToNewGateUrl(localUrlToGo);
+                                                    redirectToNewGateUrl(localUrlToGo, forceRefreshWeb);
                                                     return;
                                                 }
                                             } catch (JSONException e) {
@@ -143,7 +149,7 @@ public class Config {
                                             // this is not our gate - we should try the tunnel
                                             // PLAN D
                                             String urlToGo = "https://" + gateID + ".paczka.pro";
-                                            redirectToNewGateUrl(urlToGo);
+                                            redirectToNewGateUrl(urlToGo, forceRefreshWeb);
                                         }
                                     }, new Response.ErrorListener() {
                                         @Override
@@ -152,7 +158,7 @@ public class Config {
                                             // no connection with gate -  try tunnel
                                             // PLAN C
                                             String urlToGo = "https://" + gateID + ".paczka.pro";
-                                            redirectToNewGateUrl(urlToGo);
+                                            redirectToNewGateUrl(urlToGo, forceRefreshWeb);
                                         }
                                     });
 
@@ -163,7 +169,7 @@ public class Config {
                             // try tunnel
                             // PLAN C
                             String urlToGo = "https://" + gateID + ".paczka.pro";
-                            redirectToNewGateUrl(urlToGo);
+                            redirectToNewGateUrl(urlToGo, forceRefreshWeb);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -173,7 +179,7 @@ public class Config {
                         // try tunnel
                         // PLAN C
                         String urlToGo = "https://" + gateID + ".paczka.pro";
-                        redirectToNewGateUrl(urlToGo);
+                        redirectToNewGateUrl(urlToGo, forceRefreshWeb);
                     }
                 });
 
@@ -181,7 +187,7 @@ public class Config {
         requestQueue.add(jsonObjectRequest);
     }
 
-    private void checkTheConnectionWithGate(String gateID, String localIpHist, String goToHaView) {
+    private void checkTheConnectionWithGate(String gateID, String localIpHist, String goToHaView, Boolean forceRefreshWeb) {
         // Check if the local IP from history is still OK
         String localUrl = "http://" + localIpHist + ":8122";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -196,7 +202,7 @@ public class Config {
                                 String localUrlToGo = "http://" + localIpHist + ":8180" + goToHaView;
                                 // SUCCESS
                                 setAppLocalGateIp(localIpHist);
-                                redirectToNewGateUrl(localUrlToGo);
+                                redirectToNewGateUrl(localUrlToGo, forceRefreshWeb);
                                 return;
                             }
                         } catch (Exception e) {
@@ -204,7 +210,7 @@ public class Config {
                         }
                         // this is not our gate - we should try to ask cloud about new local ip
                         // PLAN B
-                        getTheLocalIpFromCloud(gateID, goToHaView);
+                        getTheLocalIpFromCloud(gateID, goToHaView, forceRefreshWeb);
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -212,7 +218,7 @@ public class Config {
                         Log.e(TAG, error.toString());
                         // no connection with gate - we should try to ask cloud about new local ip
                         // PLAN B
-                        getTheLocalIpFromCloud(gateID, goToHaView);
+                        getTheLocalIpFromCloud(gateID, goToHaView, forceRefreshWeb);
                     }
                 });
 
@@ -221,7 +227,7 @@ public class Config {
     }
 
 
-    public String getAppLaunchUrl(int disco, String goToHaView) {
+    public String getAppLaunchUrl(boolean disco, boolean force, String goToHaView) {
         String url;
 
         if (AisCoreUtils.onBox()){
@@ -230,10 +236,10 @@ public class Config {
 
         url = getStringPref(R.string.key_setting_app_launchurl, R.string.default_setting_app_launchurl);
 
-        if (url.startsWith("dom-") && disco > 0) {
+        if (url.startsWith("dom-") && disco) {
             String gateID = url;
             String lastLocalGateIp = getAppLocalGateIp();
-            checkTheConnectionWithGate(gateID, lastLocalGateIp, goToHaView);
+            checkTheConnectionWithGate(gateID, lastLocalGateIp, goToHaView, force);
         } else {
             // save it for interface communication with gate
             if (url.startsWith("dom-")) {

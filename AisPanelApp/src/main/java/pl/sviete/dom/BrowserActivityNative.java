@@ -510,7 +510,7 @@ public class BrowserActivityNative extends BrowserActivity {
                 goToViewFromIntent = intent.getStringExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA);
                 if (goToViewFromIntent != "") {
                     // get app url no discovery...
-                    appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
+                    appLaunchUrl = mConfig.getAppLaunchUrl(false, false, "");
                     if (appLaunchUrl.startsWith("dom-")) {
                         // check if wifi connection
                         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -518,7 +518,7 @@ public class BrowserActivityNative extends BrowserActivity {
                         if (null != activeNetwork) {
                             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                                 // quick check if we can connect with gate
-                                appLaunchUrl = mConfig.getAppLaunchUrl(1, goToViewFromIntent);
+                                appLaunchUrl = mConfig.getAppLaunchUrl(true, false, goToViewFromIntent);
                                 return;
                             }
                         }

@@ -165,7 +165,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             mButtonModeConnection.setVisibility(View.GONE);
         } else {
             mButtonModeConnection.setOnLongClickListener(v -> {
-                appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
+                appLaunchUrl = mConfig.getAppLaunchUrl(false, false, "");
                 if (appLaunchUrl.startsWith("dom-")) {
                     // sprawdzam połączenie
                     speakOutFromBrowser("Sprawdzam połączenie.", "app");
@@ -173,7 +173,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                     mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_cloud_connection_control_bg);
                     mButtonModeConnection.setRotation(0);
                     mSwitchIconModeConnection.animate().rotationBy(360).setDuration(3000).setInterpolator(new AccelerateDecelerateInterpolator());
-                    appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
+                    appLaunchUrl = mConfig.getAppLaunchUrl(true, true, "");
                 } else {
                     speakOutFromBrowser("Podaj w konfiguracji identyfikator bramki, żeby można było sprawdzać połączenie.", "app");
                 }
@@ -281,7 +281,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         decorView.setSystemUiVisibility(uiOptions);
 
         // get app url with discovery
-        appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
+        appLaunchUrl = mConfig.getAppLaunchUrl(true, false, "");
 
         if (appLaunchUrl.startsWith("dom-")) {
             loadUrl(appLaunchUrl, true, "");
@@ -343,14 +343,14 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             public void onReceive(Context context, Intent intent) {
                 final String action = intent.getAction();
                 if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
-                    appLaunchUrl = mConfig.getAppLaunchUrl(0, "");
+                    appLaunchUrl = mConfig.getAppLaunchUrl(false, false, "");
                     if (appLaunchUrl.startsWith("dom-")) {
                        // sprawdzam połączenie
                         SwitchIconView mSwitchIconModeConnection =  findViewById(R.id.switchControlModeConnection);
                         mSwitchIconModeConnection.setBackgroundResource(R.drawable.ic_cloud_connection_control_bg);
                         mButtonModeConnection.setRotation(0);
                         mSwitchIconModeConnection.animate().rotationBy(360).setDuration(3000).setInterpolator(new AccelerateDecelerateInterpolator());
-                        appLaunchUrl = mConfig.getAppLaunchUrl(3, "");
+                        appLaunchUrl = mConfig.getAppLaunchUrl(true, false, "");
                     }
                 }
             }

@@ -95,11 +95,11 @@ public class DomWebInterface {
                 Log.e("AIS auth: ", response.toString());
                 // try to discover gate or inform about connection problem
                 Config config = new Config(context.getApplicationContext());
-                String appLaunchUrl = config.getAppLaunchUrl(0, "");
+                String appLaunchUrl = config.getAppLaunchUrl(false, false, "");
                 if (appLaunchUrl.startsWith("dom-")) {
                     // sprawdzam połączenie
                     // say("Sprawdzam połączenie.");
-                    appLaunchUrl = config.getAppLaunchUrl(3, "");
+                    appLaunchUrl = config.getAppLaunchUrl(true, false, "");
                 } else {
                     // say("Sprawdz połączenie z bramką.");
                 }
