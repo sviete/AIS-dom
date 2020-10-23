@@ -531,6 +531,8 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     String aisRequest = intent.getStringExtra("aisRequest");
                     if (aisRequest.equals("micOn")) {
                         onStartStt();
+                    } else if (aisRequest.equals("micOff")) {
+                        AisCoreUtils.mSpeech.stopListening();
                     } else if (aisRequest.equals("playAudio")) {
                         final String audioUrl = intent.getStringExtra("url");
                         playAudio(audioUrl,false,0);
@@ -619,13 +621,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 json = getDeviceInfo();
             }
             response.send(json);
-            response.end();
+            // response.end();
         });
 
         mHttpServer.post("/command", (request, response) -> {
             Log.d(TAG, "command: " + request);
             response.send("ok");
-            response.end();
             JSONObject body = ((JSONObjectBody)request.getBody()).get();
             processCommand(body.toString());
         });
@@ -635,7 +636,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         mHttpServer.post("/text_to_speech", (request, response) -> {
             Log.d(TAG, "text_to_speech: " + request);
             response.send("ok");
-            response.end();
             //
             JSONObject body = ((JSONObjectBody)request.getBody()).get();
             String text_to_say = "";
@@ -736,6 +736,20 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             }
             else if(commandJson.has("setPlayerShuffle")) {
                 setPlayerShuffle(commandJson.getBoolean("setPlayerShuffle"));
+            }
+            else if(commandJson.has("micOn")) {
+                Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
+                requestIntent.putExtra("aisRequest", "micOn");
+                requestIntent.putExtra("url", "");
+                LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                bm.sendBroadcast(requestIntent);
+            }
+            else if(commandJson.has("micOff")) {
+                Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
+                requestIntent.putExtra("aisRequest", "micOff");
+                requestIntent.putExtra("url", "");
+                LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                bm.sendBroadcast(requestIntent);
             }
         }
         catch (JSONException ex) {

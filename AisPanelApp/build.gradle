@@ -11,8 +11,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 134
-        versionName '1.7.3.CAM'
+        versionCode 136
+        versionName '1.7.5.CAM'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true

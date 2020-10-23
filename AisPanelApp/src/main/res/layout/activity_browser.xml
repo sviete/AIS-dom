@@ -56,19 +56,38 @@
             android:id="@+id/AisSystemBootomUI"
             android:gravity="bottom">
 
-            <Button
-                android:id="@+id/btnGoToSettings"
-                android:layout_width="46dp"
-                android:layout_height="46dp"
+            <LinearLayout
+                android:id="@+id/btnGoToSettingsLayout"
+                android:layout_width="76dp"
+                android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="12dp"
-                android:background="@drawable/ic_go_to_settings_bg"
-                android:contentDescription="@string/ais_dom_button_settings"
+                android:background="?selectableItemBackgroundBorderless"
                 android:focusable="true"
-                android:nextFocusLeft="@+id/btnControlModeGesture"
-                android:nextFocusRight="@+id/switchControlModeConnection"
-                android:nextFocusUp="@+id/switchControlModeConnection"
-                android:nextFocusDown="@+id/btnControlModeGesture" />
+                android:gravity="center"
+                android:nextFocusLeft="@+id/ais_recognition_view"
+                android:nextFocusRight="@+id/btnGoToSettings"
+                android:nextFocusUp="@+id/btnGoToSettings"
+                android:nextFocusDown="@+id/ais_recognition_view"
+                android:orientation="vertical">
+
+                <com.github.zagum.switchicon.SwitchIconView
+                    android:id="@+id/switchControlGoToSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/ais_dom_button_settings"
+                    android:nextFocusLeft="@+id/btnControlModeGesture"
+                    android:nextFocusRight="@+id/switchControlModeConnection"
+                    android:nextFocusUp="@+id/switchControlModeConnection"
+                    android:nextFocusDown="@+id/btnControlModeGesture"
+                    android:padding="14dp"
+                    android:background="@drawable/ic_go_to_settings_bg"
+                    app:si_animation_duration="500"
+                    app:si_disabled_alpha=".3"
+                    app:si_disabled_color="#b7b7b7"
+                    app:si_enabled="true"
+                    app:si_no_dash="true"
+                    app:si_tint_color="#b7b7b7" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/btnControlModeConnection"
@@ -127,7 +146,6 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignStart="@+id/btnSpeak"
                 android:layout_marginStart="85dp"
-                android:layout_marginBottom="-14dp"
                 android:layout_gravity="center"
                 android:background="@drawable/ic_recognition_progress_view_bg"
                 android:focusable="true"

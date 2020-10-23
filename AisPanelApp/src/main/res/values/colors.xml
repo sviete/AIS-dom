@@ -32,4 +32,6 @@
     <color name="SettingsBlue">#303F9F</color>
     <color name="SettingsRed">#d04400</color>
     <color name="SettingsYellow">#FFD740</color>
+    <color name="NavigationBarDividerColor">#b7b7b7</color>
+    <color name="NavigationBarColor">#323232</color>
 </resources>

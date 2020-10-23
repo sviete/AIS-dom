@@ -7,12 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
+import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
@@ -75,7 +77,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     private View decorView;
     float zoomLevel = 1.0f;
     private ToggleButton btnSpeak;
-    private Button btnGoToSettings;
+    private SwitchIconView btnGoToSettings;
     private LocalBroadcastManager localBroadcastManager;
     Config mConfig = null;
     public RecognitionProgressView recognitionProgressView = null;
@@ -256,7 +258,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         mConfig = new Config(this.getApplicationContext());
 
         //
-        btnGoToSettings = findViewById(R.id.btnGoToSettings);
+        btnGoToSettings = findViewById(R.id.switchControlGoToSettings);
         btnGoToSettings.setOnClickListener(v -> {
             Intent intent = new Intent(BrowserActivity.this, WelcomeActivity.class);
             intent.putExtra(WelcomeActivity.BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE, true);
@@ -273,11 +275,8 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
         // a general rule, you should design your app to hide the status bar whenever you
         // hide the navigation bar.
-        int uiOptions = 0;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN;
-        }
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+
         decorView.setSystemUiVisibility(uiOptions);
 
         // get app url with discovery
@@ -333,6 +332,11 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             }
         });
         // [END retrieve_current_token]
+
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.NavigationBarColor));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getWindow().setNavigationBarDividerColor(getResources().getColor(R.color.NavigationBarDividerColor));
+        }
     }
 
     private void createWifiBrodcastReceiver(){
@@ -735,11 +739,34 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Checks the orientation of the screen
+        int visibility = 0;
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        }
+        decorView.setSystemUiVisibility(visibility);
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
-            int visibility;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // do not hide the soft buttons navigation in portrait mode
+            int orientation = getResources().getConfiguration().orientation;
+            int visibility = 0;
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -748,10 +775,9 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             } else {
                 visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             }
             decorView.setSystemUiVisibility(visibility);
         }
