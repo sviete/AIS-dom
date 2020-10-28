@@ -181,8 +181,6 @@ public class AisFuseLocationService extends Service{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        // AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED = 0;
-        // AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT = 0;
         // restart...
         try {
             stopLocationUpdates();

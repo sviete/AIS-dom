@@ -159,13 +159,28 @@ public class DomWebInterface {
         doPost(json, context);
     }
 
+    public static boolean isLocationReport(JSONObject report) {
+        try {
+            // count only location reports
+            if (report.has("type") && report.getString("type").equals("update_location")) {
+                return true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // Sending data home
     // https://developers.home-assistant.io/docs/api/native-app-integration/sending-data
     public static void doPostDomWebHoockRequest(String url, JSONObject body, Context appContext){
         DomCustomRequest jsObjRequest = new DomCustomRequest(Request.Method.POST, url, body.toString(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
+                if (isLocationReport(body)) {
+                        AisCoreUtils.GPS_SERVICE_LOCATIONS_SENT++;
+                    }
+
                 Log.d("AIS auth: ", response.toString());
             }
         }, new Response.ErrorListener() {
@@ -174,7 +189,9 @@ public class DomWebInterface {
                 Log.e("AIS auth: ", response.toString());
             }
         });
-        AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED++;
+        if (isLocationReport(body)) {
+            AisCoreUtils.GPS_SERVICE_LOCATIONS_DETECTED++;
+        }
         AisCoreUtils.getRequestQueue(appContext).add(jsObjRequest);
     }
 

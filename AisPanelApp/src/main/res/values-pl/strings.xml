@@ -134,7 +134,7 @@
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>
     <string name="title_setting_app_discovery">Odtwarzacz audio</string>
-    <string name="summary_setting_app_discovery">włącz usługę odtwarzacza audio\npozwala na przesyłanie audio z bramki do tego urządzenia oraz zdalne sterowanie odtwarzaczem na bramce</string>
+    <string name="summary_setting_app_discovery">włącz usługę odtwarzacza audio\npozwala na przesyłanie audio z bramki do tego urządzenia. Funkcjonalność działa na zasadzie Cast - bramka przesyła adres mediów do odtwarzacza. Urządzenia odtwarzacz i bramka muszą być w tej samej sieci.</string>
     <string name="default_setting_app_discovery">false</string>
 
     <string name="key_setting_hot_word_mode">setting_hot_word_mode</string>
