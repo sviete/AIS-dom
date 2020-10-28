@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../AIS-dom.iml" filepath="$PROJECT_DIR$/../AIS-dom.iml" />
-      <module fileurl="file://$PROJECT_DIR$/AisPanelApp.iml" filepath="$PROJECT_DIR$/AisPanelApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../terminal-emulator/terminal-emulator.iml" filepath="$PROJECT_DIR$/../terminal-emulator/terminal-emulator.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../terminal-view/terminal-view.iml" filepath="$PROJECT_DIR$/../terminal-view/terminal-view.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AIS-dom.AisPanelApp.iml" filepath="$PROJECT_DIR$/.idea/modules/AIS-dom.AisPanelApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-349159715/AIS-dom.porcupine.iml" filepath="$PROJECT_DIR$/.idea/modules/-349159715/AIS-dom.porcupine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-2032480720/AIS-dom.porcupinemanager.iml" filepath="$PROJECT_DIR$/.idea/modules/-2032480720/AIS-dom.porcupinemanager.iml" />
     </modules>
   </component>
 </project>
