@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: me.dm7.barcodescanner:zbar:1.9.13@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/16efb3e67041003a065617e28667ffa9/jetified-zbar-1.9.13/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/16efb3e67041003a065617e28667ffa9/jetified-zbar-1.9.13/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/16efb3e67041003a065617e28667ffa9/jetified-zbar-1.9.13/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/16efb3e67041003a065617e28667ffa9/jetified-zbar-1.9.13/jars/libs/zbar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/me.dm7.barcodescanner/zbar/1.9.13/8bb23795739a2f77c7808c55adc8997a2327fcba/zbar-1.9.13-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
