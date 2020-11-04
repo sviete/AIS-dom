@@ -129,8 +129,9 @@ public class ScannerActivity extends Activity
                 startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
             }
         } else {
-            Toast.makeText(getApplicationContext(), getString(R.string.cammera_permissions_denied_title), Toast.LENGTH_SHORT).show();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // check if the connection with gate is configured
+            Config config = new Config(this.getApplicationContext());
+            if (!config.getAppWizardDone()) {
                 showMessageOKCancel(getString(R.string.cammera_wrong_code_dialog_info, scan),
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -140,6 +141,12 @@ public class ScannerActivity extends Activity
                                 }
                             }
                         });
+            } else {
+                // send scann to gate
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.AisNfcActivity");
+                intent.putExtra("EVENT_TEXT", rawResult.getContents());
+                startActivity(intent);
             }
         }
     }
