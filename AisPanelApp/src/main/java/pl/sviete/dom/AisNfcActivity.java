@@ -96,56 +96,26 @@ public class AisNfcActivity extends AppCompatActivity {
             Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
             // new quick ais way
-            for (int i = 0; i < rawMsgs.length; i++) {
-                NdefMessage message = (NdefMessage)rawMsgs[i];
-                NdefRecord[] records = message.getRecords();
-                for (int j = 0; j < records.length; j++) {
-                    NdefRecord record = records[j];
-                    String record_type = new String(record.getType());
-                    String msg = new String(record.getPayload());
-                    if (record_type.equals("ais/event")) {
-                        try {
-                            // Get the nfc id
-                            nfcText.setText(msg);
-                            JSONObject jMessage = new JSONObject();
-                            jMessage.put("event_type", "tag_scanned");
-                            JSONObject jData = new JSONObject();
-                            jData.put("tag_id", msg);
-                            jMessage.put("event_data", jData);
-
-                            DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
-
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    finish();
-                                }
-                            }, 3000);
-
-                        } catch (Exception e) {
-                            Log.e("Exception", e.toString());
-                        }
-
-                        return;
-                    } else if (record_type.equals("ais/event")) {
-                        try {
-                            // Get the nfc message
-                            nfcText.setText(msg);
-                            if (msg.startsWith("dom-")){
-                                nfcText.setText(getString(R.string.scan_nfc_connect_with_gate_info_text_prefix) + " " + msg);
-                                final Config config = new Config(this.getApplicationContext());
-                                config.setAppLaunchUrl(msg);
-                                final Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
-                                    }
-                                }, 3000);
-                            } else {
+            if (rawMsgs != null) {
+                for (int i = 0; i < rawMsgs.length; i++) {
+                    NdefMessage message = (NdefMessage) rawMsgs[i];
+                    NdefRecord[] records = message.getRecords();
+                    for (int j = 0; j < records.length; j++) {
+                        NdefRecord record = records[j];
+                        String record_type = new String(record.getType());
+                        String msg = new String(record.getPayload());
+                        if (record_type.equals("ais/event")) {
+                            try {
+                                // Get the nfc id
                                 nfcText.setText(msg);
-                                DomWebInterface.publishMessage(msg, "speech_command", getApplicationContext());
+                                JSONObject jMessage = new JSONObject();
+                                jMessage.put("event_type", "tag_scanned");
+                                JSONObject jData = new JSONObject();
+                                jData.put("tag_id", msg);
+                                jMessage.put("event_data", jData);
+
+                                DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
+
                                 final Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     @Override
@@ -153,12 +123,44 @@ public class AisNfcActivity extends AppCompatActivity {
                                         finish();
                                     }
                                 }, 3000);
+
+                            } catch (Exception e) {
+                                Log.e("Exception", e.toString());
                             }
 
-                        } catch (Exception e) {
-                            Log.e("Exception", e.toString());
+                            return;
+                        } else if (record_type.equals("text/plain")) {
+                            try {
+                                // Get the nfc message
+                                nfcText.setText(msg);
+                                if (msg.startsWith("dom-")) {
+                                    nfcText.setText(getString(R.string.scan_nfc_connect_with_gate_info_text_prefix) + " " + msg);
+                                    final Config config = new Config(this.getApplicationContext());
+                                    config.setAppLaunchUrl(msg);
+                                    final Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            startActivity(new Intent(getApplicationContext(), BrowserActivityNative.class));
+                                        }
+                                    }, 3000);
+                                } else {
+                                    nfcText.setText(msg);
+                                    DomWebInterface.publishMessage(msg, "speech_command", getApplicationContext());
+                                    final Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            finish();
+                                        }
+                                    }, 3000);
+                                }
+
+                            } catch (Exception e) {
+                                Log.e("Exception", e.toString());
+                            }
+                            return;
                         }
-                        return;
                     }
                 }
             }
