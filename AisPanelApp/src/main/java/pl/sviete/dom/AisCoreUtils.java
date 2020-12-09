@@ -19,7 +19,7 @@ import com.android.volley.toolbox.Volley;
 import java.io.File;
 import java.text.DecimalFormat;
 
-import ai.picovoice.porcupinemanager.PorcupineManager;
+import ai.picovoice.porcupine.PorcupineManager;
 
 import static android.content.Context.BATTERY_SERVICE;
 

@@ -299,17 +299,12 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         try {
             copyResourceFile(R.raw.params, "porcupine_params.pv");
             copyResourceFile(R.raw.alexa, "alexa.ppn");
-            copyResourceFile(R.raw.americano, "americano.ppn");
-            copyResourceFile(R.raw.avocado, "avocado.ppn");
-            copyResourceFile(R.raw.blueberry, "blueberry.ppn");
-            copyResourceFile(R.raw.caterpillar, "caterpillar.ppn");
-            copyResourceFile(R.raw.christina, "christina.ppn");
-            copyResourceFile(R.raw.dragonfly, "dragonfly.ppn");
-            copyResourceFile(R.raw.flamingo, "flamingo.ppn");
-            copyResourceFile(R.raw.francesca, "francesca.ppn");
-            copyResourceFile(R.raw.iguana, "iguana.ppn");
-            copyResourceFile(R.raw.raspberry, "raspberry.ppn");
-            copyResourceFile(R.raw.terminator, "terminator.ppn");
+            copyResourceFile(R.raw.computer, "computer.ppn");
+            copyResourceFile(R.raw.hey_google, "hey_google.ppn");
+            copyResourceFile(R.raw.hey_maya, "hey_maya.ppn");
+            copyResourceFile(R.raw.hey_sara, "hey_sara.ppn");
+            copyResourceFile(R.raw.hey_siri, "hey_siri.ppn");
+            copyResourceFile(R.raw.ok_google, "ok_google.ppn");
         } catch (IOException e) {
             Toast.makeText(this, "Failed to copy resource files.", Toast.LENGTH_SHORT).show();
         }

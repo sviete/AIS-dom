@@ -1,2 +1,2 @@
-include ':AisPanelApp', ':porcupinemanager', ':porcupine'
+include ':AisPanelApp', ':porcupine'
 project(':porcupine').projectDir = new File('porcupine')

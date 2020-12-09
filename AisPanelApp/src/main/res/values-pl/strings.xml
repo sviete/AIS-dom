@@ -51,31 +51,21 @@
 
     <string-array name="hot_word_names">
         <item>"Alexa"</item>
-        <item>"Americano"</item>
-        <item>"Avocado"</item>
-        <item>"Blueberry"</item>
-        <item>"Caterpillar"</item>
-        <item>"Christina"</item>
-        <item>"Dragonfly"</item>
-        <item>"Flamingo"</item>
-        <item>"Francesca"</item>
-        <item>"Iguana"</item>
-        <item>"Raspberry"</item>
-        <item>"Terminator"</item>
+        <item>"Computer"</item>
+        <item>"Hey Google"</item>
+        <item>"Hey Maja"</item>
+        <item>"Hey Sara"</item>
+        <item>"Hey Siri"</item>
+        <item>"OK Google"</item>
     </string-array>
     <string-array name="hot_word_values">
         <item>"alexa"</item>
-        <item>"americano"</item>
-        <item>"avocado"</item>
-        <item>"blueberry"</item>
-        <item>"caterpillar"</item>
-        <item>"christina"</item>
-        <item>"dragonfly"</item>
-        <item>"flamingo"</item>
-        <item>"francesca"</item>
-        <item>"iguana"</item>
-        <item>"raspberry"</item>
-        <item>"terminator"</item>
+        <item>"computer"</item>
+        <item>"hey_google"</item>
+        <item>"hey_maya"</item>
+        <item>"hey_sara"</item>
+        <item>"hey_siri"</item>
+        <item>"ok_google"</item>
     </string-array>
 
 

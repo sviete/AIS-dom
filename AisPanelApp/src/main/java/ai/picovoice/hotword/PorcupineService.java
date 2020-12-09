@@ -24,8 +24,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.io.File;
 import java.util.Locale;
 
-import ai.picovoice.porcupinemanager.PorcupineManager;
-import ai.picovoice.porcupinemanager.PorcupineManagerException;
+import ai.picovoice.porcupine.PorcupineManager;
+import ai.picovoice.porcupine.PorcupineException;
 
 import pl.sviete.dom.AisCoreUtils;
 import pl.sviete.dom.AisPanelService;
@@ -151,7 +151,7 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
                 AisCoreUtils.mPorcupineManager.start();
             }
 
-            catch(PorcupineManagerException e){
+            catch(PorcupineException e){
                 Log.e("HWL PORCUPINE_SERVICE", e.toString());
             }
         }
@@ -162,6 +162,7 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
             Log.i(TAG, "HWL onDestroy PorcupineService");
             try {
                 AisCoreUtils.mPorcupineManager.stop();
+                AisCoreUtils.mPorcupineManager.delete();
                 AisCoreUtils.mPorcupineManager = null;
             } catch (Exception e) {
                 Log.e("HWL PORCUPINE_SERVICE", e.toString());
@@ -286,11 +287,6 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
 
         // stop current TTS
         stopTextToSpeech();
-
-
-        String voice = "";
-        float pitch = 1;
-        float rate = 1;
 
         // speak failed: not bound to TTS engine
         if (mTts == null){
