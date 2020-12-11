@@ -45,11 +45,12 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
     private int numKeywordsDetected;
     private final String TAG = PorcupineService.class.getName();
     private TextToSpeech mTts;
+    private static final String CHANNEL_ID = "HotWordServiceChannel";
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(
-                    AisCoreUtils.AIS_DOM_CHANNEL_ID,
+                    CHANNEL_ID,
                     "AI-Speaker Mic",
                     NotificationManager.IMPORTANCE_LOW);
 
@@ -72,8 +73,7 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
         numKeywordsDetected = 0;
         //
         Config config = new Config(this.getApplicationContext());
-        String hotword = config.getSelectedHotWord();
-        hotword = hotword.substring(0, 1).toUpperCase() + hotword.substring(1);
+        String hotword = config.getSelectedHotWordName();
         int sensitivity = config.getSelectedHotWordSensitivity();
 
 
@@ -89,15 +89,15 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
         NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
         String subText = hotword + " " + sensitivity;
 
-        Notification notification = new NotificationCompat.Builder(this, AisCoreUtils.AIS_DOM_CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(subText)
-                .setContentText("")
-                .setSmallIcon(R.drawable.ic_ais_logo)
+                .setContentText("Rozpoznano : " + numKeywordsDetected)
+                .setSmallIcon(R.drawable.ais_icon_mic)
                 .setContentIntent(pendingIntent)
                 .addAction(exitAction)
                 .build();
 
-        startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, notification);
+        startForeground(9997, notification);
         //
         if (AisCoreUtils.isServiceRunning(this.getApplicationContext(), AisPanelService.class)) {
             //
@@ -124,7 +124,10 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
 
         startHotWordListening();
 
-        createTTS();
+        // tts not on box
+        if (!AisCoreUtils.onBox()) {
+            createTTS();
+        }
         //
 
         return super.onStartCommand(intent, flags, startId);
@@ -222,9 +225,11 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
             }
 
             else if (action.equals(AisCoreUtils.BROADCAST_SERVICE_SAY_IT)) {
-                Log.d(TAG, BROADCAST_SERVICE_SAY_IT + " going to processTTS");
-                final String txtMessage = intent.getStringExtra(BROADCAST_SAY_IT_TEXT);
-                processTTS(txtMessage);
+                if ( AisCoreUtils.onBox()){
+                    Log.d(TAG, BROADCAST_SERVICE_SAY_IT + " going to processTTS");
+                    final String txtMessage = intent.getStringExtra(BROADCAST_SAY_IT_TEXT);
+                    processTTS(txtMessage);
+                }
             }
         }
     };
@@ -256,10 +261,42 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
     }
 
     private void startTheSpeechToText(){
+        numKeywordsDetected ++;
         // start mic
         Intent SttIntent = new Intent(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
         bm.sendBroadcast(SttIntent);
+
+        //
+        Intent exitIntent = new Intent(this, BrowserActivityNative.class);
+        exitIntent.setAction("exit_mic_service");
+        exitIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent exitPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                exitIntent,
+                0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                new Intent(this, BrowserActivityNative.class),
+                0);
+        NotificationCompat.Action exitAction = new NotificationCompat.Action.Builder(R.drawable.ic_app_exit, "STOP", exitPendingIntent).build();
+        Config config = new Config(this.getApplicationContext());
+        String hotword = config.getSelectedHotWordName();
+        int sensitivity = config.getSelectedHotWordSensitivity();
+        String subText = hotword + " " + sensitivity;
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle(subText)
+                .setContentText("Rozpoznano : " + numKeywordsDetected)
+                .setSmallIcon(R.drawable.ais_icon_mic)
+                .setContentIntent(pendingIntent)
+                .addAction(exitAction)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.notify(9997, notification);
     }
 
 

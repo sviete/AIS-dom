@@ -109,7 +109,7 @@
     <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
 
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
-    <string name="default_setting_app_hot_word">avocado</string>g>
+    <string name="default_setting_app_hot_word">hey_maya</string>g>
     <string name="title_setting_app_hot_word">Wyrażenie aktywujące komendę</string>
     <string name="summary_setting_app_hot_word">wybierz wyrażenie aktywujące komendę</string>
     <string name="title_setting_app_hot_word_sensitivity">Czułość nasłuchiwania</string>

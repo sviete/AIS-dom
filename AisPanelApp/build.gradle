@@ -12,7 +12,7 @@ android {
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 140
-        versionName '1.7.8.HotWord'
+        versionName '1.7.8.WakeWord'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
