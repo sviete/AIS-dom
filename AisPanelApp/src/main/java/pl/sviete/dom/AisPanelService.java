@@ -78,8 +78,6 @@ import java.util.Locale;
 import java.util.Map;
 
 
-import ai.picovoice.hotword.PorcupineService;
-
 import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB;
@@ -1254,9 +1252,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             String subText = "";
             Config config = new Config(getApplicationContext());
             if (config.getHotWordMode()) {
-                String hotword = config.getSelectedHotWord();
+                String hotword = config.getSelectedHotWordName();
                 int sensitivity = config.getSelectedHotWordSensitivity();
-                subText = hotword.substring(0, 1).toUpperCase() + hotword.substring(1) + " " + sensitivity;
+                subText = hotword + " " + sensitivity;
             }
             return subText;
         }
@@ -1429,15 +1427,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 //
                 mConfig.setAppDiscoveryMode(false);
 
-                // 1. stop hot word service
-                if(AisCoreUtils.isServiceRunning(getApplicationContext(), PorcupineService.class)){
-                    mConfig.setHotWordMode(false);
-                    Intent startAisApp = new Intent(getApplicationContext(), BrowserActivityNative.class);
-                    startAisApp.setAction("exit_mic_service");
-                    startAisApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(startAisApp);
-                }
-                // 2. stop audio service
+                // stop audio service
                 Intent stopIntent = new Intent(getApplicationContext(), AisPanelService.class);
                 getApplicationContext().stopService(stopIntent);
 

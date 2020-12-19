@@ -257,6 +257,15 @@ public class Config {
                 R.string.default_setting_app_hot_word);
     }
 
+    public String getSelectedHotWordName() {
+        String[] splited =  getStringPref(R.string.key_setting_app_hot_word, R.string.default_setting_app_hot_word).split("_");
+        String returnString = "";
+        for (String s: splited) {
+            returnString = returnString + s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase() + " ";
+        }
+        return  returnString.trim();
+    }
+
     public int getSelectedHotWordSensitivity(){
         int howWordSensitivity = sharedPreferences.getInt("setting_app_hot_word_sensitivity", 50);
         return howWordSensitivity;

@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/AIS-dom.iml" filepath="$PROJECT_DIR$/AIS-dom.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AisPanelApp/AIS-dom.AisPanelApp.iml" filepath="$PROJECT_DIR$/.idea/modules/AisPanelApp/AIS-dom.AisPanelApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/porcupine/AIS-dom.porcupine.iml" filepath="$PROJECT_DIR$/.idea/modules/porcupine/AIS-dom.porcupine.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/porcupinemanager/AIS-dom.porcupinemanager.iml" filepath="$PROJECT_DIR$/.idea/modules/porcupinemanager/AIS-dom.porcupinemanager.iml" />
     </modules>
   </component>
 </project>
