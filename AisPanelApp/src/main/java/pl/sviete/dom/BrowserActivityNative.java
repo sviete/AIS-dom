@@ -16,7 +16,6 @@ import android.net.Uri;
 import android.net.http.SslError;;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
@@ -25,6 +24,7 @@ import androidx.core.content.ContextCompat;
 
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +79,7 @@ public class BrowserActivityNative extends BrowserActivity {
     private ValueCallback<Uri> mUploadMessage;
     private Uri mCapturedImageURI = null;
 
-    // ExoPllayer
+    // ExoPlayer
     private PlayerView exoPlayerView;
     private ImageView exo_mute_icon;
     private ImageView exo_fullscreen_icon;
@@ -98,7 +98,7 @@ public class BrowserActivityNative extends BrowserActivity {
     private int exoRight = 0;
     private int exoBottom = 0;
     private Boolean exoMute = true;
-
+    private Toast volumeToast = null;
 
     /**
      * More info this method can be found at
@@ -626,7 +626,15 @@ public class BrowserActivityNative extends BrowserActivity {
             if (action == KeyEvent.ACTION_DOWN) {
                 // click action
                 evaluateJavascript("document.querySelector(\"home-assistant\").hass.callService(\"media_player\", \"volume_up\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})");
-                Toast.makeText(this, "AIS Vol +", Toast.LENGTH_SHORT).show();
+                if (volumeToast != null){
+                    volumeToast.cancel();
+                }
+                volumeToast = new Toast(this);
+                volumeToast.setGravity(Gravity.CENTER, 0, 0);
+                ImageView view = new ImageView(this);
+                view.setImageResource(R.drawable.icon_volume_up);
+                volumeToast.setView(view);
+                volumeToast.show();
             }
             // to Override standard vol up action
             return true;
@@ -634,7 +642,15 @@ public class BrowserActivityNative extends BrowserActivity {
             if (action == KeyEvent.ACTION_DOWN) {
                 // click action
                 evaluateJavascript("document.querySelector(\"home-assistant\").hass.callService(\"media_player\", \"volume_down\", {\"entity_id\": \"media_player.wbudowany_glosnik\"})");
-                Toast.makeText(this, "AIS Vol -", Toast.LENGTH_SHORT).show();
+                if (volumeToast != null){
+                    volumeToast.cancel();
+                }
+                volumeToast = new Toast(this);
+                volumeToast.setGravity(Gravity.CENTER, 0, 0);
+                ImageView view = new ImageView(this);
+                view.setImageResource(R.drawable.icon_volume_down);
+                volumeToast.setView(view);
+                volumeToast.show();
             }
             // to Override standard vol down action
             return true;
