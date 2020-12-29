@@ -97,6 +97,7 @@ public class Config {
     }
 
     private void redirectToNewGateUrl(String localUrlToGo, Boolean force){
+        AisCoreUtils.setAisDomUrl(localUrlToGo);
         if (!force){
             // check if the url was changed
             if (AisCoreUtils.mWebView.getUrl().startsWith(localUrlToGo)){
@@ -107,7 +108,6 @@ public class Config {
         intent.putExtra(BrowserActivity.BROADCAST_ACTION_LOAD_URL, localUrlToGo);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(myContext);
         bm.sendBroadcast(intent);
-        AisCoreUtils.setAisDomUrl(localUrlToGo);
     }
 
     private void getTheLocalIpFromCloud(String gateID, String goToHaView, Boolean forceRefreshWeb) {
