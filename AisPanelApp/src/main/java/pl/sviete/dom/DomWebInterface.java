@@ -42,8 +42,14 @@ public class DomWebInterface {
         final String url = sharedPreferences.getString(context.getString(R.string.key_setting_app_launchurl), "");
         if (url.startsWith("dom-")){
             // check if gate url is set in current session
-            if (!AisCoreUtils.getAisDomUrl().equals("")) {
-                return AisCoreUtils.getAisDomUrl();
+            String urlInSession = AisCoreUtils.getAisDomUrl();
+            if (!urlInSession.equals("")) {
+                int count = urlInSession.length() - urlInSession.replace("/", "").length();
+                if (count > 2){
+                    String[] tokens = urlInSession.split("/");
+                    return tokens[0] + "//" + tokens[2];
+                }
+                return urlInSession;
             }
             return "http://" + url + ".paczka.pro";
         }
@@ -96,17 +102,13 @@ public class DomWebInterface {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError response) {
-                Log.e("AIS auth: ", response.toString());
+                Log.e("AIS onErrorResponse: ", response.toString());
                 // try to discover gate or inform about connection problem
                 Config config = new Config(context.getApplicationContext());
                 String appLaunchUrl = config.getAppLaunchUrl(false, false, "");
                 if (appLaunchUrl.startsWith("dom-")) {
-                    // sprawdzam połączenie
-                    // say("Sprawdzam połączenie.");
                     // check and set gate url in current session
                     appLaunchUrl = config.getAppLaunchUrl(true, false, "");
-                } else {
-                    // say("Sprawdz połączenie z bramką.");
                 }
             }
         });
@@ -190,7 +192,6 @@ public class DomWebInterface {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError response) {
-                Log.e("AIS auth: ", response.toString());
                 // try to discover gate or inform about connection problem
                 Config config = new Config(appContext.getApplicationContext());
                 String appLaunchUrl = config.getAppLaunchUrl(false, false, "");
