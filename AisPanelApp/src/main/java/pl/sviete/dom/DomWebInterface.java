@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -42,6 +41,10 @@ public class DomWebInterface {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         final String url = sharedPreferences.getString(context.getString(R.string.key_setting_app_launchurl), "");
         if (url.startsWith("dom-")){
+            // check if gate url is set in current session
+            if (!AisCoreUtils.getAisDomUrl().equals("")) {
+                return AisCoreUtils.getAisDomUrl();
+            }
             return "http://" + url + ".paczka.pro";
         }
         return pl.sviete.dom.AisCoreUtils.getAisDomUrl().replaceAll("/$", "");
@@ -100,6 +103,7 @@ public class DomWebInterface {
                 if (appLaunchUrl.startsWith("dom-")) {
                     // sprawdzam połączenie
                     // say("Sprawdzam połączenie.");
+                    // check and set gate url in current session
                     appLaunchUrl = config.getAppLaunchUrl(true, false, "");
                 } else {
                     // say("Sprawdz połączenie z bramką.");
@@ -187,6 +191,13 @@ public class DomWebInterface {
             @Override
             public void onErrorResponse(VolleyError response) {
                 Log.e("AIS auth: ", response.toString());
+                // try to discover gate or inform about connection problem
+                Config config = new Config(appContext.getApplicationContext());
+                String appLaunchUrl = config.getAppLaunchUrl(false, false, "");
+                if (appLaunchUrl.startsWith("dom-")) {
+                    // check and set gate url in current session
+                    appLaunchUrl = config.getAppLaunchUrl(true, false, "");
+                }
             }
         });
         if (isLocationReport(body)) {
@@ -467,6 +478,13 @@ class AddUpdateDeviceRegistrationTaskJob extends AsyncTask<String, Void, String>
                 @Override
                 public void onErrorResponse(VolleyError response) {
                     Log.e(TAG, "AIS auth: " + response.toString());
+                    // try to discover gate or inform about connection problem
+                    Config config = new Config(mContext.getApplicationContext());
+                    String appLaunchUrl = config.getAppLaunchUrl(false, false, "");
+                    if (appLaunchUrl.startsWith("dom-")) {
+                        // check and set gate url in current session
+                        appLaunchUrl = config.getAppLaunchUrl(true, false, "");
+                    }
                 }
             });
             AisCoreUtils.getRequestQueue(mContext.getApplicationContext()).add(jsObjRequest);

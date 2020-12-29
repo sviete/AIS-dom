@@ -45,7 +45,7 @@ public class AisCoreUtils {
 
     // USB
     private static final String TAG = "AisCoreUtils";
-    private static String AIS_DOM_URL = "http://127.0.0.1:8180";
+    private static String AIS_DOM_URL = "";
     private static final String AIS_DOM_CLOUD_WS_URL = "https://powiedz.co/ords/dom/dom/";
     private static final String AIS_DOM_CLOUD_WS_URL_HTTP = "http://powiedz.co/ords/dom/dom/";
 
