@@ -630,7 +630,7 @@ public class BrowserActivityNative extends BrowserActivity {
                     volumeToast.cancel();
                 }
                 volumeToast = new Toast(this);
-                volumeToast.setGravity(Gravity.CENTER, 0, 0);
+                volumeToast.setGravity(Gravity.TOP|Gravity.RIGHT, 0, 120);
                 ImageView view = new ImageView(this);
                 view.setImageResource(R.drawable.icon_volume_up);
                 volumeToast.setView(view);
@@ -646,7 +646,8 @@ public class BrowserActivityNative extends BrowserActivity {
                     volumeToast.cancel();
                 }
                 volumeToast = new Toast(this);
-                volumeToast.setGravity(Gravity.CENTER, 0, 0);
+//                volumeToast.setGravity(Gravity.CENTER, 0, 0);
+                volumeToast.setGravity(Gravity.TOP|Gravity.RIGHT, 0, 420);
                 ImageView view = new ImageView(this);
                 view.setImageResource(R.drawable.icon_volume_down);
                 volumeToast.setView(view);
