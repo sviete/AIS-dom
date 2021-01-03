@@ -703,6 +703,15 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             }
         });
 
+        mHttpServer.get("/audio_status", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                Log.d(TAG, "request: " + request);
+                JSONObject json = getAudioStatus();
+                response.send(json);
+            }
+        });
+
         // listen on port 8122
         mHttpServer.listen(8122);
     }
@@ -1136,7 +1145,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // currently we are able to set Shuffle only on Spotify
     }
 
-    private JSONObject getAudioStatus(){
+    private JSONObject  getAudioStatus(){
         // TODO do this for Spotify too
         Log.d(TAG, "getAudioStatus Called ");
         JSONObject jState = new JSONObject();
