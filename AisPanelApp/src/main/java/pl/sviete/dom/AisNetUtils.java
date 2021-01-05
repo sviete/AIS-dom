@@ -1,5 +1,12 @@
 package pl.sviete.dom;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -31,6 +38,27 @@ public final class AisNetUtils {
     // Manufacturer
     public static String getManufacturer(){
         return android.os.Build.MANUFACTURER;
+    }
+    // NetworkDownSpeed
+    public static int getNetworkSpeed(Context context){
+        try {
+            WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            if (wifiInfo != null) {
+                return wifiInfo.getLinkSpeed() * 1000; //measured using WifiInfo.LINK_SPEED_UNITS is Mbps * 1000 to have it in Kbps
+            }
+
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            //should check null because in airplane mode it will be null
+            NetworkCapabilities nc = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                nc = cm.getNetworkCapabilities(cm.getActiveNetwork());
+                return nc.getLinkDownstreamBandwidthKbps();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     // TODO this should be improved....

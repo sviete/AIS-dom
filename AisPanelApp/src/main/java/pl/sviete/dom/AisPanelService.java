@@ -592,6 +592,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     private JSONObject getDeviceInfo(){
         JSONObject json = new JSONObject();
+        Context context = getApplicationContext();
         try {
             // the seme structure like in sonoff http://<device-ip>/cm?cmnd=status%205
             json.put("Hostname", AisNetUtils.getHostName());
@@ -606,6 +607,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             json.put("Model", AisNetUtils.getModel());
             json.put("Product", AisNetUtils.getProduct());
             json.put("Manufacturer", AisNetUtils.getManufacturer());
+            json.put("NetworkSpeed", AisNetUtils.getNetworkSpeed(context));
         } catch (JSONException e) {
             e.printStackTrace();
         }
