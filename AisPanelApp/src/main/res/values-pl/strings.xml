@@ -89,7 +89,7 @@
 
 
     <string name="key_setting_app_launchurl">setting_app_launchurl</string>
-    <string name="default_setting_app_launchurl_box">http://127.0.0.1:8180</string>
+    <string name="default_setting_app_launchurl_box">http://127.0.0.1</string>
     <string name="default_setting_app_launchurl"></string>
     <string name="title_setting_app_launchurl">Identyfikator lub URL bramki AIS dom</string>
     <string name="title_setting_app_launchurl_info_title">Skanowanie identyfikatora.</string>

@@ -11,8 +11,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 29
-        versionCode 146
-        versionName '1.8.2.NetworkSpeed'
+        versionCode 147
+        versionName '1.8.3.GetAudioInfo'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true

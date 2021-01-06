@@ -135,9 +135,11 @@ public class Config {
                                             String gateIdInNetwork = "";
                                             try {
                                                 gateIdInNetwork = response.getString("gate_id");
-                                                if (gateID.equals(gateIdInNetwork)) {
+                                                // TODO we can be more restrictive in the future
+                                                //  and check if (gateID.equals(gateIdInNetwork)) {
+                                                if (gateID.startsWith("dom-")) {
                                                     // The new local gate is OK to connect - do this connection locally
-                                                    String localUrlToGo = "http://" + localGateIpFromCloud[0] + ":8180" + goToHaView;
+                                                    String localUrlToGo = "http://" + localGateIpFromCloud[0] + goToHaView;
                                                     // SUCCESS
                                                     setAppLocalGateIp(localGateIpFromCloud[0]);
                                                     redirectToNewGateUrl(localUrlToGo, forceRefreshWeb);
@@ -199,7 +201,7 @@ public class Config {
                             gateIdInNetwork = response.getString("gate_id");
                             if (gateID.equals(gateIdInNetwork)) {
                                 // The local gate is OK to connect - do this connection locally
-                                String localUrlToGo = "http://" + localIpHist + ":8180" + goToHaView;
+                                String localUrlToGo = "http://" + localIpHist + goToHaView;
                                 // SUCCESS
                                 setAppLocalGateIp(localIpHist);
                                 redirectToNewGateUrl(localUrlToGo, forceRefreshWeb);

@@ -34,6 +34,13 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -77,6 +84,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+
+import pl.sviete.dom.data.DomCustomRequest;
 
 import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
@@ -720,6 +729,38 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
 
     //******** API Functions *****************
+    private void getAudioInfoFromCloud(String audioUrl) {
+        // Get the full audio info from AIS Cloud
+        // https://powiedz.co/ords/dom/dom/get_audio_full_info
+        String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "get_audio_full_info";
+        JSONObject audioInfo = new JSONObject();
+        try {
+            audioInfo.put("audio_url", audioUrl);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Map<String, String> heders = new HashMap<String, String>();
+        heders.put("Content-Type", "application/json");
+        DomCustomRequest jsonObjectRequest = new DomCustomRequest(Request.Method.POST, url, heders, audioInfo.toString(), new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            setAudioInfo(response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, error.toString());
+                    }
+                }
+                ){
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        requestQueue.add(jsonObjectRequest);
+    }
 
     private boolean processCommand(JSONObject commandJson) {
         Log.d(TAG, "processCommand Called " + commandJson.toString());
@@ -740,10 +781,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 }
             }
             else if(commandJson.has("playAudio")) {
-                // depricated - switch to playAudioFullInfo
                 m_media_controll_only = false;
                 String url = commandJson.getString("playAudio");
                 m_media_content_id = url;
+                // get info about audio from AIS
+                getAudioInfoFromCloud(url);
+                //
                 LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
                 Intent playIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
                 playIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "play_audio");

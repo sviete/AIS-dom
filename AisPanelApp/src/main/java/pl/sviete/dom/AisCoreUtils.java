@@ -70,7 +70,7 @@ public class AisCoreUtils {
 
     public static String getAisDomUrl(){
         if (onBox()){
-            return "http://127.0.0.1:8180";
+            return "http://127.0.0.1";
         }
         return AIS_DOM_URL;
     }
