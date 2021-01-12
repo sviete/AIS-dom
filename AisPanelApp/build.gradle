@@ -11,8 +11,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 29
-        versionCode 147
-        versionName '1.8.3.GetAudioInfo'
+        versionCode 148
+        versionName '1.8.4.FixGpsPermission'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
