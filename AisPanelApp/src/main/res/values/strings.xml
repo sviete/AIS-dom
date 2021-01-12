@@ -53,8 +53,6 @@
         <item>"Alexa"</item>
         <item>"Computer"</item>
         <item>"Hey Google"</item>
-        <item>"Hey Maya"</item>
-        <item>"Hey Sara"</item>
         <item>"Hey Siri"</item>
         <item>"OK Google"</item>
     </string-array>
@@ -62,8 +60,6 @@
         <item>"alexa"</item>
         <item>"computer"</item>
         <item>"hey_google"</item>
-        <item>"hey_maya"</item>
-        <item>"hey_sara"</item>
         <item>"hey_siri"</item>
         <item>"ok_google"</item>
     </string-array>
@@ -122,13 +118,13 @@
     <string name="title_recent_connections">Recent connections list</string>
     <string name="summary_recent_connections">you can pick position from list to reconnect</string>
 
-    <string name="key_setting_app_tts_voice">setting_app_tts_voice</string>g>
+    <string name="key_setting_app_tts_voice">setting_app_tts_voice</string>
     <string name="title_setting_app_tts_voice">TTS Voice</string>
     <string name="summary_setting_app_tts_voice">choose a voice</string>
     <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
 
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
-    <string name="default_setting_app_hot_word">hey_maya</string>g>
+    <string name="default_setting_app_hot_word">computer</string>
     <string name="title_setting_app_hot_word">Hot Word</string>
     <string name="summary_setting_app_hot_word">choose a hot word</string>
     <string name="title_setting_app_hot_word_sensitivity">Hot Word Sensitivity</string>
@@ -365,7 +361,7 @@
     <string name="kilometers">&#160;km</string>
     <string name="report_button">SEND STATUS</string>
 
-    <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>g>
+    <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>
     <string name="default_setting_local_gate_ip">ais-dom.local</string>
 
 </resources>

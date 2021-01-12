@@ -53,8 +53,6 @@
         <item>"Alexa"</item>
         <item>"Computer"</item>
         <item>"Hey Google"</item>
-        <item>"Hey Maja"</item>
-        <item>"Hey Sara"</item>
         <item>"Hey Siri"</item>
         <item>"OK Google"</item>
     </string-array>
@@ -62,8 +60,6 @@
         <item>"alexa"</item>
         <item>"computer"</item>
         <item>"hey_google"</item>
-        <item>"hey_maya"</item>
-        <item>"hey_sara"</item>
         <item>"hey_siri"</item>
         <item>"ok_google"</item>
     </string-array>
@@ -109,7 +105,7 @@
     <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
 
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
-    <string name="default_setting_app_hot_word">hey_maya</string>g>
+    <string name="default_setting_app_hot_word">computer</string>
     <string name="title_setting_app_hot_word">Wyrażenie aktywujące komendę</string>
     <string name="summary_setting_app_hot_word">wybierz wyrażenie aktywujące komendę</string>
     <string name="title_setting_app_hot_word_sensitivity">Czułość nasłuchiwania</string>
@@ -364,6 +360,6 @@
     <string name="kilometers">&#160;km</string>
     <string name="report_button">WYŚLIJ STATUS</string>
 
-    <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>g>
+    <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>
     <string name="default_setting_local_gate_ip">ais-dom.local</string>
 </resources>

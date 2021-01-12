@@ -301,8 +301,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             copyResourceFile(R.raw.alexa, "alexa.ppn");
             copyResourceFile(R.raw.computer, "computer.ppn");
             copyResourceFile(R.raw.hey_google, "hey_google.ppn");
-            copyResourceFile(R.raw.hey_maya, "hey_maya.ppn");
-            copyResourceFile(R.raw.hey_sara, "hey_sara.ppn");
             copyResourceFile(R.raw.hey_siri, "hey_siri.ppn");
             copyResourceFile(R.raw.ok_google, "ok_google.ppn");
         } catch (IOException e) {
