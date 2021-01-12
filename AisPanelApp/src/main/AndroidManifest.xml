@@ -42,6 +42,7 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.TRANSMIT_IR" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <!-- Some of the used permissions imply uses-feature, so we need to make it optional.
         See http://developer.android.com/guide/topics/manifest/uses-feature-element.html#permissions -->
