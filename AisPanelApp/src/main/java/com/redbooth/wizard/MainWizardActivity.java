@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -53,6 +54,7 @@ public class MainWizardActivity extends AppCompatActivity {
     private final int REQUEST_CAMERA_PERMISSION = 110;
     private final int REQUEST_FILES_PERMISSION = 120;
     private final int REQUEST_LOCATION_PERMISSION = 130;
+    private final int REQUEST_BACKGROUND_LOCATION_PERMISSION = 140;
     private final String TAG = "MainWizardActivity";
 
     @Override
@@ -345,8 +347,8 @@ public class MainWizardActivity extends AppCompatActivity {
         }
     }
     private boolean isLocationOn(){
-        int permissionFiles = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionFiles != PackageManager.PERMISSION_GRANTED) {
+        int permissionLocation = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
             return false;
         } else {
             return true;
@@ -369,7 +371,18 @@ public class MainWizardActivity extends AppCompatActivity {
         infoButton.setOnClickListener(v -> askForLocationOn());
     }
 
+    // only foreground permission is given
+    private void setLocationOnOFF(){
+        ImageView infoButton = findViewById(R.id.avatar_ais_logo_page2_2);
+        TextView infoText = findViewById(R.id.wizard_info_page2_2);
+        infoButton.setImageResource(R.drawable.wizzard_location_on_off);
+        infoText.setText(getString(R.string.wizzard_location_off_info));
+        infoText.setTextColor(getResources().getColor(R.color.important_info));
+        infoButton.setOnClickListener(v -> askForLocationOn());
+    }
+
     private void askForLocationOn(){
+
         ActivityCompat.requestPermissions(MainWizardActivity.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_LOCATION_PERMISSION);
@@ -504,6 +517,21 @@ public class MainWizardActivity extends AppCompatActivity {
                     setFilesIsOFF();
                 }
             case REQUEST_LOCATION_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // ask for background location on android 10
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        ActivityCompat.requestPermissions(MainWizardActivity.this,
+                                new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                                REQUEST_BACKGROUND_LOCATION_PERMISSION);
+                        setLocationOnOFF();
+                    }
+                    else{
+                        setLocationON();
+                    }
+                } else {
+                    setLocationOFF();
+                }
+            case REQUEST_BACKGROUND_LOCATION_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setLocationON();
                 } else {

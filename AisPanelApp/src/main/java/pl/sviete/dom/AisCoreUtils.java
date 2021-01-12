@@ -118,6 +118,7 @@ public class AisCoreUtils {
     public static final int REQUEST_RECORD_PERMISSION = 100;
     public static final int REQUEST_HOT_WORD_MIC_PERMISSION = 200;
     public static final int REQUEST_LOCATION_PERMISSION = 300;
+    public static final int  REQUEST_BACKGROUND_LOCATION_PERMISSION = 400;
 
     // REQUEST
     private static RequestQueue mRequestQueue;

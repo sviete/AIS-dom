@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -14,6 +17,8 @@ import androidx.preference.SwitchPreference;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceManager;
 import androidx.core.app.ActivityCompat;
+
+import com.redbooth.wizard.MainWizardActivity;
 
 import ai.picovoice.hotword.PorcupineService;
 
@@ -211,6 +216,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                             AisCoreUtils.REQUEST_LOCATION_PERMISSION);
                                 }
                             }
+
+
                             preference.getContext().startService(aisLocationService);
                         } else {
                             preference.getContext().stopService(aisLocationService);
@@ -267,6 +274,25 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         return false;
                     }
                 });
+            }
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+            Log.i(TAG, "onRequestPermissionsResult");
+            switch (requestCode) {
+                case AisCoreUtils.REQUEST_LOCATION_PERMISSION:
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        // ask for background location on android 10
+                        //int permissionLocation = ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+                        //if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            requestPermissions(
+                                    new String[] { Manifest.permission.ACCESS_BACKGROUND_LOCATION },
+                                    AisCoreUtils.REQUEST_BACKGROUND_LOCATION_PERMISSION);
+                        }
+
+                    }
             }
         }
 
