@@ -155,15 +155,15 @@ public class BrowserActivityNative extends BrowserActivity {
         exoPlayerView.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
         exoPlayerView.setControllerHideOnTouch(true);
         exoPlayerView.setControllerShowTimeoutMs(2000);
-        exo_fullscreen_icon.setOnClickListener(v -> {
-            isExoFullScreen = !isExoFullScreen;
-            exoResizeLayout();
-        });
+//        exo_fullscreen_icon.setOnClickListener(v -> {
+//            isExoFullScreen = !isExoFullScreen;
+//            exoResizeLayout();
+//        });
 
-        exo_mute_icon.setOnClickListener(v -> {
-            isExoFullScreen = !isExoFullScreen;
-            exoToggleMute();
-        });
+//        exo_mute_icon.setOnClickListener(v -> {
+//            isExoFullScreen = !isExoFullScreen;
+//            exoToggleMute();
+//        });
 
         Locale current_locale;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){

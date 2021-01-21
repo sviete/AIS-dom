@@ -232,7 +232,6 @@
     <string name="back_to_exit">Naciśnij ponownie by wyjść z aplikacji</string>
     <string name="pref_ais_dom_console_title">Konsola</string>
     <string name="pref_ais_dom_console_summary">konsola pozwala na dostęp do wszystkich zaawansowanych funkcjonalności systemu</string>
-    <string name="pref_ais_dom_spotify_summary">przejdz do Spotify</string>
     <string name="pref_ais_dom_exit_summary">naciśnij by wyjść z aplikacji</string>
     <string name="pref_ais_about_app">WERSJA APLIKACJI</string>
 
@@ -325,6 +324,8 @@
     <string name="hotword_selected_word_info">Nasłuchuje: </string>
     <string name="playback_channel_name">AIS cast</string>
     <string name="playback_channel_descr">AIS cast channel</string>
+    <string name="cast_channel_name">AIS cast</string>
+    <string name="cast_channel_descr">AIS cast channel</string>
 
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="fcm_message">FCM Message</string>

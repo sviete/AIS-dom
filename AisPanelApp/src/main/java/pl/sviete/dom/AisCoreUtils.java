@@ -59,6 +59,10 @@ public class AisCoreUtils {
     public static final String BROADCAST_EXO_PLAYER_COMMAND = "BROADCAST_EXO_PLAYER_COMMAND";
     public static final String BROADCAST_EXO_PLAYER_COMMAND_TEXT = "BROADCAST_EXO_PLAYER_COMMAND_TEXT";
 
+    // CAST
+    public static final String BROADCAST_CAST_COMMAND = "BROADCAST_CAST_COMMAND";
+    public static final String BROADCAST_CAST_COMMAND_TEXT = "BROADCAST_CAST_COMMAND_TEXT";
+
     // GPS
     public static int GPS_SERVICE_LOCATIONS_DETECTED = 0;
     public static int GPS_SERVICE_LOCATIONS_SENT = 0;
@@ -96,7 +100,6 @@ public class AisCoreUtils {
 
 
     // Audio source
-    public static String mAudioSourceSpotify = "Spotify";
     public static String mAudioSourceAndroid = "Android";
 
     // Notification

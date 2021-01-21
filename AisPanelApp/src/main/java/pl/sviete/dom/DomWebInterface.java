@@ -31,6 +31,8 @@ import pl.sviete.dom.data.DomCustomRequest;
 
 
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
 import static pl.sviete.dom.AisCoreUtils.getBatteryPercentage;
@@ -92,11 +94,18 @@ public class DomWebInterface {
                 //
                 if (response.has("player_status")) {
                     try {
+                        // player status info from ais
+
                         JSONObject player_status = response.getJSONObject("player_status");
                         AisPanelService.m_media_title = player_status.getString("media_title");
                         AisPanelService.m_media_source = player_status.getString("media_source");
                         AisPanelService.m_media_album_name = player_status.getString("media_album_name");
                         AisPanelService.m_media_stream_image = player_status.getString("media_stream_image");
+                        // broadcast to refresh player notification
+                        Intent intent = new Intent(BROADCAST_EXO_PLAYER_COMMAND);
+                        intent.putExtra(BROADCAST_EXO_PLAYER_COMMAND_TEXT, "refresh_notification");
+                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
+                        bm.sendBroadcast(intent);
                     } catch (JSONException ex) {
                         ex.printStackTrace();
                     }
