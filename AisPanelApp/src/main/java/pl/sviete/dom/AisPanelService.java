@@ -390,7 +390,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 executeExoPlayerCommandOnAis(command);
             }  else if (action.equals(BROADCAST_CAST_COMMAND)){
                 final String command = intent.getStringExtra(AisCoreUtils.BROADCAST_CAST_COMMAND_TEXT);
-                playCastMedia(command);
+                executeCastPlayerCommand(command);
             } else if (action.equals(BROADCAST_ON_AIS_REQUEST)) {
                 Log.d(TAG, BROADCAST_ON_AIS_REQUEST);
                 if (intent.hasExtra("aisRequest")){
@@ -576,13 +576,23 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 Log.d(TAG, "request: " + request);
                 JSONObject jState = new JSONObject();
                 try {
-                    jState.put("currentStatus", 0);
+                    boolean playing = false;
+                    long duration = 0;
+                    long currentPosition = 0;
+                    int state = Player.STATE_IDLE;
+                    if (mCastExoPlayer!= null) {
+                        playing = mCastExoPlayer.isPlaying();
+                        duration = mCastExoPlayer.getDuration();
+                        currentPosition = mCastExoPlayer.getCurrentPosition();
+                        state = mCastExoPlayer.getPlaybackState();
+                    }
+                    jState.put("currentStatus", state);
                     jState.put("currentMedia", m_cast_media_title);
-                    jState.put("playing", false);
+                    jState.put("playing", playing);
                     jState.put("currentVolume", getVolume());
-                    jState.put("duration",0);
-                    jState.put("currentPosition", 0);
-                    jState.put("currentSpeed", 0);
+                    jState.put("duration", duration);
+                    jState.put("currentPosition", currentPosition);
+                    jState.put("currentSpeed", 1);
                     jState.put("media_source", m_cast_media_source);
                     jState.put("media_album_name", m_cast_media_album_name);
                     if (m_cast_media_stream_image == null) {
@@ -657,18 +667,18 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             else if(commandJson.has("stopAudio")) {
                 stopAudio();
                 LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                Intent stopIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
-                stopIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "stop");
+                Intent stopIntent = new Intent(AisCoreUtils.BROADCAST_CAST_COMMAND);
+                stopIntent.putExtra(AisCoreUtils.BROADCAST_CAST_COMMAND_TEXT, "stop");
                 bm.sendBroadcast(stopIntent);
             }
             else if(commandJson.has("pauseAudio")) {
                 Boolean pauseAudio = commandJson.getBoolean("pauseAudio");
                 LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-                Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
+                Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_CAST_COMMAND);
                 if (pauseAudio) {
-                    pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "pause");
+                    pauseIntent.putExtra(AisCoreUtils.BROADCAST_CAST_COMMAND_TEXT, "pause");
                 } else {
-                    pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "play");
+                    pauseIntent.putExtra(AisCoreUtils.BROADCAST_CAST_COMMAND_TEXT, "play");
                 }
                 bm.sendBroadcast(pauseIntent);
             }
@@ -943,11 +953,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         m_media_source = AisCoreUtils.mAudioSourceAndroid;
         m_media_stream_image = "ais";
         m_media_album_name = " ";
-        // try to stop and start ExoPlayer to refresh the status
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-        Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
-        pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "play_empty");
-        bm.sendBroadcast(pauseIntent);
     }
     private void refreshAudioNotification() {
         Log.e(TAG, "get info ");
@@ -1102,6 +1107,36 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
 
     //
+    private void executeCastPlayerCommand(String command) {
+        if (command.equals("pause")){
+            try {
+                if(mCastExoPlayer != null) {
+                    mCastExoPlayer.setPlayWhenReady(false);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error pauseAudio: " + e.getMessage());
+            }
+        } else if (command.equals("play")){
+            try {
+                if(mCastExoPlayer != null) {
+                    mCastExoPlayer.setPlayWhenReady(true);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error pauseAudio: " + e.getMessage());
+            }
+        } else if (command.equals("stop")){
+            try {
+                if(mCastExoPlayer != null) {
+                    mCastExoPlayer.stop();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error pauseAudio: " + e.getMessage());
+            }
+        } else {
+            playCastMedia(command);
+        }
+    }
+
     private void executeExoPlayerCommandOnAis(String command) {
         if (command.equals("pause")){
             pauseAudio(true);
@@ -1121,7 +1156,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     refreshAudioNotification();
                 }
             }, 2000);
-
         }
     }
 
