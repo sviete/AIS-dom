@@ -9,7 +9,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -20,7 +19,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
@@ -100,7 +98,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private SimpleExoPlayer mExoPlayer;
     public static String m_media_title = null;
     public static String m_media_source = AisCoreUtils.mAudioSourceAndroid;
-    public static String m_media_stream_image = null;
+    public static String m_media_stream_image = "ais";
     public static String m_media_album_name = null;
     private PlayerNotificationManager playerNotificationManager;
 
@@ -630,7 +628,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, error.toString());
+                        Log.e(TAG, "getAudioInfoFromCloud: " + error.toString());
                     }
                 }
                 ){
@@ -940,38 +938,50 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
     }
 
+    private void invalidatePlayerNotification() {
+        m_media_title = "AI-Speaker";
+        m_media_source = AisCoreUtils.mAudioSourceAndroid;
+        m_media_stream_image = "ais";
+        m_media_album_name = " ";
+        // try to stop and start ExoPlayer to refresh the status
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+        Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
+        pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "play_empty");
+        bm.sendBroadcast(pauseIntent);
+    }
     private void refreshAudioNotification() {
-        playerNotificationManager.invalidate();
-        String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "get_audio_full_info";
-        JSONObject audioInfo = new JSONObject();
-        try {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            final String appUrl = sharedPreferences.getString(getApplicationContext().getString(R.string.key_setting_app_launchurl), "");
-            audioInfo.put("audio_url", appUrl);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Map<String, String> heders = new HashMap<String, String>();
-        heders.put("Content-Type", "application/json");
-        DomCustomRequest jsonObjectRequest = new DomCustomRequest(Request.Method.POST, url, heders, audioInfo.toString(), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    setAudioInfo(response);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Log.e(TAG, "get info ");
+        if (AisCoreUtils.AIS_REMOTE_GATE_ID != null && AisCoreUtils.AIS_REMOTE_GATE_ID.startsWith("dom-")) {
+            String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "get_audio_full_info";
+            JSONObject audioInfo = new JSONObject();
+            try {
+                audioInfo.put("audio_url", AisCoreUtils.AIS_REMOTE_GATE_ID);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Map<String, String> heders = new HashMap<String, String>();
+            heders.put("Content-Type", "application/json");
+            DomCustomRequest jsonObjectRequest = new DomCustomRequest(Request.Method.POST, url, heders, audioInfo.toString(), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        setAudioInfo(response);
+                        playerNotificationManager.invalidate();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(TAG, "refreshAudioNotification: " + error.toString());
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, error.toString());
-            }
+            ) {
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+            requestQueue.add(jsonObjectRequest);
         }
-        ){
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        requestQueue.add(jsonObjectRequest);
     }
 
     private void playAudio(){
@@ -1104,7 +1114,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         } else if (command.equals("play_empty")){
             playAudio();
         } else if (command.equals("refresh_notification")) {
-            refreshAudioNotification();
+            invalidatePlayerNotification();
+            // give 3 seconds
+            mMainThreadHandler.postDelayed(new Runnable() {
+                public void run() {
+                    refreshAudioNotification();
+                }
+            }, 2000);
+
         }
     }
 
@@ -1133,16 +1150,20 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
             Thread thread = new Thread(() -> {
                 try {
-                    URL url = new URL(m_media_stream_image);
-                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    callback.onBitmap(bitmap);
+                    if (m_media_stream_image.equals("ais")) {
+                        callback.onBitmap(getSpeakerImage());
+                    } else {
+                        URL url = new URL(m_media_stream_image);
+                        Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        callback.onBitmap(bitmap);
+                    }
                 } catch (Exception e) {
                     callback.onBitmap(getSpeakerImage());
                     e.printStackTrace();
                 }
             });
             thread.start();
-            return null;
+            return getSpeakerImage();
         }
 
         @Nullable
@@ -1395,7 +1416,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         @Override
         public String getCurrentContentText(Player player) {
             int window = player.getCurrentWindowIndex();
-            return m_cast_media_source;
+            return "Cast " +  m_cast_media_source;
         }
 
         @Nullable

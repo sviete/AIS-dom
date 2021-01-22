@@ -92,23 +92,20 @@ public class DomWebInterface {
                     }
                 }
                 //
-                if (response.has("player_status")) {
+                if (response.has("gate_id")) {
                     try {
-                        // player status info from ais
-
-                        JSONObject player_status = response.getJSONObject("player_status");
-                        AisPanelService.m_media_title = player_status.getString("media_title");
-                        AisPanelService.m_media_source = player_status.getString("media_source");
-                        AisPanelService.m_media_album_name = player_status.getString("media_album_name");
-                        AisPanelService.m_media_stream_image = player_status.getString("media_stream_image");
-                        // broadcast to refresh player notification
-                        Intent intent = new Intent(BROADCAST_EXO_PLAYER_COMMAND);
-                        intent.putExtra(BROADCAST_EXO_PLAYER_COMMAND_TEXT, "refresh_notification");
-                        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
-                        bm.sendBroadcast(intent);
+                        AisCoreUtils.AIS_REMOTE_GATE_ID = response.getString("gate_id");
                     } catch (JSONException ex) {
                         ex.printStackTrace();
                     }
+                }
+                if (response.has("player_status") || response.has("say_it")) {
+                    // get player status info from AIS
+                    // broadcast to refresh player notification
+                    Intent intent = new Intent(BROADCAST_EXO_PLAYER_COMMAND);
+                    intent.putExtra(BROADCAST_EXO_PLAYER_COMMAND_TEXT, "refresh_notification");
+                    LocalBroadcastManager bm = LocalBroadcastManager.getInstance(context);
+                    bm.sendBroadcast(intent);
                 }
             }
         }, new Response.ErrorListener() {
