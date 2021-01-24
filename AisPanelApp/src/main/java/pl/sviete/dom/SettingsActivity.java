@@ -115,6 +115,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             String versionName = BuildConfig.VERSION_NAME;
             PreferenceCategory prefCategorySettings = (PreferenceCategory) findPreference("pref_category_app_settings");
             Preference preferenceVersion = findPreference("pref_ais_dom_version");
+            preferenceVersion.setTitle("IP: " + AisNetUtils.getIPAddress(true));
             if(AisCoreUtils.onBox()) {
                 preferenceVersion.setSummary(versionName + " (client app on iot gate)");
                 // hide some options on gate / phone
@@ -137,7 +138,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 //
 
             } else {
-                preferenceVersion.setSummary(versionName + " \n(mob client id: " + AisCoreUtils.AIS_GATE_ID + ")" );
+                preferenceVersion.setSummary(versionName + " \n(mob client id: " + AisCoreUtils.AIS_GATE_ID + ")");
             }
 
             // set on exit

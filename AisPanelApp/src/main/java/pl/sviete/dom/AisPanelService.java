@@ -103,13 +103,13 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private PlayerNotificationManager playerNotificationManager;
 
     // cast
-    private SimpleExoPlayer mCastExoPlayer;
-    private PlayerNotificationManager mCastPlayerNotificationManager;
+    public static SimpleExoPlayer mCastExoPlayer;
+    public static String mCastStreamUrl;
+    public static PlayerNotificationManager mCastPlayerNotificationManager;
     public static String m_cast_media_title = null;
     public static String m_cast_media_source = AisCoreUtils.mAudioSourceAndroid;
     public static String m_cast_media_stream_image = null;
     public static String m_cast_media_album_name = null;
-    CastDescriptionAdapter mCasttDescriptionAdapter  = new CastDescriptionAdapter();
     // Create Handler for main thread (can be reused).
     Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
@@ -908,44 +908,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     // play audio on local exo just to show the status to user
     private void playCastMedia(String streamUrl){
-        String ais_cast_channel = "ais_cast_channel";
-        int ais_cast_notification_id = 8888888;
-        if (mCastExoPlayer != null) {
-            try {
-                mCastExoPlayer.stop();
-                mCastPlayerNotificationManager.setPlayer(null);
-                mCastExoPlayer.release();
-                mCastExoPlayer = null;
-            } catch (Exception e) {
-                Log.e(TAG, "Error stop playCastMedia: " + e.getMessage());
-            }
-        }
-        try {
-            mCastExoPlayer = new SimpleExoPlayer.Builder(getApplicationContext()).build();
-            MediaItem mediaItem = MediaItem.fromUri(streamUrl);
-            mCastExoPlayer.setMediaItem(mediaItem);
-            mCastExoPlayer.prepare();
-            mCastPlayerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(
-                    getApplicationContext(),
-                    ais_cast_channel,
-                    R.string.playback_channel_name,
-                    R.string.cast_channel_descr,
-                    ais_cast_notification_id,
-                    mCasttDescriptionAdapter
-            );
-
-            mCastPlayerNotificationManager.setPlayer(mCastExoPlayer);
-            mCastExoPlayer.setPlayWhenReady(true);
-            mCastPlayerNotificationManager.setUseNextAction(false);
-            mCastPlayerNotificationManager.setUsePreviousAction(false);
-            mCastPlayerNotificationManager.setUseStopAction(true);
-            mCastPlayerNotificationManager.setRewindIncrementMs(0);
-            mCastPlayerNotificationManager.setFastForwardIncrementMs(0);
-            mCastPlayerNotificationManager.setSmallIcon(R.drawable.ais_icon_cast);
-            //
-        } catch (Exception e) {
-            Log.e(TAG, "Error playCastMedia: " + e.getMessage());
-        }
+        mCastStreamUrl = streamUrl;
+        //
+        Intent playerActivity = new Intent(this, AisMediaPlayerActivity.class);
+        playerActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(playerActivity);
     }
 
     private void invalidatePlayerNotification() {
@@ -1429,55 +1396,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             actionIndices[1] = 4;
             return actionIndices;
         }
-    }
-
-    // cast notification
-    private class CastDescriptionAdapter implements
-            PlayerNotificationManager.MediaDescriptionAdapter {
-
-        @Override
-        public String getCurrentContentTitle(Player player) {
-            return m_cast_media_title;
-        }
-
-        @Nullable
-        @Override
-        public PendingIntent createCurrentContentIntent(Player player) {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public String getCurrentContentText(Player player) {
-            int window = player.getCurrentWindowIndex();
-            return "Cast " +  m_cast_media_source;
-        }
-
-        @Nullable
-        @Override
-        public CharSequence getCurrentSubText(Player player) {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Bitmap getCurrentLargeIcon(Player player,
-                                          PlayerNotificationManager.BitmapCallback callback) {
-
-            Thread thread = new Thread(() -> {
-                try {
-                    URL url = new URL(m_cast_media_stream_image);
-                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    callback.onBitmap(bitmap);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-            thread.start();
-
-            return null;
-        }
-
     }
 
 }

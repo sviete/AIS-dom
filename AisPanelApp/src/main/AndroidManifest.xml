@@ -191,14 +191,15 @@
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
-        <activity android:name="pl.sviete.dom.connhist.AisConnectionsHistoryActivity"
-            android:label="@string/list_connection_history"
-            android:theme="@style/AppThemeActionBar">
+
+        <activity
+            android:name="pl.sviete.dom.AisMediaPlayerActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppThemeFullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
-
 
         <activity
             android:name="com.redbooth.wizard.MainWizardActivity">
