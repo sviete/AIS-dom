@@ -23,7 +23,6 @@
         android:layout_height="match_parent"
         app:show_buffering="when_playing"
         app:show_shuffle_button="true"
-        app:default_artwork="@drawable/ic_ais_logo"
         app:use_artwork="true"/>
 
 

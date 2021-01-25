@@ -1,7 +1,6 @@
 package pl.sviete.dom;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -17,8 +16,6 @@ import androidx.preference.SwitchPreference;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceManager;
 import androidx.core.app.ActivityCompat;
-
-import com.redbooth.wizard.MainWizardActivity;
 
 import ai.picovoice.hotword.PorcupineService;
 
