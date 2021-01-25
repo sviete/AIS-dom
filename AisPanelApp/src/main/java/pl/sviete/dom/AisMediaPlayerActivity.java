@@ -2,10 +2,15 @@ package pl.sviete.dom;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +21,9 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 
@@ -23,6 +31,16 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
     private static final String TAG = "AisMediaPlayerActivity";
     private final CastDescriptionAdapter mCasttDescriptionAdapter  = new CastDescriptionAdapter();
 
+    public static Drawable drawableFromUrl(String url) throws IOException {
+        Bitmap x;
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.connect();
+        InputStream input = connection.getInputStream();
+
+        x = BitmapFactory.decodeStream(input);
+        return new BitmapDrawable(Resources.getSystem(), x);
+    }
 
     @Override
     protected void onStart() {
@@ -75,17 +93,11 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
             AisPanelService.mCastPlayerNotificationManager.setFastForwardIncrementMs(0);
             AisPanelService. mCastPlayerNotificationManager.setSmallIcon(R.drawable.ais_icon_cast);
 
-            //
-//            Thread thread = new Thread(() -> {
-//                try {
-//                    URL url = new URL(AisPanelService.m_cast_media_stream_image);
-//                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-//                    playerView.setBackground();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//            thread.start();
+
+            // TODO
+            Drawable img = drawableFromUrl(AisPanelService.m_cast_media_stream_image);
+            playerView.setDefaultArtwork(img);
+
 
 
         } catch (Exception e) {
