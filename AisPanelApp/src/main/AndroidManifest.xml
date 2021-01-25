@@ -202,6 +202,15 @@
         </activity>
 
         <activity
+            android:name="pl.sviete.dom.AisCamActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppThemeFullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name="com.redbooth.wizard.MainWizardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

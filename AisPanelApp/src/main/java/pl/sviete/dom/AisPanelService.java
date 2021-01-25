@@ -110,6 +110,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public static String m_cast_media_source = AisCoreUtils.mAudioSourceAndroid;
     public static String m_cast_media_stream_image = null;
     public static String m_cast_media_album_name = null;
+    public static String mCamStreamUrl = null;
     // Create Handler for main thread (can be reused).
     Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
@@ -402,6 +403,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     } else if (aisRequest.equals("playAudio")) {
                         final String audioUrl = intent.getStringExtra("url");
                         playCastMedia(audioUrl);
+                    } else if (aisRequest.equals("showCamera")) {
+                        final String streamUrl = intent.getStringExtra("url");
+                        showCamView(streamUrl);
                     } else if (aisRequest.equals("findPhone")) {
                         // set audio volume to 100
                         setVolume(100);
@@ -716,6 +720,13 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 requestIntent.putExtra("url", "");
                 LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
                 bm.sendBroadcast(requestIntent);
+            } else if (commandJson.has("showCamera")) {
+                Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
+                requestIntent.putExtra("aisRequest", "showCamera");
+                String url = commandJson.getString("showCamera");
+                requestIntent.putExtra("url", url);
+                LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+                bm.sendBroadcast(requestIntent);
             }
         }
         catch (JSONException ex) {
@@ -906,13 +917,22 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     }
 
-    // play audio on local exo just to show the status to user
+    // play audio on local exo
     private void playCastMedia(String streamUrl){
         mCastStreamUrl = streamUrl;
         //
         Intent playerActivity = new Intent(this, AisMediaPlayerActivity.class);
         playerActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(playerActivity);
+    }
+    // show camera view
+    private void showCamView(String streamUrl){
+        Intent camActivity = new Intent(this, AisCamActivity.class);
+        // "rtsp://192.168.2.38/unicast"
+        mCamStreamUrl = streamUrl;
+        camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(camActivity);
+
     }
 
     private void invalidatePlayerNotification() {

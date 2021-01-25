@@ -1,0 +1,50 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    android:background="@android:color/background_dark">
+
+    <org.videolan.libvlc.util.VLCVideoLayout
+        android:id="@+id/video_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="false">
+
+        <Button
+            android:id="@+id/cam_activity_exit"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_gravity="left|bottom"
+            android:drawableTop="@drawable/cam_icon_exit_to_app"
+            android:layout_marginStart="40dp"
+            android:textSize = "14sp"
+            android:text="exit"
+            android:background = "@drawable/round_button"
+            android:textColor = "#E64A19"/>
+        <Button
+            android:id="@+id/cam_activity_screenshot"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:drawableTop="@drawable/cam_icon_photo"
+            android:layout_gravity="center|bottom"
+            android:textSize = "14sp"
+            android:text="photo"
+            android:background = "@drawable/round_button"
+            android:textColor = "#FFA000"
+            />
+        <Button
+            android:id="@+id/cam_activity_open_gate"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_alignParentBottom="true"
+            android:drawableTop="@drawable/cam_icon_open"
+            android:layout_marginEnd="40dp"
+            android:layout_gravity="right|bottom"
+            android:textSize = "14sp"
+            android:text="open"
+            android:background = "@drawable/round_button"
+            android:textColor = "#388E3C"/>
+    </org.videolan.libvlc.util.VLCVideoLayout>
+
+</FrameLayout>
