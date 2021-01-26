@@ -1,14 +1,10 @@
 package pl.sviete.dom;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,12 +13,7 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.util.VLCVideoLayout;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-
-import static pl.sviete.dom.AisPanelService.mCamStreamUrl;
 
 
 public class AisCamActivity extends AppCompatActivity  {
@@ -32,6 +23,9 @@ public class AisCamActivity extends AppCompatActivity  {
 
         private LibVLC mLibVLC = null;
         private MediaPlayer mMediaPlayer = null;
+
+        public String mUrl = null;
+        public String mOpenAutomation = null;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -63,44 +57,27 @@ public class AisCamActivity extends AppCompatActivity  {
                     screenshotCamButton();
                 }
             });
+
+            // open
+            Button openGateCamButton = (Button) findViewById(R.id.cam_activity_open_gate);
+            openGateCamButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openGateCamButton();
+                }
+            });
         }
 
+    private void openGateCamButton() {
+            if (mOpenAutomation != null) {
+                DomWebInterface.publishMessage("Automatyzacja " + mOpenAutomation, "speech_command", getApplicationContext());
+            }
+            Toast.makeText(getBaseContext(),"Uruchamiam: " + mOpenAutomation, Toast.LENGTH_SHORT).show();
+    }
+
     private void screenshotCamButton() {
-            // TODO
-        return;
-//        View view = (View) findViewById(R.id.video_layout);
-//        View screenView = view.getRootView();
-//        screenView.setDrawingCacheEnabled(true);
-//        Bitmap bitmap = Bitmap.createBitmap(screenView.getDrawingCache());
-//        screenView.setDrawingCacheEnabled(false);
-//
-//        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Screenshots";
-//        File dir = new File(dirPath);
-//        if(!dir.exists())
-//            dir.mkdirs();
-//        File file = new File(dirPath, "test.png");
-//        try {
-//            FileOutputStream fOut = new FileOutputStream(file);
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut);
-//            fOut.flush();
-//            fOut.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        Uri uri = Uri.fromFile(file);
-//        Intent intent = new Intent();
-//        intent.setAction(Intent.ACTION_SEND);
-//        intent.setType("image/*");
-//
-//        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
-//        intent.putExtra(android.content.Intent.EXTRA_TEXT, "");
-//        intent.putExtra(Intent.EXTRA_STREAM, uri);
-//        try {
-//            startActivity(Intent.createChooser(intent, "Share Screenshot"));
-//        } catch (ActivityNotFoundException e) {
-//            Toast.makeText(getApplicationContext(), "No App Available", Toast.LENGTH_SHORT).show();
-//        }
+        DomWebInterface.publishMessage("Zdjęcie z kamery " + mUrl, "speech_command", getApplicationContext());
+        Toast.makeText(getBaseContext(),"Zapisuje zdjęcie z kamery w galerii.", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -114,13 +91,22 @@ public class AisCamActivity extends AppCompatActivity  {
         @Override
         protected void onStart() {
             super.onStart();
+
+            Intent intent = getIntent();
+            if (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL)) {
+                mUrl = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL);
+            }
+            if  (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION)) {
+                mOpenAutomation = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION);
+            }
+
             mMediaPlayer.attachViews(mVideoLayout, null, ENABLE_SUBTITLES, USE_TEXTURE_VIEW);
             try {
-                final Media media = new Media(mLibVLC, Uri.parse(mCamStreamUrl));
+                final Media media = new Media(mLibVLC, Uri.parse(mUrl));
                 mMediaPlayer.setMedia(media);
                 media.release();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
             mMediaPlayer.play();
         }

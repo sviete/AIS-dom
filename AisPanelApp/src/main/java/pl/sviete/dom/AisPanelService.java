@@ -76,6 +76,9 @@ import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
 import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION;
 
 
 public class AisPanelService extends Service implements TextToSpeech.OnInitListener, ExoPlayer.EventListener {
@@ -110,7 +113,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public static String m_cast_media_source = AisCoreUtils.mAudioSourceAndroid;
     public static String m_cast_media_stream_image = null;
     public static String m_cast_media_album_name = null;
-    public static String mCamStreamUrl = null;
     // Create Handler for main thread (can be reused).
     Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
@@ -276,6 +278,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         filter.addAction((BROADCAST_CAST_COMMAND));
         filter.addAction(BROADCAST_SERVICE_SAY_IT);
         filter.addAction(BROADCAST_ON_AIS_REQUEST);
+        filter.addAction(BROADCAST_CAMERA_COMMAND);
 
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
         bm.registerReceiver(mBroadcastReceiver, filter);
@@ -392,6 +395,10 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             }  else if (action.equals(BROADCAST_CAST_COMMAND)){
                 final String command = intent.getStringExtra(AisCoreUtils.BROADCAST_CAST_COMMAND_TEXT);
                 executeCastPlayerCommand(command);
+            } else if (action.equals((BROADCAST_CAMERA_COMMAND))) {
+                final String streamUrl = intent.getStringExtra(BROADCAST_CAMERA_COMMAND_URL);
+                final String openAutomation = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION);
+                showCamView(streamUrl, openAutomation);
             } else if (action.equals(BROADCAST_ON_AIS_REQUEST)) {
                 Log.d(TAG, BROADCAST_ON_AIS_REQUEST);
                 if (intent.hasExtra("aisRequest")){
@@ -403,9 +410,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     } else if (aisRequest.equals("playAudio")) {
                         final String audioUrl = intent.getStringExtra("url");
                         playCastMedia(audioUrl);
-                    } else if (aisRequest.equals("showCamera")) {
-                        final String streamUrl = intent.getStringExtra("url");
-                        showCamView(streamUrl);
                     } else if (aisRequest.equals("findPhone")) {
                         // set audio volume to 100
                         setVolume(100);
@@ -721,10 +725,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
                 bm.sendBroadcast(requestIntent);
             } else if (commandJson.has("showCamera")) {
-                Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
-                requestIntent.putExtra("aisRequest", "showCamera");
-                String url = commandJson.getString("showCamera");
-                requestIntent.putExtra("url", url);
+                Intent requestIntent = new Intent(BROADCAST_CAMERA_COMMAND);
+                JSONObject showCamera = commandJson.getJSONObject("showCamera");
+                String url = showCamera.getString("streamUrl");
+                String openAutomation = showCamera.getString("openAutomationName");
+                requestIntent.putExtra(BROADCAST_CAMERA_COMMAND_URL, url);
+                requestIntent.putExtra(BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION, openAutomation);
                 LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
                 bm.sendBroadcast(requestIntent);
             }
@@ -926,10 +932,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         startActivity(playerActivity);
     }
     // show camera view
-    private void showCamView(String streamUrl){
+    private void showCamView(String streamUrl, String openAutomation){
         Intent camActivity = new Intent(this, AisCamActivity.class);
         // "rtsp://192.168.2.38/unicast"
-        mCamStreamUrl = streamUrl;
+        camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, streamUrl);
+        camActivity.putExtra(BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION, openAutomation);
         camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(camActivity);
 
