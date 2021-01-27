@@ -938,6 +938,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, streamUrl);
         camActivity.putExtra(BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION, openAutomation);
         camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(camActivity);
 
     }

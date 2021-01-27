@@ -100,6 +100,8 @@ public class AisCamActivity extends AppCompatActivity  {
                 mOpenAutomation = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION);
             }
 
+            Toast.makeText(getBaseContext(), "CAM url: " + mUrl, Toast.LENGTH_SHORT).show();
+
             mMediaPlayer.attachViews(mVideoLayout, null, ENABLE_SUBTITLES, USE_TEXTURE_VIEW);
             try {
                 final Media media = new Media(mLibVLC, Uri.parse(mUrl));
