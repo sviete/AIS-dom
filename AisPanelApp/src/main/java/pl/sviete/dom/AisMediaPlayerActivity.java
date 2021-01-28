@@ -48,6 +48,8 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.media_player_view);
 
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
         mMainThreadHandler.post(
                 playMedia()
         );

@@ -3,12 +3,14 @@ package pl.sviete.dom;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONObject;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
@@ -25,16 +27,16 @@ public class AisCamActivity extends AppCompatActivity  {
         private MediaPlayer mMediaPlayer = null;
 
         public String mUrl = null;
-        public String mOpenAutomation = null;
+        public String mHaCamId = null;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
             setContentView(R.layout.activity_ais_cam);
 
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
             final ArrayList<String> args = new ArrayList<>();
-            args.add("-vvv");
             mLibVLC = new LibVLC(this, args);
             mMediaPlayer = new MediaPlayer(mLibVLC);
 
@@ -69,15 +71,37 @@ public class AisCamActivity extends AppCompatActivity  {
         }
 
     private void openGateCamButton() {
-            if (mOpenAutomation != null) {
-                DomWebInterface.publishMessage("Automatyzacja " + mOpenAutomation, "speech_command", getApplicationContext());
+            if (mHaCamId != null) {
+                try {
+                    // send camera button event
+                    JSONObject jMessage = new JSONObject();
+                    jMessage.put("event_type", "ais_cam_button_pressed");
+                    JSONObject jData = new JSONObject();
+                    jData.put("button", "open");
+                    jData.put("camera_entity_id", mHaCamId);
+                    jMessage.put("event_data", jData);
+                    DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
+                } catch (Exception e) {
+                    Log.e("Exception", e.toString());
+                }
             }
-            Toast.makeText(getBaseContext(),"Uruchamiam: " + mOpenAutomation, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(),"Otwieram.", Toast.LENGTH_SHORT).show();
     }
 
     private void screenshotCamButton() {
-        DomWebInterface.publishMessage("Zdjęcie z kamery " + mUrl, "speech_command", getApplicationContext());
-        Toast.makeText(getBaseContext(),"Zapisuje zdjęcie z kamery w galerii.", Toast.LENGTH_SHORT).show();
+        try {
+            // send camera button event
+            JSONObject jMessage = new JSONObject();
+            jMessage.put("event_type", "ais_cam_button_pressed");
+            JSONObject jData = new JSONObject();
+            jData.put("button", "picture");
+            jData.put("camera_entity_id", mHaCamId);
+            jMessage.put("event_data", jData);
+            DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
+        } catch (Exception e) {
+            Log.e("Exception", e.toString());
+        }
+        Toast.makeText(getBaseContext(),"Zdjęcie z kamery.", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -96,8 +120,8 @@ public class AisCamActivity extends AppCompatActivity  {
             if (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL)) {
                 mUrl = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL);
             }
-            if  (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION)) {
-                mOpenAutomation = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION);
+            if  (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_HA_ID)) {
+                mHaCamId = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_HA_ID);
             }
 
             Toast.makeText(getBaseContext(), "CAM url: " + mUrl, Toast.LENGTH_SHORT).show();
