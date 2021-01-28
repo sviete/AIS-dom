@@ -12,7 +12,7 @@ android {
         minSdkVersion 22
         targetSdkVersion 29
         versionCode 156
-        versionName '2.0.1.CamCast'
+        versionName '2.0.2.CamCast'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
