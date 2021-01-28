@@ -194,7 +194,7 @@
 
         <activity
             android:name="pl.sviete.dom.AisMediaPlayerActivity"
-            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|keyboard"
             android:theme="@style/AppThemeFullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -203,7 +203,7 @@
 
         <activity
             android:name="pl.sviete.dom.AisCamActivity"
-            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|keyboard"
             android:theme="@style/AppThemeFullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
