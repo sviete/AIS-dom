@@ -67,7 +67,7 @@ public class AisCoreUtils {
     // CAMERA
     public static final String BROADCAST_CAMERA_COMMAND = "BROADCAST_CAMERA_COMMAND";
     public static final String BROADCAST_CAMERA_COMMAND_URL = "BROADCAST_CAMERA_COMMAND_URL";
-    public static final String BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION = "BROADCAST_CAMERA_COMMAND_OPEN_AUTOMATION";
+    public static final String BROADCAST_CAMERA_HA_ID = "BROADCAST_CAMERA_HA_ID";
 
     // GPS
     public static int GPS_SERVICE_LOCATIONS_DETECTED = 0;
