@@ -357,21 +357,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
 
     @Override
     public void onInit(int initStatus) {
-        if (initStatus == TextToSpeech.SUCCESS) {
-            mTts.setSpeechRate(1.0f);
-            Config mConfig = new Config(getApplicationContext());
-            String ttsVoice = mConfig.getAppTtsVoice();
-            Voice voiceobj = new Voice(
-                    ttsVoice, new Locale("pl_PL"),
-                    Voice.QUALITY_HIGH,
-                    Voice.LATENCY_NORMAL,
-                    false,
-                    null);
-            mTts.setVoice(voiceobj);
-            if(this.textToSpeak.length() >= 4000) {
-                this.textToSpeak = this.textToSpeak.substring(0, 3999);
+        // fix - java.lang.NullPointerException
+        try {
+            if (initStatus == TextToSpeech.SUCCESS) {
+                mTts.setSpeechRate(1.0f);
+                Config mConfig = new Config(getApplicationContext());
+                String ttsVoice = mConfig.getAppTtsVoice();
+                Voice voiceobj = new Voice(
+                        ttsVoice, new Locale("pl_PL"),
+                        Voice.QUALITY_HIGH,
+                        Voice.LATENCY_NORMAL,
+                        false,
+                        null);
+                mTts.setVoice(voiceobj);
+                if(this.textToSpeak.length() >= 4000) {
+                    this.textToSpeak = this.textToSpeak.substring(0, 3999);
+                }
+                mTts.speak(this.textToSpeak, TextToSpeech.QUEUE_FLUSH, null,"123456");
             }
-            mTts.speak(this.textToSpeak, TextToSpeech.QUEUE_FLUSH, null,"123456");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

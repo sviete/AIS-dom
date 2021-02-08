@@ -7,7 +7,9 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebStorage;
+import android.webkit.WebView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -96,7 +98,8 @@ public class Config {
 
     private void redirectToNewGateUrl(String localUrlToGo, Boolean force){
         AisCoreUtils.setAisDomUrl(localUrlToGo);
-        if (!force){
+        // fix java.lang.NullPointerException
+        if (!force && AisCoreUtils.mWebView != null){
             // check if the url was changed
             if (AisCoreUtils.mWebView.getUrl().startsWith(localUrlToGo)){
                 return;
