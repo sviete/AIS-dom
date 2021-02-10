@@ -1,6 +1,5 @@
 package pl.sviete.dom;
 
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -14,7 +13,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +23,6 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -35,6 +32,7 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
     private static final String TAG = "AisMediaPlayerActivity";
     private final CastDescriptionAdapter mCasttDescriptionAdapter  = new CastDescriptionAdapter();
     Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+    public static PlayerNotificationManager mCastPlayerNotificationManager;
 
 
     @Override
@@ -68,7 +66,7 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
         if (AisPanelService.mCastExoPlayer != null) {
             try {
                 AisPanelService.mCastExoPlayer.stop();
-                AisPanelService.mCastPlayerNotificationManager.setPlayer(null);
+                mCastPlayerNotificationManager.setPlayer(null);
                 AisPanelService.mCastExoPlayer.release();
                 AisPanelService.mCastExoPlayer = null;
             } catch (Exception e) {
@@ -84,7 +82,7 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
             MediaItem mediaItem = MediaItem.fromUri(AisPanelService.mCastStreamUrl);
             AisPanelService.mCastExoPlayer.setMediaItem(mediaItem);
             AisPanelService.mCastExoPlayer.prepare();
-            AisPanelService. mCastPlayerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(
+            mCastPlayerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(
                     getApplicationContext(),
                     ais_cast_channel,
                     R.string.playback_channel_name,
@@ -92,14 +90,14 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
                     ais_cast_notification_id,
                     mCasttDescriptionAdapter
             );
-            AisPanelService.mCastPlayerNotificationManager.setPlayer(AisPanelService.mCastExoPlayer);
+            mCastPlayerNotificationManager.setPlayer(AisPanelService.mCastExoPlayer);
             AisPanelService.mCastExoPlayer.setPlayWhenReady(true);
-            AisPanelService.mCastPlayerNotificationManager.setUseNextAction(false);
-            AisPanelService.mCastPlayerNotificationManager.setUsePreviousAction(false);
-            AisPanelService.mCastPlayerNotificationManager.setUseStopAction(true);
-            AisPanelService.mCastPlayerNotificationManager.setRewindIncrementMs(0);
-            AisPanelService.mCastPlayerNotificationManager.setFastForwardIncrementMs(0);
-            AisPanelService. mCastPlayerNotificationManager.setSmallIcon(R.drawable.ais_icon_cast);
+            mCastPlayerNotificationManager.setUseNextAction(false);
+            mCastPlayerNotificationManager.setUsePreviousAction(false);
+            mCastPlayerNotificationManager.setUseStopAction(true);
+            mCastPlayerNotificationManager.setRewindIncrementMs(0);
+            mCastPlayerNotificationManager.setFastForwardIncrementMs(0);
+            mCastPlayerNotificationManager.setSmallIcon(R.drawable.ais_icon_cast);
             Drawable drawable = getDrawable(R.drawable.ic_ais_logo);
             playerView.setDefaultArtwork(drawable);
         } catch (Exception e) {

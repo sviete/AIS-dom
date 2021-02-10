@@ -97,18 +97,10 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     private final IBinder mBinder = new AisPanelServiceBinder();
     private TextToSpeech mTts;
 
-    //ExoPlayer -start
-    private SimpleExoPlayer mExoPlayer;
-    public static String m_media_title = null;
-    public static String m_media_source = AisCoreUtils.mAudioSourceAndroid;
-    public static String m_media_stream_image = "ais";
-    public static String m_media_album_name = null;
-    private PlayerNotificationManager playerNotificationManager;
 
     // cast
     public static SimpleExoPlayer mCastExoPlayer;
     public static String mCastStreamUrl;
-    public static PlayerNotificationManager mCastPlayerNotificationManager;
     public static String m_cast_media_title = null;
     public static String m_cast_media_source = AisCoreUtils.mAudioSourceAndroid;
     public static String m_cast_media_stream_image = null;
@@ -116,6 +108,20 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     // Create Handler for main thread (can be reused).
     Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
+    //
+    Notification mAisServiceNotification;
+    NotifyServiceReceiver aisNotifyServiceReceiver;
+    public static String m_ais_media_title = "AI-Speaker";
+    public static String m_ais_media_source = AisCoreUtils.mAudioSourceAndroid;
+    public static String m_ais_media_stream_image_url = "ais";
+    public static Bitmap m_ais_media_bitmap_image;
+    public static String m_ais_media_album_name = " ";
+    public PendingIntent mGoToAisPendingIntent;
+    public PendingIntent mPendingIntentAisStop;
+    public PendingIntent mPendingIntentAisNext;
+    public PendingIntent mPendingIntentAisPause;
+    public PendingIntent mPendingIntentAisPrev;
+    public PendingIntent mPendingIntentAisMic;
 
     private Bitmap getSpeakerImage(){
         Bitmap largeIcon = null;
@@ -172,29 +178,35 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
         createNotificationChannel();
 
-        // Go to frame
-        Intent goToAppView = new Intent(getApplicationContext(), BrowserActivityNative.class);
-        int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
-        goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, "/aisaudio");
-        goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("ais_stop");
+        intentFilter.addAction("ais_next");
+        intentFilter.addAction("ais_play_pause");
+        intentFilter.addAction("ais_prev");
+        intentFilter.addAction("ais_mic");
+        registerReceiver(aisNotifyServiceReceiver, intentFilter);
 
 
-        String aisTitle = "Player";
-
-        Notification serviceNotification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)
+        mAisServiceNotification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)
                 .setContentTitle("AIS dom")
-                .setContentText(aisTitle)
+                // Show controls on lock screen even when user hides sensitive content.
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                // Add media control buttons that invoke intents in your media service
+                .addAction( R.drawable.ic_app_exit, "Stop", mPendingIntentAisStop) // #0
+                .addAction( R.drawable.exo_icon_previous, "Previous", mPendingIntentAisPrev) // #1
+                .addAction(R.drawable.ic_app_play_pause, "Pause", mPendingIntentAisPause)  // #2
+                .addAction(R.drawable.exo_icon_next, "Next", mPendingIntentAisNext)     // #3
+                .addAction(R.drawable.ais_icon_mic, "Mic", mPendingIntentAisMic)     // #4
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle())
+                .setContentText("AI-Speaker")
                 .setSmallIcon(R.drawable.ic_ais_logo)
-                .setContentIntent(pendingIntent)
+                .setLargeIcon(m_ais_media_bitmap_image)
+                .setContentIntent(mGoToAisPendingIntent)
                 .setSound(null)
                 .build();
 
-        startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, serviceNotification);
-
-
-        // play intro - to have notification player
-        playAudio();
+        startForeground(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, mAisServiceNotification);
 
         if (mConfig.getAppDiscoveryMode()) {
             // player auto discovery on gate
@@ -205,6 +217,25 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
         //
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public Bitmap getCurrentAisLargeIcon() {
+        Thread thread = new Thread(() -> {
+            try {
+                if (m_ais_media_stream_image_url.equals("ais")) {
+                    m_ais_media_bitmap_image = getSpeakerImage();
+                } else {
+                    URL url = new URL(m_ais_media_stream_image_url);
+                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    m_ais_media_bitmap_image = bitmap;
+                    refreshAisNotification();
+                }
+            } catch (Exception e) {
+                m_ais_media_bitmap_image = getSpeakerImage();
+            }
+        });
+        thread.start();
+        return getSpeakerImage();
     }
 
 
@@ -258,6 +289,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate Called");
+
+        aisNotifyServiceReceiver = new NotifyServiceReceiver();
+
         mConfig = new Config(getApplicationContext());
 
         // prepare the lock types we may use
@@ -286,36 +320,30 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // http api server
         configureHttp();
 
-        //ExoPlayer
-        mExoPlayer = new SimpleExoPlayer.Builder(getApplicationContext()).build();
-        mExoPlayer.addListener(this);
-        playerNotificationManager = new customPlayerNotificationManager(
-                this,
-                AIS_DOM_CHANNEL_ID,
-                AisCoreUtils.AIS_DOM_NOTIFICATION_ID,
-                new DescriptionAdapter(),
-                new customNotificationListener(),
-                new customActionReceiver()
-        );
-
-        playerNotificationManager.setPlayer(mExoPlayer);
-        // omit skip previous and next actions
-        playerNotificationManager.setUseNavigationActions(false);
-        // omit fast forward action by setting the increment to zero
-        playerNotificationManager.setFastForwardIncrementMs(0);
-        // omit rewind action by setting the increment to zero
-        playerNotificationManager.setRewindIncrementMs(0);
         //
-        playerNotificationManager.setUsePlayPauseActions(false);
-        playerNotificationManager.setSmallIcon(R.drawable.ic_ais_logo);
-        //
-        String MEDIA_SESSION_TAG = "ais";
-        MediaSessionCompat mediaSession = new MediaSessionCompat(this, MEDIA_SESSION_TAG);
-        mediaSession.setActive(true);
-        playerNotificationManager.setMediaSessionToken(mediaSession.getSessionToken());
-
         createTTS();
         //
+
+        // notification
+        m_ais_media_bitmap_image = getSpeakerImage();
+        // Go to frame
+        Intent goToAppView = new Intent(getApplicationContext(), BrowserActivityNative.class);
+        int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
+        goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, "/aisaudio");
+        goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mGoToAisPendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
+        // notification buttons
+        Intent intentAisStop = new Intent("ais_stop").setPackage(AisPanelService.this.getPackageName());
+        mPendingIntentAisStop = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisStop, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intentAisNext = new Intent("ais_next").setPackage(AisPanelService.this.getPackageName());
+        mPendingIntentAisNext = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisNext, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intentAisPause = new Intent("ais_play_pause").setPackage(AisPanelService.this.getPackageName());
+        mPendingIntentAisPause = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisPause, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intentAisPrev = new Intent("ais_prev").setPackage(AisPanelService.this.getPackageName());
+        mPendingIntentAisPrev = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisPrev, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intentAisMic = new Intent("ais_mic").setPackage(AisPanelService.this.getPackageName());
+        mPendingIntentAisMic = PendingIntent.getBroadcast(AisPanelService.this,1, intentAisMic, PendingIntent.FLAG_UPDATE_CURRENT);
+
     }
 
     @Override
@@ -334,13 +362,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             mTts.stop();
             mTts.shutdown();
             mTts = null;
-        }
-
-        if (mExoPlayer != null) {
-            mExoPlayer.stop();
-            playerNotificationManager.setPlayer(null);
-            mExoPlayer.release();
-            mExoPlayer = null;
         }
 
         if (mHttpServer != null){
@@ -362,6 +383,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             if (wifiLock.isHeld()) {
                 wifiLock.release();
             }
+        }
+        try {
+            this.unregisterReceiver(aisNotifyServiceReceiver);
+        } catch (Exception e){
+            Log.e(TAG, "Exception " + e.toString());
         }
 
         Log.i(TAG, "destroy");
@@ -391,7 +417,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 Log.d(TAG, BROADCAST_ON_END_TEXT_TO_SPEECH + " turnUpVolume");
             } else if (action.equals(BROADCAST_EXO_PLAYER_COMMAND)){
                 final String command = intent.getStringExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT);
-                executeExoPlayerCommandOnAis(command);
+                executeCastPlayerCommand(command);
             }  else if (action.equals(BROADCAST_CAST_COMMAND)){
                 final String command = intent.getStringExtra(AisCoreUtils.BROADCAST_CAST_COMMAND_TEXT);
                 executeCastPlayerCommand(command);
@@ -415,8 +441,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                         setVolume(100);
                         // play
                         playCastMedia("asset:///find_my_phone.mp3");
-                    } else if (aisRequest.equals("stopAudio")) {
-                        stopAudio();
                     }
                 }
             }
@@ -673,7 +697,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 setAudioInfo(audioInfo);
             }
             else if(commandJson.has("stopAudio")) {
-                stopAudio();
                 LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
                 Intent stopIntent = new Intent(AisCoreUtils.BROADCAST_CAST_COMMAND);
                 stopIntent.putExtra(AisCoreUtils.BROADCAST_CAST_COMMAND_TEXT, "stop");
@@ -703,13 +726,16 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 setVolume(vol);
             }
             else if(commandJson.has("setPlaybackPitch")) {
-                setPlaybackPitch(Float.parseFloat(commandJson.getString("setPlaybackPitch")));
+                // TODO
+                // setPlaybackPitch(Float.parseFloat(commandJson.getString("setPlaybackPitch")));
             }
             else if(commandJson.has("seekTo")) {
-                seekTo(commandJson.getLong("seekTo"));
+                // TODO
+                // seekTo(commandJson.getLong("seekTo"));
             }
             else if(commandJson.has("skipTo")) {
-                skipTo(commandJson.getLong("skipTo"));
+                // TODO
+                // skipTo(commandJson.getLong("skipTo"));
             }
             else if(commandJson.has("micOn")) {
                 Intent requestIntent = new Intent(AisPanelService.BROADCAST_ON_AIS_REQUEST);
@@ -944,13 +970,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     }
 
-    private void invalidatePlayerNotification() {
-        m_media_title = "AI-Speaker";
-        m_media_source = AisCoreUtils.mAudioSourceAndroid;
-        m_media_stream_image = "ais";
-        m_media_album_name = " ";
-    }
-    private void refreshAudioNotification() {
+    private void getAudioInfoForNotification() {
         Log.e(TAG, "get info ");
         if (AisCoreUtils.AIS_REMOTE_GATE_ID != null && AisCoreUtils.AIS_REMOTE_GATE_ID.startsWith("dom-")) {
             String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "get_audio_full_info";
@@ -967,7 +987,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 public void onResponse(JSONObject response) {
                     try {
                         setAudioInfo(response);
-                        playerNotificationManager.invalidate();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -985,23 +1004,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
     }
 
-    private void playAudio(){
-        String streamUrl = "asset:///1-second-of-silence.mp3";
-        // String streamUrl = "asset:///find_my_phone.mp3";
-        try {
-            mExoPlayer.stop();
-            MediaItem mediaItem = MediaItem.fromUri(streamUrl);
-            mExoPlayer.setMediaItem(mediaItem);
-            mExoPlayer.prepare();
-            mExoPlayer.setPlayWhenReady(true);
-        } catch (Exception e) {
-            Log.e(TAG, "Error playAudio: " + e.getMessage());
-        }
-    }
-
 
     private void setCastMediaInfo(JSONObject audioInfo) {
-        Log.d(TAG, "setAudioInfo Called: " + audioInfo.toString());
+        Log.d(TAG, "setCastMediaInfo Called: " + audioInfo.toString());
         try {
             m_cast_media_title = audioInfo.getString("media_title");
             m_cast_media_source = audioInfo.getString("media_source");
@@ -1012,61 +1017,50 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
     }
 
+    private void refreshAisNotification(){
+        mAisServiceNotification = new NotificationCompat.Builder(this, AIS_DOM_CHANNEL_ID)
+                .setContentTitle(m_ais_media_title)
+                .setContentText(m_ais_media_source)
+                // Show controls on lock screen even when user hides sensitive content.
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                // Add media control buttons that invoke intents in your media service
+                .addAction( R.drawable.ic_app_exit, "Stop", mPendingIntentAisStop) // #0
+                .addAction( R.drawable.exo_icon_previous, "Previous", mPendingIntentAisPrev) // #1
+                .addAction(R.drawable.ic_app_play_pause, "Pause", mPendingIntentAisPause)  // #2
+                .addAction(R.drawable.exo_icon_next, "Next", mPendingIntentAisNext)     // #3
+                .addAction(R.drawable.ais_icon_mic, "Mic", mPendingIntentAisMic)     // #4
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle())
+                .setSmallIcon(R.drawable.ic_ais_logo)
+                .setLargeIcon(m_ais_media_bitmap_image)
+                .setContentIntent(mGoToAisPendingIntent)
+                .setSound(null)
+                .build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.notify(AisCoreUtils.AIS_DOM_NOTIFICATION_ID, mAisServiceNotification);
+    }
+
     private void setAudioInfo(JSONObject audioInfo) {
         Log.d(TAG, "setAudioInfo Called: " + audioInfo.toString());
         try {
-            m_media_title = audioInfo.getString("media_title");
-            m_media_source = audioInfo.getString("media_source");
-            m_media_album_name = audioInfo.getString("media_album_name");
-            m_media_stream_image = audioInfo.getString("media_stream_image");
-            // try to stop and start ExoPlayer to refresh the status
-            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
-            Intent pauseIntent = new Intent(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND);
-            pauseIntent.putExtra(AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT, "play_empty");
-            bm.sendBroadcast(pauseIntent);
+            m_ais_media_bitmap_image = getSpeakerImage();
+            m_ais_media_title = audioInfo.getString("media_title");
+            m_ais_media_source = audioInfo.getString("media_source");
+            m_ais_media_album_name = audioInfo.getString("media_album_name");
+            m_ais_media_stream_image_url = audioInfo.getString("media_stream_image");
+            refreshAisNotification();
+            // get new image and refresh notification
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getCurrentAisLargeIcon();
+                }
+            }, 2500);
         } catch (Exception e) {
             Log.e(TAG, "setAudioInfo " + e.toString());
         }
     }
-
-    private void pauseExoPlayer(Boolean pause){
-        Log.d(TAG, "pauseExoPlayer Called: " + pause.toString());
-        // pause / play
-        try {
-            mExoPlayer.setPlayWhenReady(!pause);
-        } catch (Exception e) {
-            Log.e(TAG, "Error pauseAudio: " + e.getMessage());
-        }
-    }
-
-    private void stopExoPlayer(){
-        Log.d(TAG, "stopExoPlayer Called ");
-        try {
-            mExoPlayer.stop();
-        } catch (Exception e) {
-            Log.e(TAG, "Error stopAudio: " + e.getMessage());
-        }
-    }
-
-    private void pauseAudio(Boolean pause){
-        Log.d(TAG, "pauseAudio Called: " + pause.toString());
-        pauseExoPlayer(pause);
-    }
-
-    private void stopAudio(){
-        Log.d(TAG, "stopAudio Called ");
-        stopExoPlayer();
-    }
-
-    private void seekTo(long positionMs){
-        mExoPlayer.seekTo(mExoPlayer.getCurrentPosition() + positionMs);
-    }
-
-    private void skipTo(long positionMs){
-        mExoPlayer.seekTo(positionMs);
-    }
-
-
 
     private void setVolume(int vol){
         Log.d(TAG, "setVolume Called: " + vol);
@@ -1093,12 +1087,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             Log.e(TAG, e.toString());
             return 100;
         }
-    }
-
-    private void setPlaybackPitch(float pitch){
-        Log.d(TAG, "setPlaybackPitch Called ");
-        PlaybackParameters pp = new  PlaybackParameters(1.0f, pitch);
-        mExoPlayer.setPlaybackParameters(pp);
     }
 
 
@@ -1128,242 +1116,26 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             } catch (Exception e) {
                 Log.e(TAG, "Error pauseAudio: " + e.getMessage());
             }
-        } else {
+        } else if (command.equals("refresh_notification")){
+            getAudioInfoForNotification();
+        }
+        else {
             playCastMedia(command);
         }
     }
 
-    private void executeExoPlayerCommandOnAis(String command) {
-        if (command.equals("pause")){
-            pauseAudio(true);
-        } else if (command.equals("play")){
-            pauseAudio(false);
-        } else if (command.equals("play_audio")){
-            playAudio();
-        } else if (command.equals("stop")){
-            stopAudio();
-        } else if (command.equals("play_empty")){
-            playAudio();
-        } else if (command.equals("refresh_notification")) {
-            invalidatePlayerNotification();
-            // give 3 seconds
-            mMainThreadHandler.postDelayed(new Runnable() {
-                public void run() {
-                    refreshAudioNotification();
-                }
-            }, 2000);
-        }
-    }
-
-    //
-    // Exo Player notification
-    private class DescriptionAdapter implements
-            PlayerNotificationManager.MediaDescriptionAdapter {
+    public class NotifyServiceReceiver extends BroadcastReceiver{
 
         @Override
-        public String getCurrentContentTitle(Player player) {
-            return m_media_title;
-        }
+        public void onReceive(Context arg0, Intent intent) {
 
-        @Nullable
-        @Override
-        public String getCurrentContentText(Player player) {
-            if (m_media_source.equals(AisCoreUtils.mAudioSourceAndroid)){
-                return "intro";
-            }
-            return m_media_source;
-        }
+            String action = intent.getAction();
 
-        @Override
-        public Bitmap getCurrentLargeIcon(Player player,
-                                          PlayerNotificationManager.BitmapCallback callback) {
-
-            Thread thread = new Thread(() -> {
-                try {
-                    if (m_media_stream_image.equals("ais")) {
-                        callback.onBitmap(getSpeakerImage());
-                    } else {
-                        URL url = new URL(m_media_stream_image);
-                        Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                        callback.onBitmap(bitmap);
-                    }
-                } catch (Exception e) {
-                    callback.onBitmap(getSpeakerImage());
-                    e.printStackTrace();
-                }
-            });
-            thread.start();
-            return getSpeakerImage();
-        }
-
-        @Nullable
-        @Override
-        public PendingIntent createCurrentContentIntent(Player player) {
-            // Go to frame - open AIS app by clicking on notification
-            Intent goToAppView = new Intent(AisPanelService.this, BrowserActivityNative.class);
-            int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
-            goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, "/aisaudio");
-            goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent contentPendingIntent = PendingIntent.getActivity(AisPanelService.this,iUniqueId, goToAppView,PendingIntent.FLAG_UPDATE_CURRENT);
-            return contentPendingIntent;
-        }
-
-        @Override
-        public String getCurrentSubText(Player player) {
-            String subText = "";
-            Config config = new Config(getApplicationContext());
-            if (config.getHotWordMode()) {
-                String hotword = config.getSelectedHotWordName();
-                int sensitivity = config.getSelectedHotWordSensitivity();
-                subText = hotword + " " + sensitivity;
-            }
-            return subText;
-        }
-    }
-
-    private class customActionReceiver implements PlayerNotificationManager.CustomActionReceiver {
-        @Override
-        public Map<String, NotificationCompat.Action> createCustomActions(Context context, int instanceId) {
-            Map<String, NotificationCompat.Action> actionMap = new HashMap<>();
-            // STOP
-            Intent intentAisStop = new Intent("ais_stop")
-                    .setPackage(AisPanelService.this.getPackageName());
-            PendingIntent pendingIntentAisStop = PendingIntent.getBroadcast(
-                    AisPanelService.this,
-                    instanceId,
-                    intentAisStop,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-
-            NotificationCompat.Action actionStop = new NotificationCompat.Action(
-                    R.drawable.ic_app_exit,
-                    "ais_stop",
-                    pendingIntentAisStop
-            );
-            actionMap.put("ais_stop",actionStop);
-
-            // PREV
-            Intent intentAisPrev = new Intent("ais_prev")
-                    .setPackage(AisPanelService.this.getPackageName());
-            PendingIntent pendingIntentAisPrev = PendingIntent.getBroadcast(
-                    AisPanelService.this,
-                    instanceId,
-                    intentAisPrev,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-
-
-            NotificationCompat.Action actionPrev = new NotificationCompat.Action(
-                    R.drawable.exo_icon_previous,
-                    "ais_prev",
-                    pendingIntentAisPrev
-            );
-            actionMap.put("ais_prev",actionPrev);
-
-
-            // PLAY
-            Intent intentAisPlay = new Intent("ais_play")
-                    .setPackage(AisPanelService.this.getPackageName());
-            PendingIntent pendingIntentPlay = PendingIntent.getBroadcast(
-                    AisPanelService.this,
-                    instanceId,
-                    intentAisPlay,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-
-
-            NotificationCompat.Action actionPlay = new NotificationCompat.Action(
-                    R.drawable.exo_icon_play,
-                    "ais_play",
-                    pendingIntentPlay
-            );
-            actionMap.put("ais_play",actionPlay);
-
-
-            // PAUSE
-            Intent intentAisPause = new Intent("ais_pause")
-                    .setPackage(AisPanelService.this.getPackageName());
-            PendingIntent pendingIntentPause = PendingIntent.getBroadcast(
-                    AisPanelService.this,
-                    instanceId,
-                    intentAisPause,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-
-
-            NotificationCompat.Action actionPause = new NotificationCompat.Action(
-                    R.drawable.exo_icon_pause,
-                    "ais_pause",
-                    pendingIntentPause
-            );
-            actionMap.put("ais_pause",actionPause);
-
-
-            // NEXT
-            Intent intentAisNext = new Intent("ais_next")
-                    .setPackage(AisPanelService.this.getPackageName());
-            PendingIntent pendingIntentAisNext = PendingIntent.getBroadcast(
-                    AisPanelService.this,
-                    instanceId,
-                    intentAisNext,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-
-
-            NotificationCompat.Action actionNext = new NotificationCompat.Action(
-                    R.drawable.exo_icon_next,
-                    "ais_next",
-                    pendingIntentAisNext
-            );
-            actionMap.put("ais_next",actionNext);
-
-
-            // MIC ON
-            Intent intentAisMic = new Intent("ais_mic")
-                    .setPackage(AisPanelService.this.getPackageName());
-            PendingIntent pendingIntentAisMic = PendingIntent.getBroadcast(
-                    AisPanelService.this,
-                    instanceId,
-                    intentAisMic,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-            NotificationCompat.Action actionMic = new NotificationCompat.Action(
-                    R.drawable.ais_icon_mic,
-                    "ais_mic",
-                    pendingIntentAisMic
-            );
-            actionMap.put("ais_mic",actionMic);
-
-
-            return actionMap;
-
-
-        }
-
-        @Override
-        public List<String> getCustomActions(Player player) {
-            List<String> customActions = new ArrayList<>();
-            customActions.add("ais_stop");
-            customActions.add("ais_prev");
-            if(player.getPlayWhenReady()) {
-                customActions.add("ais_pause");
-            }else{
-                customActions.add("ais_play");
-            }
-            customActions.add("ais_next");
-
-            customActions.add("ais_mic");
-
-            return customActions;
-        }
-
-        @Override
-        public void onCustomAction(Player player, String action, Intent intent) {
-            if (action.equals("ais_play")) {
-                pauseAudio(false);
-                DomWebInterface.publishMessage("media_play", "media_player", getApplicationContext());
-            } else if (action.equals("ais_pause")) {
-                pauseAudio(true);
-                DomWebInterface.publishMessage("media_pause", "media_player", getApplicationContext());
+            if (action.equals("ais_play_pause")) {
+                DomWebInterface.publishMessage("media_play_pause", "media_player", getApplicationContext());
             } else if (action.equals("ais_prev")) {
-                // publish prev command
                 DomWebInterface.publishMessage("media_previous_track", "media_player", getApplicationContext());
             } else if (action.equals("ais_next")) {
-                // publish next command
                 DomWebInterface.publishMessage("media_next_track", "media_player", getApplicationContext());
             } else if (action.equals("ais_mic")) {
                 if (AisCoreUtils.mSpeechIsRecording) {
@@ -1393,37 +1165,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 getApplicationContext().stopService(stopIntent);
 
             }
-        }
-    }
-
-    private class customNotificationListener implements PlayerNotificationManager.NotificationListener{
-//        @Override
-//        public void onNotificationPosted(int notificationId, Notification notification, boolean ongoing) {
-//            // call service.startForeground(notificationId, notification) if required
-//        }
-//        @Override
-//        public void onNotificationCancelled(int notificationId, boolean dismissedByUser) {
-//            if (dismissedByUser) {
-//                // Do what the app wants to do when dismissed by the user.
-//            }
-//        }
-
-    }
-
-    private class customPlayerNotificationManager extends PlayerNotificationManager {
-
-
-        public customPlayerNotificationManager(AisPanelService aisPanelService, String aisDomChannelId, int aisDomNotificationId, DescriptionAdapter descriptionAdapter, customNotificationListener customNotificationListener, AisPanelService.customActionReceiver customActionReceiver) {
-            super(aisPanelService, aisDomChannelId, aisDomNotificationId, descriptionAdapter, customNotificationListener, customActionReceiver);
-        }
-
-        @Override
-        protected int[] getActionIndicesForCompactView(List<String> actionNames, Player player) {
-            int[] actionIndices = new int[2];
-            // play / pause and mic
-            actionIndices[0] = 2;
-            actionIndices[1] = 4;
-            return actionIndices;
         }
     }
 
