@@ -1,6 +1,7 @@
 package pl.sviete.dom;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -143,11 +144,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             preferenceExitApp.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Intent startMain = new Intent(Intent.ACTION_MAIN);
-                    startMain.addCategory(Intent.CATEGORY_HOME);
-                    startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(startMain);
-                    return true;
+                    if (AisCoreUtils.onBox()){
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.setComponent(new ComponentName("pl.sviete.dom","pl.sviete.dom.SplashScreenActivityMenu"));
+                        startActivity(intent);
+                        return true;
+                    } else {
+                        Intent startMain = new Intent(Intent.ACTION_MAIN);
+                        startMain.addCategory(Intent.CATEGORY_HOME);
+                        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(startMain);
+                        return true;
+                    }
                 }
             });
 
