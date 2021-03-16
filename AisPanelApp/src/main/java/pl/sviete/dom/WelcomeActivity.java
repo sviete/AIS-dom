@@ -1,5 +1,6 @@
 package pl.sviete.dom;
 import android.app.UiModeManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -149,6 +150,11 @@ public class WelcomeActivity extends AppCompatActivity {
             if (config.getAppWizardDone()) {
                 startBrowserActivity();
             } else {
+                // no settings wizard on TV
+                if (AisCoreUtils.AIS_DEVICE_TYPE.equals("TV")) {
+                    // stay in settings
+                    return;
+                }
                 startWizardActivity();
             }
         }
@@ -162,16 +168,6 @@ public class WelcomeActivity extends AppCompatActivity {
     private void startWizardActivity() {
         Log.d(TAG, "startWizardActivity Called");
         startActivity(new Intent(getApplicationContext(), MainWizardActivity.class));
-    }
-
-
-    public void appExit() {
-        Log.d(TAG, "onExit Called");
-        // going to home screen programmatically
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
     }
 
 
