@@ -11,8 +11,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 29
-        versionCode 160
-        versionName '2.0.6.AisFix'
+        versionCode 161
+        versionName '2.0.7.TV'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
