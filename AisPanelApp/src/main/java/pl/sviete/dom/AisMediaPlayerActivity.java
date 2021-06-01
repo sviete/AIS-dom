@@ -82,6 +82,7 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
             MediaItem mediaItem = MediaItem.fromUri(AisPanelService.mCastStreamUrl);
             AisPanelService.mCastExoPlayer.setMediaItem(mediaItem);
             AisPanelService.mCastExoPlayer.prepare();
+
             mCastPlayerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(
                     getApplicationContext(),
                     ais_cast_channel,
@@ -196,17 +197,18 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
         @Override
         public Bitmap getCurrentLargeIcon(Player player,
                                           PlayerNotificationManager.BitmapCallback callback) {
-
-            Thread thread = new Thread(() -> {
-                try {
-                    URL url = new URL(AisPanelService.m_cast_media_stream_image);
-                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    callback.onBitmap(bitmap);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-            thread.start();
+            if (AisPanelService.m_cast_media_stream_image != null) {
+                Thread thread = new Thread(() -> {
+                    try {
+                        URL url = new URL(AisPanelService.m_cast_media_stream_image);
+                        Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        callback.onBitmap(bitmap);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+                thread.start();
+            }
 
             return null;
         }
