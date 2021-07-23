@@ -285,6 +285,16 @@ public class Config {
         ed.apply();
     }
 
+    //
+    public void setDoorbellMode(Boolean mode) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putBoolean(myContext.getString(R.string.key_pref_ais_dom_doorbell), mode);
+        ed.apply();
+    }
+
+    public Boolean getDoorbellMode() {
+        return getBoolPref(R.string.key_pref_ais_dom_doorbell, R.string.default_setting_hot_word_mode);
+    }
 
     public Boolean getHotWordMode() {
         return getBoolPref(R.string.key_setting_hot_word_mode, R.string.default_setting_hot_word_mode);

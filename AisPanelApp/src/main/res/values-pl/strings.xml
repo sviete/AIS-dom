@@ -120,8 +120,17 @@
 
     <string name="key_setting_app_discovery">setting_app_discovery</string>
     <string name="title_setting_app_discovery">Funkcje panelu sterowania</string>
-    <string name="summary_setting_app_discovery">Dodatkowe funkcję panelu sterowania. Przekierowywanie multimediów z bramki do tego urządzenia oraz wideo i audio z kamer. Funkcjonalność działa na zasadzie Cast - bramka przesyła adres mediów do odtwarzacza. Urządzenia odtwarzacz, bramka i kamery muszą być w tej samej sieci.</string>
+    <string name="summary_setting_app_discovery">Dodatkowe funkcję panelu sterowania. Przekierowywanie multimediów z bramki do tego urządzenia oraz wideo i audio z kamer. Funkcjonalność działa na zasadzie Cast - bramka przesyła adres mediów do odtwarzacza. Urządzenia odtwarzacz, bramka i kamery muszą być w tej samej lokalnej sieci.</string>
     <string name="default_setting_app_discovery">false</string>
+
+    <string name="key_pref_ais_dom_doorbell">pref_ais_dom_doorbell</string>
+    <string name="default_setting_doorbell">false</string>
+    <string name="title_setting_doorbell">Wideodomofon</string>
+    <string name="summary_setting_doorbell">Dwukierunkowa komunikacja audio oraz widok z kamery w domofonie (wymagany serwer SIP na bramce AIS).</string>
+
+    <string name="key_pref_ais_dom_sip">pref_ais_dom_sip</string>
+    <string name="title_pref_ais_dom_sip">Doorbell settings</string>
+    <string name="summary_pref_ais_dom_sip">SIP Settings etc/</string>
 
     <string name="key_setting_hot_word_mode">setting_hot_word_mode</string>
     <string name="default_setting_hot_word_mode">false</string>

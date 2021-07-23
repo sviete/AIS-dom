@@ -5,6 +5,9 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.sip.SipAudioCall;
+import android.net.sip.SipManager;
+import android.net.sip.SipProfile;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.speech.SpeechRecognizer;
@@ -20,6 +23,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 
 import ai.picovoice.porcupine.PorcupineManager;
+import pl.sviete.dom.sip.IncomingCallReceiver;
 
 import static android.content.Context.BATTERY_SERVICE;
 
@@ -128,9 +132,17 @@ public class AisCoreUtils {
     public static final int REQUEST_HOT_WORD_MIC_PERMISSION = 200;
     public static final int REQUEST_LOCATION_PERMISSION = 300;
     public static final int  REQUEST_BACKGROUND_LOCATION_PERMISSION = 400;
+    public static final int REQUEST_SIP_PERMISSION = 500;
 
     // REQUEST
     private static RequestQueue mRequestQueue;
+
+    // SIP
+    public static SipManager mAisSipManager = null;
+    public static SipProfile mAisSipProfile = null;
+    public static SipAudioCall mAisSipCall = null;
+    public static IncomingCallReceiver mAisSipCallReceiver;
+
     /*
      * Check if we are on gate or phone
      *

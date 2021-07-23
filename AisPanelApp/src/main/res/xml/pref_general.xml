@@ -51,6 +51,18 @@
                 android:summary="@string/summary_setting_app_discovery"
                 android:key="@string/key_setting_app_discovery"
                 android:icon="@drawable/ic_disco_player_in_network"/>
+            <SwitchPreference
+                android:defaultValue="@string/default_setting_doorbell"
+                android:title="@string/title_setting_doorbell"
+                android:summary="@string/summary_setting_doorbell"
+                android:key="@string/key_pref_ais_dom_doorbell"
+                android:icon="@drawable/ic_doorbell"/>
+            <PreferenceScreen
+                android:key="@string/key_pref_ais_dom_sip"
+                android:title="SIP"
+                android:summary="AIS SIP"
+                android:icon="@drawable/doorbell_icon_settings">
+            </PreferenceScreen>
             <ListPreference
                 android:defaultValue="@string/default_setting_test_zoomlevel"
                 android:entries="@array/zoom_level_names"

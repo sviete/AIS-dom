@@ -130,6 +130,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 prefCategoryExperimental.removePreference(preferenceAudioDisco);
 
                 //
+                Preference preferenceDoorbell = findPreference("pref_ais_dom_doorbell");
+                prefCategoryExperimental.removePreference(preferenceDoorbell);
+                Preference preferenceSip = findPreference("pref_ais_dom_sip");
+                prefCategoryExperimental.removePreference(preferenceSip);
+
+                //
                 Preference preferenceReportLocation = findPreference("setting_report_location");
                 prefCategoryExperimental.removePreference(preferenceReportLocation);
 
@@ -185,13 +191,53 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         if ((boolean) newValue) {
                             Intent aisAudioService = new Intent(preference.getContext(), AisPanelService.class);
                             preference.getContext().startService(aisAudioService);
-                            }
+                            // show doorbell settings
+                            Preference preferenceDoorbell = findPreference("pref_ais_dom_doorbell");
+                            preferenceDoorbell.setVisible((Boolean) true);
+                            Preference preferenceSip = findPreference("pref_ais_dom_sip");
+                            preferenceSip.setVisible((Boolean) true);
+                        }
 
                         else {
                             Intent aisAudioService = new Intent(preference.getContext(), AisPanelService.class);
                             preference.getContext().stopService(aisAudioService);
+
+                            // hide doorbell
+                            config.setDoorbellMode(false);
+                            Preference preferenceDoorbell = findPreference("pref_ais_dom_doorbell");
+                            preferenceDoorbell.setVisible((Boolean) false);
+                            Preference preferenceSip = findPreference("pref_ais_dom_sip");
+                            preferenceSip.setVisible((Boolean) false);
+
                         }
-                    } else if (prefKey.equals("setting_hot_word_mode")) {
+                    } else if (prefKey.equals("pref_ais_dom_doorbell")) {
+                        if ((boolean) newValue) {
+                            // ask for permission
+                            int permissionSip = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.USE_SIP);
+                            if (permissionSip != PackageManager.PERMISSION_GRANTED) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    requestPermissions(
+                                            new String[] { Manifest.permission.USE_SIP },
+                                            AisCoreUtils.REQUEST_SIP_PERMISSION);
+                                }
+                            } else {
+                                Intent aisAudioService = new Intent(preference.getContext(), AisPanelService.class);
+                                aisAudioService.putExtra("AIS_DOOR_BELL_CHANGE", true);
+                                preference.getContext().startService(aisAudioService);
+                                // show sip settings
+                                Preference preferenceSip = findPreference("pref_ais_dom_sip");
+                                preferenceSip.setVisible((Boolean) true);
+                            }
+                        } else {
+                            Intent aisAudioService = new Intent(preference.getContext(), AisPanelService.class);
+                            aisAudioService.putExtra("AIS_DOOR_BELL_CHANGE", false);
+                            preference.getContext().startService(aisAudioService);
+                            // hide sip settings
+                            Preference preferenceSip = findPreference("pref_ais_dom_sip");
+                            preferenceSip.setVisible((Boolean) false);
+                        }
+                    }
+                    else if (prefKey.equals("setting_hot_word_mode")) {
                         if ((boolean) newValue) {
                             // ask for permission
                             int permissionMicrophone = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.RECORD_AUDIO);
@@ -267,6 +313,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
                 preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
 
+                //
+                Preference preferenceDoorBell = findPreference("pref_ais_dom_doorbell");
+                preferenceDoorBell.setOnPreferenceChangeListener(preferenceChangeListener);
+
 
                 // pref_ais_dom_list_gesture
                 PreferenceScreen preGesture = (PreferenceScreen) findPreference("pref_ais_dom_list_gesture");
@@ -277,6 +327,30 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
                         intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.gesture.GestureListActivity");
                         startActivity(intent);
+                        return false;
+                    }
+                });
+
+                // pref_ais_dom_sip
+                PreferenceScreen preSip = (PreferenceScreen) findPreference("pref_ais_dom_sip");
+                preSip.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        // check the permission
+                        int permissionSip = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.USE_SIP);
+                        if (permissionSip != PackageManager.PERMISSION_GRANTED) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                requestPermissions(
+                                        new String[] { Manifest.permission.USE_SIP },
+                                        AisCoreUtils.REQUEST_SIP_PERMISSION);
+                            }
+                        } else {
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.sip.WalkieTalkieActivity");
+                            startActivity(intent);
+
+                        }
                         return false;
                     }
                 });
@@ -299,6 +373,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         }
 
                     }
+                case AisCoreUtils.REQUEST_SIP_PERMISSION:
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.sip.WalkieTalkieActivity");
+                    startActivity(intent);
             }
         }
 

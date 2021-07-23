@@ -9,9 +9,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.net.sip.SipException;
+import android.net.sip.SipManager;
+import android.net.sip.SipProfile;
+import android.net.sip.SipRegistrationListener;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Build;
@@ -19,17 +24,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.support.v4.media.session.MediaSessionCompat;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -40,11 +44,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.ui.PlayerNotificationManager;
-import com.google.android.exoplayer2.MediaItem;
 
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
@@ -57,14 +58,14 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.ArrayList;
+import java.text.ParseException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 
 import pl.sviete.dom.data.DomCustomRequest;
+import pl.sviete.dom.sip.IncomingCallReceiver;
 
 import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAST_COMMAND;
@@ -123,6 +124,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public PendingIntent mPendingIntentAisPrev;
     public PendingIntent mPendingIntentAisMic;
 
+
     private Bitmap getSpeakerImage(){
         Bitmap largeIcon = null;
         try {
@@ -171,10 +173,136 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         mTts.setSpeechRate(1.0f);
     }
 
+    // SIP
+    public void initializeSipManager() {
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.SipDemo.INCOMING_CALL");
+        AisCoreUtils.mAisSipCallReceiver = new IncomingCallReceiver();
+        this.registerReceiver(AisCoreUtils.mAisSipCallReceiver, filter);
+
+        if(AisCoreUtils.mAisSipManager == null) {
+            AisCoreUtils.mAisSipManager = SipManager.newInstance(this);
+        }
+        initializeLocalSipProfile();
+    }
+
+    public void destroySip() {
+        if (AisCoreUtils.mAisSipCall != null) {
+            AisCoreUtils.mAisSipCall.close();
+        }
+
+        closeLocalSipProfile();
+
+        if (AisCoreUtils.mAisSipCallReceiver != null) {
+            this.unregisterReceiver(AisCoreUtils.mAisSipCallReceiver);
+        }
+    }
+
+    /**
+     * Closes out your local profile, freeing associated objects into memory
+     * and unregistering your device from the server.
+     */
+    public void closeLocalSipProfile() {
+        if (AisCoreUtils.mAisSipManager == null) {
+            return;
+        }
+        try {
+            if (AisCoreUtils.mAisSipProfile != null) {
+                AisCoreUtils.mAisSipManager.close(AisCoreUtils.mAisSipProfile.getUriString());
+            }
+        } catch (Exception ee) {
+            Log.d(TAG, "Failed to close local profile.", ee);
+        }
+    }
+
+    /**
+     * Updates the status box at the top of the UI with a messege of your choice.
+     * @param status The String to display in the status box.
+     */
+    public void updateStatus(final String status) {
+        // Toast.makeText(getApplicationContext(), status,Toast.LENGTH_SHORT).show();
+        // AIS TODO
+
+    }
+
+
+    /**
+     * Logs you into your SIP provider, registering this device as the location to
+     * send SIP calls to for your SIP address.
+     */
+    public void initializeLocalSipProfile() {
+        if (AisCoreUtils.mAisSipManager == null) {
+            return;
+        }
+
+        if (AisCoreUtils.mAisSipProfile != null) {
+            closeLocalSipProfile();
+        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String username = prefs.getString("namePref", "");
+        String domain = prefs.getString("domainPref", "");
+        String password = prefs.getString("passPref", "");
+
+        if (username.length() == 0 || domain.length() == 0 || password.length() == 0) {
+            // showDialog(UPDATE_SETTINGS_DIALOG);
+            return;
+        }
+
+        try {
+            SipProfile.Builder builder = new SipProfile.Builder(username, domain);
+            builder.setPassword(password);
+            AisCoreUtils.mAisSipProfile = builder.build();
+
+            Intent i = new Intent();
+            i.setAction("android.SipDemo.INCOMING_CALL");
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, Intent.FILL_IN_DATA);
+            AisCoreUtils.mAisSipManager.open(AisCoreUtils.mAisSipProfile, pi, null);
+
+
+            // This listener must be added AFTER manager.open is called,
+            // Otherwise the methods aren't guaranteed to fire.
+
+            AisCoreUtils.mAisSipManager.setRegistrationListener(AisCoreUtils.mAisSipProfile.getUriString(), new SipRegistrationListener() {
+                public void onRegistering(String localProfileUri) {
+                    updateStatus("Registering with SIP Server...");
+                }
+
+                public void onRegistrationDone(String localProfileUri, long expiryTime) {
+                    updateStatus("Ready");
+                }
+
+                public void onRegistrationFailed(String localProfileUri, int errorCode,
+                                                 String errorMessage) {
+                    updateStatus("Registration failed.  Please check settings.");
+                }
+            });
+        } catch (ParseException pe) {
+            updateStatus("Connection Error.");
+        } catch (SipException se) {
+            updateStatus("Connection error.");
+        }
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+
+        boolean onlyAisDoorBellChange = false;
+        if (intent.hasExtra("AIS_DOOR_BELL_CHANGE")) {
+            onlyAisDoorBellChange = intent.getBooleanExtra("AIS_DOOR_BELL_CHANGE", false);
+        }
+
+        if (mConfig.getDoorbellMode()) {
+            // enable sip
+            initializeSipManager();
+        } else {
+            // disable sip
+            destroySip();
+        }
+
 
         createNotificationChannel();
 
@@ -193,8 +321,8 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                 // Show controls on lock screen even when user hides sensitive content.
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 // Add media control buttons that invoke intents in your media service
-                .addAction( R.drawable.ic_app_exit, "Stop", mPendingIntentAisStop) // #0
-                .addAction( R.drawable.exo_icon_previous, "Previous", mPendingIntentAisPrev) // #1
+                .addAction(R.drawable.ic_app_exit, "Stop", mPendingIntentAisStop) // #0
+                .addAction(R.drawable.exo_icon_previous, "Previous", mPendingIntentAisPrev) // #1
                 .addAction(R.drawable.ic_app_play_pause, "Pause", mPendingIntentAisPause)  // #2
                 .addAction(R.drawable.exo_icon_next, "Next", mPendingIntentAisNext)     // #3
                 .addAction(R.drawable.ais_icon_mic, "Mic", mPendingIntentAisMic)     // #4
