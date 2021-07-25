@@ -23,7 +23,6 @@ import java.io.File;
 import java.text.DecimalFormat;
 
 import ai.picovoice.porcupine.PorcupineManager;
-import pl.sviete.dom.sip.IncomingCallReceiver;
 
 import static android.content.Context.BATTERY_SERVICE;
 
@@ -138,10 +137,10 @@ public class AisCoreUtils {
     private static RequestQueue mRequestQueue;
 
     // SIP
-    public static SipManager mAisSipManager = null;
-    public static SipProfile mAisSipProfile = null;
-    public static SipAudioCall mAisSipCall = null;
-    public static IncomingCallReceiver mAisSipCallReceiver;
+    public static String mAisSipStatus = null;
+    public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
+    public static final String BROADCAST_SIP_INCOMING_CALL = "pl.sviete.dom.sip.BROADCAST_SIP_INCOMING_CALL";
+
 
     /*
      * Check if we are on gate or phone

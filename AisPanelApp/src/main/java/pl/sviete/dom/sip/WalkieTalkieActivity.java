@@ -20,7 +20,10 @@ import android.widget.ToggleButton;
 import java.text.ParseException;
 
 import pl.sviete.dom.AisCoreUtils;
+import pl.sviete.dom.AisPanelService;
 import pl.sviete.dom.R;
+
+import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
 
 /**
  * Handles all calling, receiving calls, and UI interaction in the WalkieTalkie app.
@@ -45,22 +48,15 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         setContentView(R.layout.walkietalkie);
         //setContentView(R.layout.activity_ais_cam);
 
-        ToggleButton pushToTalkButton = (ToggleButton) findViewById(R.id.pushToTalk);
+        ToggleButton pushToTalkButton = findViewById(R.id.pushToTalk);
         pushToTalkButton.setOnTouchListener(this);
 
-        // Set up the intent filter.  This will be used to fire an
-        // IncomingCallReceiver when someone calls the SIP address used by this
-        // application.
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("android.SipDemo.INCOMING_CALL");
-        AisCoreUtils.mAisSipCallReceiver = new IncomingCallReceiver();
-        this.registerReceiver(AisCoreUtils.mAisSipCallReceiver, filter);
-
-        // "Push to talk" can be a serious pain when the screen keeps turning off.
+        // video talk can be a serious pain when the screen keeps turning off.
         // Let's prevent that.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        //initializeManager();
+        //
+        updateStatus(mAisSipStatus);
     }
 
     @Override
@@ -68,99 +64,24 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
         super.onStart();
         // When we get back from the preference setting Activity, assume
         // settings have changed, and re-login with new auth info.
-        // initializeManager();
+        if (mAisSipStatus != "Ready") {
+            Intent sipIntent = new Intent(getBaseContext(), AisPanelService.class);
+            sipIntent.putExtra(AisCoreUtils.BROADCAST_SIP_COMMAND, "SIP_ON");
+            getBaseContext().startService(sipIntent);
+        }
+
+        //
+        updateStatus(mAisSipStatus);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (AisCoreUtils.mAisSipCall != null) {
-            AisCoreUtils.mAisSipCall.close();
+        if (AisPanelService.mAisSipAudioCall != null) {
+            AisPanelService.mAisSipAudioCall.close();
         }
     }
 
-    public void initializeManager() {
-        if(AisCoreUtils.mAisSipManager == null) {
-            AisCoreUtils.mAisSipManager = SipManager.newInstance(this);
-        }
-
-        initializeLocalProfile();
-    }
-
-    /**
-     * Logs you into your SIP provider, registering this device as the location to
-     * send SIP calls to for your SIP address.
-     */
-    public void initializeLocalProfile() {
-        if (AisCoreUtils.mAisSipManager == null) {
-            return;
-        }
-
-        if (AisCoreUtils.mAisSipProfile != null) {
-            closeLocalProfile();
-        }
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String username = prefs.getString("namePref", "");
-        String domain = prefs.getString("domainPref", "");
-        String password = prefs.getString("passPref", "");
-
-        if (username.length() == 0 || domain.length() == 0 || password.length() == 0) {
-            showDialog(UPDATE_SETTINGS_DIALOG);
-            return;
-        }
-
-        try {
-            SipProfile.Builder builder = new SipProfile.Builder(username, domain);
-            builder.setPassword(password);
-            AisCoreUtils.mAisSipProfile = builder.build();
-
-            Intent i = new Intent();
-            i.setAction("android.SipDemo.INCOMING_CALL");
-            PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, Intent.FILL_IN_DATA);
-            AisCoreUtils.mAisSipManager.open(AisCoreUtils.mAisSipProfile, pi, null);
-
-
-            // This listener must be added AFTER manager.open is called,
-            // Otherwise the methods aren't guaranteed to fire.
-
-            AisCoreUtils.mAisSipManager.setRegistrationListener(AisCoreUtils.mAisSipProfile.getUriString(), new SipRegistrationListener() {
-                public void onRegistering(String localProfileUri) {
-                    updateStatus("Registering with SIP Server...");
-                }
-
-                public void onRegistrationDone(String localProfileUri, long expiryTime) {
-                    updateStatus("Ready");
-                }
-
-                public void onRegistrationFailed(String localProfileUri, int errorCode,
-                                                 String errorMessage) {
-                    updateStatus("Registration failed.  Please check settings.");
-                }
-            });
-        } catch (ParseException pe) {
-            updateStatus("Connection Error.");
-        } catch (SipException se) {
-            updateStatus("Connection error.");
-        }
-    }
-
-    /**
-     * Closes out your local profile, freeing associated objects into memory
-     * and unregistering your device from the server.
-     */
-    public void closeLocalProfile() {
-        if (AisCoreUtils.mAisSipManager == null) {
-            return;
-        }
-        try {
-            if (AisCoreUtils.mAisSipProfile != null) {
-                AisCoreUtils.mAisSipManager.close(AisCoreUtils.mAisSipProfile.getUriString());
-            }
-        } catch (Exception ee) {
-            Log.d(TAG, "Failed to close local profile.", ee);
-        }
-    }
 
     /**
      * Make an outgoing call.
@@ -190,23 +111,13 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
                 }
             };
 
-            AisCoreUtils.mAisSipCall = AisCoreUtils.mAisSipManager.makeAudioCall(AisCoreUtils.mAisSipProfile.getUriString(), sipAddress, listener, 30);
+            AisPanelService.mAisSipAudioCall = AisPanelService.mAisSipManager.makeAudioCall(
+                    AisPanelService.mAisSipProfile.getUriString(), sipAddress, listener, 30
+            );
 
         }
         catch (Exception e) {
             Log.i(TAG, "Error when trying to close manager.", e);
-            if (AisCoreUtils.mAisSipProfile != null) {
-                try {
-                    AisCoreUtils.mAisSipManager.close(AisCoreUtils.mAisSipProfile.getUriString());
-                } catch (Exception ee) {
-                    Log.i(TAG,
-                            "Error when trying to close manager.", ee);
-                    ee.printStackTrace();
-                }
-            }
-            if (AisCoreUtils.mAisSipCall != null) {
-                AisCoreUtils.mAisSipCall.close();
-            }
         }
     }
 
@@ -244,13 +155,13 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
      * as it normally would.
      */
     public boolean onTouch(View v, MotionEvent event) {
-        if (AisCoreUtils.mAisSipCall == null) {
-            return false;
-        } else if (event.getAction() == MotionEvent.ACTION_DOWN && AisCoreUtils.mAisSipCall != null && AisCoreUtils.mAisSipCall.isMuted()) {
-            AisCoreUtils.mAisSipCall.toggleMute();
-        } else if (event.getAction() == MotionEvent.ACTION_UP && !AisCoreUtils.mAisSipCall.isMuted()) {
-            AisCoreUtils.mAisSipCall.toggleMute();
-        }
+//        if (AisCoreUtils.mAisSipCall == null) {
+//            return false;
+//        } else if (event.getAction() == MotionEvent.ACTION_DOWN && AisCoreUtils.mAisSipCall != null && AisCoreUtils.mAisSipCall.isMuted()) {
+//            AisCoreUtils.mAisSipCall.toggleMute();
+//        } else if (event.getAction() == MotionEvent.ACTION_UP && !AisCoreUtils.mAisSipCall.isMuted()) {
+//            AisCoreUtils.mAisSipCall.toggleMute();
+//        }
         return false;
     }
 
@@ -271,14 +182,14 @@ public class WalkieTalkieActivity extends Activity implements View.OnTouchListen
                 updatePreferences();
                 break;
             case HANG_UP:
-                if(AisCoreUtils.mAisSipCall != null) {
+                if(AisPanelService.mAisSipAudioCall != null) {
                     try {
-                        AisCoreUtils.mAisSipCall.endCall();
+                        AisPanelService.mAisSipAudioCall.endCall();
                     } catch (SipException se) {
                         Log.d(TAG,
                                 "Error ending call.", se);
                     }
-                    AisCoreUtils.mAisSipCall.close();
+                    AisPanelService.mAisSipAudioCall.close();
                 }
                 break;
         }

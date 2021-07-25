@@ -95,8 +95,8 @@
     <string name="summary_setting_doorbell">Two-way audio communication and view from the camera in the intercom (SIP server required on the AIS gateway)/</string>
 
     <string name="key_pref_ais_dom_sip">pref_ais_dom_sip</string>
-    <string name="title_pref_ais_dom_sip">Doorbell settings</string>
-    <string name="summary_pref_ais_dom_sip">SIP Settings etc/</string>
+    <string name="title_pref_ais_dom_sip">Video Doorbell view</string>
+    <string name="summary_pref_ais_dom_sip">Camera view and VoIP Settings</string>
 
     <string name="key_setting_hot_word_mode">setting_hot_word_mode</string>
     <string name="default_setting_hot_word_mode">false</string>

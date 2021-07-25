@@ -109,7 +109,7 @@
     <string name="title_setting_app_hot_word">Wyrażenie aktywujące komendę</string>
     <string name="summary_setting_app_hot_word">wybierz wyrażenie aktywujące komendę</string>
     <string name="title_setting_app_hot_word_sensitivity">Czułość nasłuchiwania</string>
-    <string name="summary_setting_app_hot_word_sensitivity">wybierz czułość nasłuchiwania wyrażenia aktywującego</string>
+    <string name="summary_setting_app_hot_word_sensitivity">wybierz czułość nasłuchiwania wyrażenia aktywującego</string>
 
 
     <string name="key_setting_report_location">setting_report_location</string>
@@ -129,8 +129,8 @@
     <string name="summary_setting_doorbell">Dwukierunkowa komunikacja audio oraz widok z kamery w domofonie (wymagany serwer SIP na bramce AIS).</string>
 
     <string name="key_pref_ais_dom_sip">pref_ais_dom_sip</string>
-    <string name="title_pref_ais_dom_sip">Doorbell settings</string>
-    <string name="summary_pref_ais_dom_sip">SIP Settings etc/</string>
+    <string name="title_pref_ais_dom_sip">Obraz kamery wideodomofonu</string>
+    <string name="summary_pref_ais_dom_sip">Widok z kamery i ustawienia komunikacji VoIP</string>
 
     <string name="key_setting_hot_word_mode">setting_hot_word_mode</string>
     <string name="default_setting_hot_word_mode">false</string>

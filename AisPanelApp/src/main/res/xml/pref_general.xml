@@ -59,8 +59,8 @@
                 android:icon="@drawable/ic_doorbell"/>
             <PreferenceScreen
                 android:key="@string/key_pref_ais_dom_sip"
-                android:title="SIP"
-                android:summary="AIS SIP"
+                android:title="@string/title_pref_ais_dom_sip"
+                android:summary="@string/summary_pref_ais_dom_sip"
                 android:icon="@drawable/doorbell_icon_settings">
             </PreferenceScreen>
             <ListPreference

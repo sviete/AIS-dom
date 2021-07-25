@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -221,17 +222,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                             AisCoreUtils.REQUEST_SIP_PERMISSION);
                                 }
                             } else {
-                                Intent aisAudioService = new Intent(preference.getContext(), AisPanelService.class);
-                                aisAudioService.putExtra("AIS_DOOR_BELL_CHANGE", true);
-                                preference.getContext().startService(aisAudioService);
+                                // Info about change is sip settings
+                                Intent sipIntent = new Intent(preference.getContext(), AisPanelService.class);
+                                sipIntent.putExtra(AisCoreUtils.BROADCAST_SIP_COMMAND, "SIP_ON");
+                                preference.getContext().startService(sipIntent);
+
                                 // show sip settings
                                 Preference preferenceSip = findPreference("pref_ais_dom_sip");
                                 preferenceSip.setVisible((Boolean) true);
                             }
                         } else {
-                            Intent aisAudioService = new Intent(preference.getContext(), AisPanelService.class);
-                            aisAudioService.putExtra("AIS_DOOR_BELL_CHANGE", false);
-                            preference.getContext().startService(aisAudioService);
+                            // Info about change is sip settings
+                            Intent sipIntent = new Intent(preference.getContext(), AisPanelService.class);
+                            sipIntent.putExtra(AisCoreUtils.BROADCAST_SIP_COMMAND, "SIP_OFF");
+                            preference.getContext().startService(sipIntent);
+
                             // hide sip settings
                             Preference preferenceSip = findPreference("pref_ais_dom_sip");
                             preferenceSip.setVisible((Boolean) false);
