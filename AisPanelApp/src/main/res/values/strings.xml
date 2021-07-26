@@ -374,4 +374,28 @@
     <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>
     <string name="default_setting_local_gate_ip">ais-dom.local</string>
 
+    <!-- SIP-->
+    <string name="key_setting_local_sip_client_name">setting_local_sip_client_name</string>
+    <string name="default_setting_local_sip_client_name"></string>
+    <string name="key_setting_local_sip_client_password">setting_local_sip_client_password</string>
+    <string name="default_setting_local_sip_client_password"></string>
+    <string name="key_setting_local_sip_cam_url">setting_local_sip_cam_url</string>
+    <string name="default_setting_local_sip_cam_url"></string>
+
+    <string name="setting_local_sip_client_name_text">SIP Username</string>
+    <string name="setting_local_sip_client_summary_text">Username for your SIP Account</string>
+    <string name="setting_local_sip_client_title_text">Enter Username</string>
+
+    <string name="setting_local_sip_pass_name_text">SIP Password</string>
+    <string name="setting_local_sip_pass_summary_text">Password for your SIP Account</string>
+    <string name="setting_local_sip_pass_title_text">Enter Password</string>
+
+    <string name="setting_local_sip_domain_name_text">SIP Domain</string>
+    <string name="setting_local_sip_domain_summary_text">Domain for your SIP Account</string>
+    <string name="setting_local_sip_domain_title_text">Enter Username</string>
+
+    <string name="setting_local_sip_cam_url_name_text">SIP Camera URL</string>
+    <string name="setting_local_sip_cam_url_summary_text">Cam url fro your video doorbell</string>
+    <string name="setting_local_sip_cam_url_title_text">Enter local URL to camera</string>
+
 </resources>

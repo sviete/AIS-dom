@@ -372,4 +372,34 @@
 
     <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>
     <string name="default_setting_local_gate_ip">ais-dom.local</string>
+
+    <!-- SIP-->
+    <string name="key_setting_local_sip_client_name">setting_local_sip_client_name</string>
+    <string name="default_setting_local_sip_client_name"></string>
+    <string name="key_setting_local_sip_client_password">setting_local_sip_client_password</string>
+    <string name="default_setting_local_sip_client_password"></string>
+    <string name="key_setting_local_sip_cam_url">setting_local_sip_cam_url</string>
+    <string name="default_setting_local_sip_cam_url"></string>
+
+    <string name="setting_local_sip_client_name_text">Nazwa użytkownika SIP</string>
+    <string name="setting_local_sip_client_summary_text">Nazwa użytkownika dla twojego konta SIP</string>
+    <string name="setting_local_sip_client_title_text">Wpisz nazwę użytkownika</string>
+
+    <string name="setting_local_sip_pass_name_text">Hasło SIP</string>
+    <string name="setting_local_sip_pass_summary_text">Hasło do Twojego konta SIP</string>
+    <string name="setting_local_sip_pass_title_text">Wprowadź hasło</string>
+
+    <string name="setting_local_sip_domain_name_text">Domena SIP</string>
+    <string name="setting_local_sip_domain_summary_text">Domena dla Twojego konta SIP</string>
+    <string name="setting_local_sip_domain_title_text">Wpisz nazwę użytkownika</string>
+
+    <string name="setting_local_sip_cam_url_name_text">Adres URL kamery SIP</string>
+    <string name="setting_local_sip_cam_url_summary_text">Adres URL kamery do dzwonka wideo</string>
+    <string name="setting_local_sip_cam_url_title_text">Wpisz lokalny adres URL kamery</string>
+
+
+
+
+
+
 </resources>

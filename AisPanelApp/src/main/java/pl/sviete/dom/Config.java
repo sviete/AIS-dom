@@ -25,6 +25,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import ai.picovoice.hotword.PorcupineService;
 
@@ -111,21 +113,48 @@ public class Config {
         bm.sendBroadcast(intent);
     }
 
-    private void getTheLocalIpFromCloud(String gateID, String goToHaView, Boolean forceRefreshWeb) {
+    public void getTheLocalIpFromCloud(String gateID, String goToHaView, Boolean forceRefreshWeb) {
         // 1. Get the new local IP from the Cloud
-        // https://powiedz.co/ords/dom/dom/gate_ip_full_info?id=dom-aba
-        String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_full_info?id=" + gateID;
+        // https://powiedz.co/ords/dom/dom/gate_ip_full_info
+        String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "gate_ip_full_info";
         final String[] localGateIpFromCloud = {"ais-dom"};
+        JSONObject deviceJsonInfo = new JSONObject();
+        try{
+            deviceJsonInfo.put("gate_id", gateID);
+            deviceJsonInfo.put("client_id", AisCoreUtils.AIS_GATE_ID);
+            deviceJsonInfo.put("app_version", BuildConfig.VERSION_NAME);
+            deviceJsonInfo.put("client_ip", AisNetUtils.getIPAddress(true));
+            deviceJsonInfo.put("os_version", AisNetUtils.getApiLevel() + " " + AisNetUtils.getOsVersion());
+            deviceJsonInfo.put("device_type", AisCoreUtils.AIS_DEVICE_TYPE);
+        } catch (Exception e) {
+            Log.e("Exception", e.toString());
+        }
+        // call
+        Map<String, String> heders = new HashMap<String, String>();
+        heders.put("Content-Type", "application/json; charset=UTF-8");
+        heders.put("Authorization", "Bearer ais");
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                (Request.Method.POST, url, deviceJsonInfo, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            localGateIpFromCloud[0] = response.getString("ip");
+                            localGateIpFromCloud[0] = response.getString("gate_local_ip");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
 
+                        // save sip settings
+                        try {
+                            setSipLocalClientName(response.getString("sip_local_client_name"));
+                            setSipLocalClientPassword(response.getString("sip_local_client_password"));
+                            setSipLocalCamUrl(response.getString("sip_local_cam_url"));
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        //
                         if (!localGateIpFromCloud[0].equals("ais-dom")) {
                             // 2. check if new local IP from cloud is now OK
                             String localUrl = "http://" + localGateIpFromCloud[0]+ ":8122";
@@ -381,6 +410,12 @@ public class Config {
         WebStorage.getInstance().deleteAllData();
     }
 
+    public String getAppLaunchUrl() {
+        return getStringPref(R.string.key_setting_app_launchurl, R.string.default_setting_app_launchurl);
+    }
+
+
+
 
     public float getTestZoomLevel() {
         return Float.valueOf(getStringPref(R.string.key_setting_test_zoomlevel, R.string.default_setting_test_zoomlevel));
@@ -408,6 +443,40 @@ public class Config {
         SharedPreferences.Editor ed = sharedPreferences.edit();
         ed.putString(myContext.getString(R.string.key_setting_local_gate_ip), gateIp);
         ed.apply();
+    }
+
+    //
+    // -- SIP --
+    public void setSipLocalClientName(String sipLocalClientName) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putString(myContext.getString(R.string.key_setting_local_sip_client_name), sipLocalClientName);
+        ed.apply();
+    }
+
+    public String getSipLocalClientName() {
+        return getStringPref(R.string.key_setting_local_sip_client_name,
+                R.string.default_setting_local_sip_client_name);
+    }
+
+    public void setSipLocalClientPassword(String sipLocalClientPass) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putString(myContext.getString(R.string.key_setting_local_sip_client_password), sipLocalClientPass);
+        ed.apply();
+    }
+
+    public String getSipLocalClientPassword() {
+        return getStringPref(R.string.key_setting_local_sip_client_password,
+                R.string.default_setting_local_sip_client_password);
+    }
+
+    public void setSipLocalCamUrl(String sipLocalCamUr) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putString(myContext.getString(R.string.key_setting_local_sip_cam_url), sipLocalCamUr);
+        ed.apply();
+    }
+
+    public String getSipLocalCamUrl() {
+        return getStringPref(R.string.key_setting_local_sip_cam_url, R.string.default_setting_local_sip_cam_url);
     }
 
 }

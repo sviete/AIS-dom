@@ -58,12 +58,14 @@
                 android:key="@string/key_pref_ais_dom_doorbell"
                 android:icon="@drawable/ic_doorbell"/>
             <PreferenceScreen
+                android:dependency="pref_ais_dom_doorbell"
                 android:key="@string/key_pref_ais_dom_sip"
                 android:title="@string/title_pref_ais_dom_sip"
                 android:summary="@string/summary_pref_ais_dom_sip"
                 android:icon="@drawable/doorbell_icon_settings">
             </PreferenceScreen>
             <ListPreference
+                android:dependency="pref_ais_dom_sip"
                 android:defaultValue="@string/default_setting_test_zoomlevel"
                 android:entries="@array/zoom_level_names"
                 android:entryValues="@array/zoom_level_values"

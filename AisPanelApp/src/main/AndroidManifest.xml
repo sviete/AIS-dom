@@ -220,14 +220,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".sip.WalkieTalkieActivity"
-            android:screenOrientation="landscape"
-            android:configChanges="orientation|keyboardHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
         <activity android:name=".sip.SipSettings" android:label="set_preferences"/>
 
         <receiver android:name=".sip.IncomingCallReceiver" android:label="Call Receiver">

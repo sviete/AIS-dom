@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.sip.*;
 import android.util.Log;
 
+import pl.sviete.dom.AisCamActivity;
 import pl.sviete.dom.AisCoreUtils;
 import pl.sviete.dom.AisMediaPlayerActivity;
 import pl.sviete.dom.AisPanelService;
@@ -45,7 +46,7 @@ public class IncomingCallReceiver extends BroadcastReceiver {
 
             AisPanelService.mAisSipAudioCall = incomingCall;
 
-            Intent camActivity = new Intent(context, WalkieTalkieActivity.class);
+            Intent camActivity = new Intent(context, AisCamActivity.class);
             camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             context.startActivity(camActivity);

@@ -194,8 +194,17 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     // -----------------------
     public void initializeSipManager() {
 
+        if (mAisIncomingCallReceiver != null) {
+            try {
+                this.unregisterReceiver(mAisIncomingCallReceiver);
+            } catch (Exception e){
+                Log.e(TAG, "Exception " + e.toString());
+            }
+        }
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(BROADCAST_SIP_INCOMING_CALL);
+
         mAisIncomingCallReceiver = new IncomingCallReceiver();
         this.registerReceiver(mAisIncomingCallReceiver, filter);
 
@@ -231,7 +240,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
         try {
             if (mAisSipProfile != null) {
-                mAisSipManager.unregister(mAisSipProfile, null);
                 mAisSipManager.close(mAisSipProfile.getUriString());
             }
         } catch (Exception ee) {
@@ -263,9 +271,16 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String username = prefs.getString("namePref", "");
-        String domain = prefs.getString("domainPref", "");
-        String password = prefs.getString("passPref", "");
+        String username = prefs.getString("setting_local_sip_client_name", "");
+        String domain = prefs.getString("setting_local_gate_ip", "");
+        String password = prefs.getString("setting_local_sip_client_password", "");
+        if (username.equals("ais_auto")) {
+            username = mConfig.getAppLocalGateIp();
+        }
+
+        if (domain.equals("ais_auto")) {
+            domain = mConfig.getAppLocalGateIp();
+        }
 
         if (username.length() == 0 || domain.length() == 0 || password.length() == 0) {
             // showDialog(UPDATE_SETTINGS_DIALOG);

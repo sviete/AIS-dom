@@ -58,6 +58,12 @@ public class WelcomeActivity extends AppCompatActivity {
             // set remote control mode on start
             Config config = new Config(this.getApplicationContext());
 
+            // get the sip settings from ais cloud
+            if (config.getAppLaunchUrl().startsWith("dom-") && config.getSipLocalClientName().equals("")) {
+                // get sip settings from cloud
+                config.getTheLocalIpFromCloud(config.getAppLaunchUrl(), "", true);
+            }
+
             // check the device type on start
             UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
             if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_WATCH) {

@@ -21,6 +21,10 @@ import androidx.core.app.ActivityCompat;
 
 import ai.picovoice.hotword.PorcupineService;
 
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_HA_ID;
+import static pl.sviete.dom.AisCoreUtils.getAisDomCloudWsUrl;
+
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -351,10 +355,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                         AisCoreUtils.REQUEST_SIP_PERMISSION);
                             }
                         } else {
-                            Intent intent = new Intent(Intent.ACTION_MAIN);
-                            intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.sip.WalkieTalkieActivity");
-                            startActivity(intent);
-
+                            Intent camActivity = new Intent(preference.getContext(), AisCamActivity.class);
+                            camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+                            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(camActivity);
                         }
                         return false;
                     }
@@ -379,9 +384,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                     }
                 case AisCoreUtils.REQUEST_SIP_PERMISSION:
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.sip.WalkieTalkieActivity");
-                    startActivity(intent);
+                    //
+                    Log.i(TAG, "Need to colick egain..");
             }
         }
 
