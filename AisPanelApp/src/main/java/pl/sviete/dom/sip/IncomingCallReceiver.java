@@ -7,8 +7,6 @@ import android.net.sip.*;
 import android.util.Log;
 
 import pl.sviete.dom.AisCamActivity;
-import pl.sviete.dom.AisCoreUtils;
-import pl.sviete.dom.AisMediaPlayerActivity;
 import pl.sviete.dom.AisPanelService;
 
 /**

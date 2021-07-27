@@ -398,4 +398,11 @@
     <string name="setting_local_sip_cam_url_summary_text">Cam url fro your video doorbell</string>
     <string name="setting_local_sip_cam_url_title_text">Enter local URL to camera</string>
 
+    <string name="sip_call_someone_text">Call Someone</string>
+    <string name="sip_ending_call_text">Ending call</string>
+    <string name="sip_ending_no_call_to_end_text">No audio call to end</string>
+    <string name="sip_opening_text">Opening</string>
+    <string name="sip_cam_photo_text">Camera photo</string>
+    <string name="sip_video_door_intercom_text">AIS Video door intercom status:</string>
+
 </resources>

@@ -77,6 +77,7 @@ import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_INCOMING_CALL;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_STATUS;
 import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
@@ -252,8 +253,10 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
      * @param status The String to display in the status box.
      */
     public void updateAisSipStatus(final String status) {
-        // Toast.makeText(getApplicationContext(), status,Toast.LENGTH_SHORT).show();
         mAisSipStatus = status;
+        Intent intent = new Intent(BROADCAST_SIP_STATUS);
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+        bm.sendBroadcast(intent);
     }
 
 

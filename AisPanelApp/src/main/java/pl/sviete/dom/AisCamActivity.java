@@ -2,12 +2,17 @@ package pl.sviete.dom;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.net.sip.SipAudioCall;
 import android.net.sip.SipException;
 import android.os.Bundle;
+import android.os.Handler;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.json.JSONObject;
 import org.videolan.libvlc.LibVLC;
@@ -30,6 +36,8 @@ import java.util.ArrayList;
 
 import pl.sviete.dom.sip.SipSettings;
 
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
 
 
@@ -46,9 +54,6 @@ public class AisCamActivity extends AppCompatActivity  {
 
     // SIP
     private static final int SIP_CALL_ADDRESS = 1;
-    private static final int SIP_SET_AUTH_INFO = 2;
-    private static final int SIP_UPDATE_SETTINGS_DIALOG = 3;
-    private static final int SIP_HANG_UP = 4;
     public String sipAddress = null;
 
     private static Config mConfig;
@@ -94,6 +99,44 @@ public class AisCamActivity extends AppCompatActivity  {
             }
         });
 
+        // settings
+        Button settingsSipCamButton = (Button) findViewById(R.id.cam_activity_settings);
+        settingsSipCamButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateSipPreferences();
+            }
+        });
+
+        // answer
+        Button answerSipCamButton = (Button) findViewById(R.id.cam_activity_answer_call);
+        answerSipCamButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(SIP_CALL_ADDRESS);
+            }
+        });
+
+        // end call
+        Button endCallSipCamButton = (Button) findViewById(R.id.cam_activity_end_call);
+        endCallSipCamButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(AisPanelService.mAisSipAudioCall != null) {
+                    try {
+                        AisPanelService.mAisSipAudioCall.endCall();
+                    } catch (SipException se) {
+                        Log.d(TAG,"Error ending call.", se);
+                    }
+                    AisPanelService.mAisSipAudioCall.close();
+                    Toast.makeText(getBaseContext(),R.string.sip_ending_call_text, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getBaseContext(), R.string.sip_ending_no_call_to_end_text, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
         // video talk can be a serious pain when the screen keeps turning off.
         // Let's prevent that.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -101,7 +144,14 @@ public class AisCamActivity extends AppCompatActivity  {
         //
         mConfig = new Config(getApplicationContext());
         updateStatus(mAisSipStatus);
+
+        // BROADCAST
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AisCoreUtils.BROADCAST_SIP_STATUS);
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
+        bm.registerReceiver(mBroadcastReceiver, filter);
     }
+
 
     private void openGateCamButton() {
             if (mHaCamId != null) {
@@ -118,7 +168,7 @@ public class AisCamActivity extends AppCompatActivity  {
                     Log.e("Exception", e.toString());
                 }
             }
-            Toast.makeText(getBaseContext(),"Otwieram.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(),R.string.sip_opening_text, Toast.LENGTH_SHORT).show();
     }
 
     private void screenshotCamButton() {
@@ -134,8 +184,22 @@ public class AisCamActivity extends AppCompatActivity  {
         } catch (Exception e) {
             Log.e("Exception", e.toString());
         }
-        Toast.makeText(getBaseContext(),"Zdjęcie z kamery.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(),R.string.sip_cam_photo_text, Toast.LENGTH_SHORT).show();
     }
+
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(AisCoreUtils.BROADCAST_SIP_STATUS)) {
+                updateStatus(mAisSipStatus);
+            }
+            else if (action.equals(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING)){
+                Log.d(TAG, "HWL stopHotWordListening");
+
+            }
+        }
+    };
 
 
     @Override
@@ -146,6 +210,13 @@ public class AisCamActivity extends AppCompatActivity  {
 
         if (AisPanelService.mAisSipAudioCall != null) {
             AisPanelService.mAisSipAudioCall.close();
+        }
+
+        try {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
+            bm.unregisterReceiver(mBroadcastReceiver);
+        } catch (Exception e){
+            Log.e(TAG, "unregisterReceiver " + e.toString());
         }
     }
 
@@ -195,39 +266,6 @@ public class AisCamActivity extends AppCompatActivity  {
     }
 
     // SIP
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, SIP_CALL_ADDRESS, 0, "Call someone");
-        menu.add(0, SIP_SET_AUTH_INFO, 0, "Edit your SIP Info.");
-        menu.add(0, SIP_HANG_UP, 0, "End Current Call.");
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case SIP_CALL_ADDRESS:
-                showDialog(SIP_CALL_ADDRESS);
-                break;
-            case SIP_SET_AUTH_INFO:
-                updateSipPreferences();
-                break;
-            case SIP_HANG_UP:
-                if(AisPanelService.mAisSipAudioCall != null) {
-                    try {
-                        AisPanelService.mAisSipAudioCall.endCall();
-                    } catch (SipException se) {
-                        Log.d(TAG,
-                                "Error ending call.", se);
-                    }
-                    AisPanelService.mAisSipAudioCall.close();
-                }
-                break;
-        }
-        return true;
-    }
-
         @Override
         protected Dialog onCreateDialog(int id) {
             switch (id) {
@@ -239,7 +277,7 @@ public class AisCamActivity extends AppCompatActivity  {
 
                     textField.setText("domofon@" + mConfig.getAppLocalGateIp());
                     return new AlertDialog.Builder(this)
-                            .setTitle("Call Someone.")
+                            .setTitle(R.string.sip_call_someone_text)
                             .setView(textBoxView)
                             .setPositiveButton(
                                     android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -259,21 +297,6 @@ public class AisCamActivity extends AppCompatActivity  {
                                     })
                             .create();
 
-                case SIP_UPDATE_SETTINGS_DIALOG:
-                    return new AlertDialog.Builder(this)
-                            .setMessage("Please update your SIP Account Settings.")
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    updateSipPreferences();
-                                }
-                            })
-                            .setNegativeButton(
-                                    android.R.string.cancel, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int whichButton) {
-                                            // Noop.
-                                        }
-                                    })
-                            .create();
             }
             return null;
         }
@@ -292,8 +315,12 @@ public class AisCamActivity extends AppCompatActivity  {
         this.runOnUiThread(new Runnable() {
             public void run() {
                 try {
+                    String statusDisp = status;
+                    if (status.equals("Ready")){
+                        statusDisp = getString(R.string.sip_video_door_intercom_text) + " " + status;
+                    }
                     TextView labelView = (TextView) findViewById(R.id.sipLabel);
-                    labelView.setText(status);
+                    labelView.setText(statusDisp);
                 } catch (Exception e) {
                 Log.d(TAG, "Error ", e);
             }

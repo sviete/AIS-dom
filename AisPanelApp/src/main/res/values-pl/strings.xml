@@ -391,15 +391,17 @@
 
     <string name="setting_local_sip_domain_name_text">Domena SIP</string>
     <string name="setting_local_sip_domain_summary_text">Domena dla Twojego konta SIP</string>
-    <string name="setting_local_sip_domain_title_text">Wpisz nazwę użytkownika</string>
+    <string name="setting_local_sip_domain_title_text">Wpisz domenę SIP</string>
 
     <string name="setting_local_sip_cam_url_name_text">Adres URL kamery SIP</string>
     <string name="setting_local_sip_cam_url_summary_text">Adres URL kamery do dzwonka wideo</string>
     <string name="setting_local_sip_cam_url_title_text">Wpisz lokalny adres URL kamery</string>
 
-
-
-
-
+    <string name="sip_call_someone_text">Zadzwoń do kogoś</string>
+    <string name="sip_ending_call_text">Kończę połączenie</string>
+    <string name="sip_ending_no_call_to_end_text">Brak połączenia audio do zakończenia</string>
+    <string name="sip_opening_text">Otwieram</string>
+    <string name="sip_cam_photo_text">Zdjęcie z kamery</string>
+    <string name="sip_video_door_intercom_text">AIS Wideodomofon status:</string>
 
 </resources>
