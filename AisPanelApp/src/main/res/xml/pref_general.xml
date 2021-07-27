@@ -52,6 +52,7 @@
                 android:key="@string/key_setting_app_discovery"
                 android:icon="@drawable/ic_disco_player_in_network"/>
             <SwitchPreference
+                android:dependency="setting_app_discovery"
                 android:defaultValue="@string/default_setting_doorbell"
                 android:title="@string/title_setting_doorbell"
                 android:summary="@string/summary_setting_doorbell"
@@ -65,7 +66,6 @@
                 android:icon="@drawable/doorbell_icon_settings">
             </PreferenceScreen>
             <ListPreference
-                android:dependency="pref_ais_dom_sip"
                 android:defaultValue="@string/default_setting_test_zoomlevel"
                 android:entries="@array/zoom_level_names"
                 android:entryValues="@array/zoom_level_values"
