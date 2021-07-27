@@ -71,6 +71,7 @@ public class AisCoreUtils {
     public static final String BROADCAST_CAMERA_COMMAND = "BROADCAST_CAMERA_COMMAND";
     public static final String BROADCAST_CAMERA_COMMAND_URL = "BROADCAST_CAMERA_COMMAND_URL";
     public static final String BROADCAST_CAMERA_HA_ID = "BROADCAST_CAMERA_HA_ID";
+    public static final String BROADCAST_CAMERA_SIP_CALL = "BROADCAST_CAMERA_SIP_CALL";
 
     // GPS
     public static int GPS_SERVICE_LOCATIONS_DETECTED = 0;
@@ -137,7 +138,8 @@ public class AisCoreUtils {
     private static RequestQueue mRequestQueue;
 
     // SIP
-    public static String mAisSipStatus = null;
+    public static String mAisSipStatus = "";
+    public static SipAudioCall mAisSipIncomingCall;
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
     public static final String BROADCAST_SIP_INCOMING_CALL = "pl.sviete.dom.sip.BROADCAST_SIP_INCOMING_CALL";

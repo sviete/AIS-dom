@@ -404,5 +404,6 @@
     <string name="sip_opening_text">Opening</string>
     <string name="sip_cam_photo_text">Camera photo</string>
     <string name="sip_video_door_intercom_text">AIS Video door intercom status:</string>
+    <string name="sip_answering_call_text">Answering call</string>
 
 </resources>

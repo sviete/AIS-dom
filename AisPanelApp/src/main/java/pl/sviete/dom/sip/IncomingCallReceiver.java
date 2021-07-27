@@ -7,7 +7,12 @@ import android.net.sip.*;
 import android.util.Log;
 
 import pl.sviete.dom.AisCamActivity;
+import pl.sviete.dom.AisCoreUtils;
 import pl.sviete.dom.AisPanelService;
+import pl.sviete.dom.Config;
+
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_SIP_CALL;
 
 /**
  * Listens for incoming SIP calls, intercepts and hands them off to AIS Camera Activity.
@@ -20,7 +25,7 @@ public class IncomingCallReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        SipAudioCall incomingCall = null;
+
         try {
 
             SipAudioCall.Listener listener = new SipAudioCall.Listener() {
@@ -34,26 +39,17 @@ public class IncomingCallReceiver extends BroadcastReceiver {
                 }
             };
 
-            incomingCall = AisPanelService.mAisSipManager.takeAudioCall(intent, listener);
-            incomingCall.answerCall(30);
-            incomingCall.startAudio();
-            incomingCall.setSpeakerMode(true);
-            if(incomingCall.isMuted()) {
-                incomingCall.toggleMute();
-            }
-
-            AisPanelService.mAisSipAudioCall = incomingCall;
+            AisCoreUtils.mAisSipIncomingCall = AisPanelService.mAisSipManager.takeAudioCall(intent, listener);
 
             Intent camActivity = new Intent(context, AisCamActivity.class);
-            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Config config = new Config(context);
+            camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+            camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
             context.startActivity(camActivity);
 
         } catch (Exception e) {
             Log.e("AIS", e.getMessage());
-            if (incomingCall != null) {
-                incomingCall.close();
-            }
         }
     }
 

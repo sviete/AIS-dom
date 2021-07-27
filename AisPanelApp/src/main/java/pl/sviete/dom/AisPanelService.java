@@ -130,7 +130,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     //
     public static SipManager mAisSipManager = null;
     public static SipProfile mAisSipProfile = null;
-    public static SipAudioCall mAisSipAudioCall = null;
+    public static SipAudioCall mAisSipIncomingCall = null;
     public IncomingCallReceiver mAisIncomingCallReceiver;
 
 
@@ -216,8 +216,8 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     }
 
     public void destroySip() {
-        if (mAisSipAudioCall != null) {
-            mAisSipAudioCall.close();
+        if (mAisSipIncomingCall != null) {
+            mAisSipIncomingCall.close();
         }
 
         closeLocalSipProfile();
@@ -1133,7 +1133,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         startActivity(playerActivity);
     }
     // show camera view
-    private void showCamView(String streamUrl, String haCamId){
+    public void showCamView(String streamUrl, String haCamId){
         Intent camActivity = new Intent(this, AisCamActivity.class);
         // "rtsp://192.168.2.38/unicast"
         camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, streamUrl);

@@ -357,8 +357,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         } else {
                             Intent camActivity = new Intent(preference.getContext(), AisCamActivity.class);
                             camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
-                            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(camActivity);
                         }
                         return false;
