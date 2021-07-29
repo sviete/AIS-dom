@@ -152,6 +152,7 @@ public class AisCamActivity extends AppCompatActivity  {
                         Log.d(TAG,"Error ending call.", se);
                     }
                     AisCoreUtils.mAisSipIncomingCall.close();
+                    AisCoreUtils.mAisSipIncomingCall = null;
                     Toast.makeText(getBaseContext(),R.string.sip_ending_call_text, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getBaseContext(), R.string.sip_ending_no_call_to_end_text, Toast.LENGTH_SHORT).show();
@@ -256,6 +257,9 @@ public class AisCamActivity extends AppCompatActivity  {
         }
         if  (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_SIP_CALL)) {
             sipCall = intent.getBooleanExtra(AisCoreUtils.BROADCAST_CAMERA_SIP_CALL, false);
+        }
+        if (AisCoreUtils.mAisSipIncomingCall == null) {
+            sipCall = false;
         }
 
         mMediaPlayer.attachViews(mVideoLayout, null, ENABLE_SUBTITLES, USE_TEXTURE_VIEW);

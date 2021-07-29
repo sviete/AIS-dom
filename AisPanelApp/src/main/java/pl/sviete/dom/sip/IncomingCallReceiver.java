@@ -1,6 +1,7 @@
 package pl.sviete.dom.sip;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.sip.*;
@@ -12,6 +13,7 @@ import pl.sviete.dom.AisPanelService;
 import pl.sviete.dom.Config;
 
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_HA_ID;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_SIP_CALL;
 
 /**
@@ -41,11 +43,19 @@ public class IncomingCallReceiver extends BroadcastReceiver {
 
             AisCoreUtils.mAisSipIncomingCall = AisPanelService.mAisSipManager.takeAudioCall(intent, listener);
 
-            Intent camActivity = new Intent(context, AisCamActivity.class);
-            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            Intent camActivity = new Intent(context, AisCamActivity.class);
+//            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            Config config = new Config(context);
+//            camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+//            camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
+//            context.startActivity(camActivity);
+
+            Intent camActivity = new Intent(Intent.ACTION_MAIN);
+            camActivity.setComponent(new ComponentName("pl.sviete.dom.client","pl.sviete.dom.AisPanelService"));
             Config config = new Config(context);
             camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
             camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
+            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(camActivity);
 
         } catch (Exception e) {
