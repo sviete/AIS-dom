@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -355,10 +357,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                         AisCoreUtils.REQUEST_SIP_PERMISSION);
                             }
                         } else {
-                            Intent camActivity = new Intent(preference.getContext(), AisCamActivity.class);
-                            camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
-                            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(camActivity);
+                            //Check if permission has been granted
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(preference.getContext())) {
+                                //Request permission if not authorized
+                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                                intent.setData(Uri.parse("package:" + preference.getContext().getPackageName()));
+                                startActivityForResult(intent, 0);
+                            } else {
+                                Intent camActivity = new Intent(preference.getContext(), AisCamActivity.class);
+                                camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+                                camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(camActivity);
+                            }
                         }
                         return false;
                     }
