@@ -296,6 +296,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             builder.setSendKeepAlive(true);
             builder.setPort(5060);
             builder.setPassword(password);
+            builder.setAuthUserName(username);
             mAisSipProfile = builder.build();
 
             Intent i = new Intent();

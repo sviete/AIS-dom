@@ -232,9 +232,9 @@ public class AisCamActivity extends AppCompatActivity  {
         mMediaPlayer.release();
         mLibVLC.release();
 
-        if (AisCoreUtils.mAisSipIncomingCall != null) {
-            AisCoreUtils.mAisSipIncomingCall.close();
-        }
+//        if (AisCoreUtils.mAisSipIncomingCall != null) {
+//            AisCoreUtils.mAisSipIncomingCall.close();
+//        }
 
         try {
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
@@ -278,7 +278,12 @@ public class AisCamActivity extends AppCompatActivity  {
             final Animation animShake = AnimationUtils.loadAnimation(this, R.anim.shake);
             Button answerSipCamButton = (Button) findViewById(R.id.cam_activity_answer_call);
             answerSipCamButton.startAnimation(animShake);
-            Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName(), Toast.LENGTH_SHORT).show();
+            if (AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName() != null) {
+                Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName(), Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getUserName(), Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(getBaseContext(), "CAM url: " + mUrl, Toast.LENGTH_SHORT).show();
             // SIP when we get back from the preference setting Activity, assume

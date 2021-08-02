@@ -358,17 +358,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             }
                         } else {
                             //Check if permission has been granted
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(preference.getContext())) {
-                                //Request permission if not authorized
-                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                                intent.setData(Uri.parse("package:" + preference.getContext().getPackageName()));
-                                startActivityForResult(intent, 0);
-                            } else {
-                                Intent camActivity = new Intent(preference.getContext(), AisCamActivity.class);
-                                camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
-                                camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(camActivity);
-                            }
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(preference.getContext())) {
+//                                //Request permission if not authorized
+//                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+//                                intent.setData(Uri.parse("package:" + preference.getContext().getPackageName()));
+//                                startActivityForResult(intent, 0);
+//                            } else {
+                         Intent camActivity = new Intent(preference.getContext(), AisCamActivity.class);
+                         camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+                         camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                         startActivity(camActivity);
+                            //}
                         }
                         return false;
                     }

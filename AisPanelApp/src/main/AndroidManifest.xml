@@ -206,7 +206,6 @@
         <activity
             android:name="pl.sviete.dom.AisCamActivity"
             android:configChanges="orientation|screenSize|keyboard"
-            android:screenOrientation="landscape"
             android:theme="@style/AppThemeFullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -223,9 +222,9 @@
         <activity android:name=".sip.SipSettings" android:label="set_preferences"/>
 
         <receiver android:name=".sip.IncomingCallReceiver" android:label="Call Receiver">
-            <intent-filter>
-                <action android:name="pl.sviete.dom.sip.BROADCAST_SIP_INCOMING_CALL"/>
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="pl.sviete.dom.sip.BROADCAST_SIP_INCOMING_CALL"/>-->
+<!--            </intent-filter>-->
         </receiver>
 
 

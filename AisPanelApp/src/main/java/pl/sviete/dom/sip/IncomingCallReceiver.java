@@ -34,7 +34,7 @@ public class IncomingCallReceiver extends BroadcastReceiver {
                 @Override
                 public void onRinging(SipAudioCall call, SipProfile caller) {
                     try {
-                        call.answerCall(30);
+                        Log.e("AIS", "onRinging" + caller.getUserName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -43,20 +43,21 @@ public class IncomingCallReceiver extends BroadcastReceiver {
 
             AisCoreUtils.mAisSipIncomingCall = AisPanelService.mAisSipManager.takeAudioCall(intent, listener);
 
-//            Intent camActivity = new Intent(context, AisCamActivity.class);
-//            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            Config config = new Config(context);
-//            camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
-//            camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
-//            context.startActivity(camActivity);
-
-            Intent camActivity = new Intent(Intent.ACTION_MAIN);
-            camActivity.setComponent(new ComponentName("pl.sviete.dom.client","pl.sviete.dom.AisPanelService"));
+            Intent camActivity = new Intent(context, AisCamActivity.class);
+            camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            //camActivity.addFlags(Intent.FLAG_ACTIVITY_);
             Config config = new Config(context);
             camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
             camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
-            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(camActivity);
+
+//            Intent camActivity = new Intent(Intent.ACTION_MAIN);
+//            camActivity.setComponent(new ComponentName("pl.sviete.dom.client","pl.sviete.dom.AisPanelService"));
+//            Config config = new Config(context);
+//            camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+//            camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
+//            camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            context.startActivity(camActivity);
 
         } catch (Exception e) {
             Log.e("AIS", e.getMessage());
