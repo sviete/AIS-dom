@@ -140,6 +140,8 @@ public class AisCoreUtils {
     // SIP
     public static String mAisSipStatus = "";
     public static SipAudioCall mAisSipIncomingCall;
+    public static SipAudioCall mAisSipOutgoingCall;
+    public static Intent mAisSipIncomingCallIntent;
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
     public static final String BROADCAST_SIP_INCOMING_CALL = "pl.sviete.dom.sip.BROADCAST_SIP_INCOMING_CALL";

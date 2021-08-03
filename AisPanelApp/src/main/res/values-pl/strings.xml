@@ -402,7 +402,7 @@
     <string name="sip_ending_no_call_to_end_text">Brak połączenia audio do zakończenia</string>
     <string name="sip_opening_text">Otwieram</string>
     <string name="sip_cam_photo_text">Zdjęcie z kamery</string>
-    <string name="sip_video_door_intercom_text">AIS Wideodomofon status:</string>
+    <string name="sip_video_door_intercom_text">AIS Wideodomofon:</string>
     <string name="sip_answering_call_text">Odbieram połączenie</string>
 
 </resources>

@@ -322,11 +322,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         return new SipRegistrationListener() {
 
             public void onRegistering(String localProfileUri) {
-                updateAisSipStatus("Registering with SIP Server...");
+                updateAisSipStatus(getString(R.string.sip_video_door_intercom_text) + " Registering with SIP Server...");
             }
 
             public void onRegistrationDone(String localProfileUri, long expiryTime) {
-                updateAisSipStatus("Ready");
+                updateAisSipStatus(getString(R.string.sip_video_door_intercom_text) + " Ready");
             }
 
             public void onRegistrationFailed(String localProfileUri, int errorCode, String errorMessage) {

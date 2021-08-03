@@ -29,23 +29,9 @@ public class IncomingCallReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         try {
-
-            SipAudioCall.Listener listener = new SipAudioCall.Listener() {
-                @Override
-                public void onRinging(SipAudioCall call, SipProfile caller) {
-                    try {
-                        Log.e("AIS", "onRinging" + caller.getUserName());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-
-            AisCoreUtils.mAisSipIncomingCall = AisPanelService.mAisSipManager.takeAudioCall(intent, listener);
-
+            AisCoreUtils.mAisSipIncomingCallIntent = intent;
             Intent camActivity = new Intent(context, AisCamActivity.class);
-            camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            //camActivity.addFlags(Intent.FLAG_ACTIVITY_);
+            camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             Config config = new Config(context);
             camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
             camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
