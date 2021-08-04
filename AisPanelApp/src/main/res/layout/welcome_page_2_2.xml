@@ -53,6 +53,19 @@
         android:text="@string/wizard_step_2_2_title" />
 
     <TextView
+        android:id="@+id/wizard_privacy_policy"
+        style="@style/text_subtitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/wizard_desc_page2_2"
+        android:layout_marginBottom="80dp"
+        android:clickable="true"
+        android:text="@string/wizard_privacy_policy"
+        android:textColor="@color/black"
+        android:autoLink="web"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/wizard_desc_page2_2"
         style="@style/text_subtitle"
         android:layout_above="@+id/avatar_ais_logo_page2_2"

@@ -7,12 +7,17 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -134,6 +139,18 @@ public class MainWizardActivity extends AppCompatActivity {
                         }
                         // check and set LOCATION access
                         checkLocationAccess();
+                        TextView privacyPolicy = (TextView) findViewById(R.id.wizard_privacy_policy);
+                        privacyPolicy.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                String url = "https://powiedz.co/ords/f?p=DOM1:PRIVACY_POLICY";
+                                Intent i = new Intent(Intent.ACTION_VIEW);
+                                i.setData(Uri.parse(url));
+                                startActivity(i);
+                            }
+                        });
+
                         break;
                     case 4:
                         if (inSyncAnimator == null) {

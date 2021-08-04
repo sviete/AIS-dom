@@ -291,6 +291,8 @@
     <string name="key_setting_ais_ha_webhook_id">ais_ha_webhook_id</string>
     <string name="default_setting_ais_ha_webhook_id">""</string>
 
+    <string name="wizard_privacy_policy"><a href="https://powiedz.co/ords/f?p=DOM1:PRIVACY_POLICY">Privacy Policy</a></string>
+
     <string name="wizard_step_1_title">Configuration step by step!</string>
     <string name="wizard_step_1_info">Set the application parameters easily using the wizard..</string>
 
