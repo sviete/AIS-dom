@@ -116,21 +116,6 @@ public class AisCamActivity extends AppCompatActivity  {
             public void onClick(View v) {
                 mRingsActive = false;
 
-                // info to ha
-                try {
-                    // send camera button event
-                    JSONObject jMessage = new JSONObject();
-                    jMessage.put("event_type", "ais_video_ring_button_pressed");
-                    JSONObject jData = new JSONObject();
-                    jData.put("button", "answer");
-                    jData.put("camera_entity_id", mHaCamId);
-                    jData.put("calling_user_name", mCallingUserName);
-                    jMessage.put("event_data", jData);
-                    DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
-                } catch (Exception e) {
-                    Log.e("Exception", e.toString());
-                }
-
                 //
                 if (AisCoreUtils.mAisSipIncomingCall != null){
                     try {
@@ -151,6 +136,22 @@ public class AisCamActivity extends AppCompatActivity  {
                 else {
                     showDialog(SIP_CALL_ADDRESS);
                 }
+
+                // info to ha
+                try {
+                    // send camera button event
+                    JSONObject jMessage = new JSONObject();
+                    jMessage.put("event_type", "ais_video_ring_button_pressed");
+                    JSONObject jData = new JSONObject();
+                    jData.put("button", "answer");
+                    jData.put("camera_entity_id", mHaCamId);
+                    jData.put("calling_user_name", mCallingUserName);
+                    jMessage.put("event_data", jData);
+                    DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
+                } catch (Exception e) {
+                    Log.e("Exception", e.toString());
+                }
+
             }
         });
 
@@ -438,6 +439,7 @@ public class AisCamActivity extends AppCompatActivity  {
                             }
                         }
                         mediaPlayer.stop();
+
                     };
                 };
                 Thread myThread = new Thread(myRunnable);
@@ -676,8 +678,22 @@ public class AisCamActivity extends AppCompatActivity  {
         }  catch (Exception e) {
             Log.d(TAG, "Error ", e);
         }
-        TextView labelView = findViewById(R.id.sipCallStatusLabel);
-        labelView.setText(useName + " " + text + " state " + state);
+        String status = useName + " " + text + " state " + state;
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                try {
+                    String statusDisp = "No SIP connection, check settings -> ";
+                    if (status != null && !status.equals("")){
+                        statusDisp = status;
+                    }
+                    TextView labelView = findViewById(R.id.sipCallStatusLabel);
+                    labelView.setText(statusDisp);
+                } catch (Exception e) {
+                    Log.d(TAG, "Error ", e);
+                }
+            }
+        });
+
     }
 
 }

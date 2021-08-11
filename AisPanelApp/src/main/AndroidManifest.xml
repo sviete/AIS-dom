@@ -55,9 +55,9 @@
     <uses-feature android:name="android.hardware.wifi" android:required="false" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.front" android:required="false" />
-    <uses-feature android:name="android.hardware.sip.voip" android:required="true" />
-
+    <uses-feature android:name="android.hardware.sip.voip" android:required="false" />
     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+
     <uses-permission android:name="android.permission.USB_PERMISSION" />
 
 
