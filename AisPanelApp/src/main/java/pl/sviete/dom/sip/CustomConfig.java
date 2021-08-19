@@ -15,9 +15,9 @@ public class CustomConfig implements Config {
 
     private InetAddress publicIpAddress;
 
-    @Override public String getUserPart() { return "u1"; }
-    @Override public String getDomain() { return "10.10.10.10"; }
-    @Override public String getPassword() { return "p1"; }
+    @Override public String getUserPart() { return "u2"; }
+    @Override public String getDomain() { return "192.168.2.58"; }
+    @Override public String getPassword() { return "p2"; }
     @Override
     public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
 
