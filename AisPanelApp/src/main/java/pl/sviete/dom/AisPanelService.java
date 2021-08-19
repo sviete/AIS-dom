@@ -201,7 +201,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             try {
                 this.unregisterReceiver(mAisIncomingCallReceiver);
             } catch (Exception e){
-                Log.e(TAG, "Exception " + e.toString());
+                Log.e(TAG, "initializeSipManager Exception " + e.toString());
             }
         }
 

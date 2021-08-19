@@ -11,6 +11,7 @@ import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.net.sip.SipAudioCall;
 import android.net.sip.SipException;
+import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.os.Bundle;
 import android.util.Log;
@@ -650,6 +651,12 @@ public class AisCamActivity extends AppCompatActivity  {
             public void run() {
                 try {
                     String statusDisp = "No SIP connection, check settings -> ";
+                    //
+                    if(SipManager.isVoipSupported(getApplicationContext()) && SipManager.isApiSupported(getApplicationContext())){
+                        Log.d("VOIP:", "Supported!");
+                    } else{
+                        statusDisp = "VoIP calls using SIP are not supported on this device.";
+                    }
                     if (status != null && !status.equals("")){
                         statusDisp = status;
                     }

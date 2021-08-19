@@ -303,7 +303,7 @@
     <string name="wizard_step_2_1_info">Dostęp do plików jest potrzebny, by wysyłać zdjęcia do Asystenta domowego.</string>
 
     <string name="wizard_step_2_2_title">Dostęp do lokalizacji</string>
-    <string name="wizard_step_2_2_info">Dostęp do lokalizacji jest potrzebny, by wysyłać lokalizacje urządzenia do Asystenta domowego.</string>
+    <string name="wizard_step_2_2_info">Aplikacja AIS dom zbiera dane o lokalizacji, aby umożliwić wykrywanie obecności, nawet gdy aplikacja jest zamknięta lub nie jest używana.</string>
 
     <string name="wizard_step_3_title">Dostęp do kamery</string>
     <string name="wizard_step_3_info">Dostęp do kamery jest potrzebny, by skanować identyfikator urządzenia i wysyłać zdjęcia do galerii na bramce.</string>

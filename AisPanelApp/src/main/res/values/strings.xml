@@ -303,7 +303,7 @@
     <string name="wizard_step_2_1_info">Access to tfiles is needed to send pictures to Assistant domowy.</string>
 
     <string name="wizard_step_2_2_title">Allow access to location</string>
-    <string name="wizard_step_2_2_info">Location access is needed to send your device locations to the AIS dom gate.</string>
+    <string name="wizard_step_2_2_info">AIS dom application collects location data to enable presence detection, even when the app is closed or not in use.</string>
 
     <string name="wizard_step_3_title">Allow the access to camera</string>
     <string name="wizard_step_3_info">Access to the camera is needed to scan the gate id.</string>
