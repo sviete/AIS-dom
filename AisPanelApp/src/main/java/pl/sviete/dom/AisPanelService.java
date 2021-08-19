@@ -55,6 +55,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.net.SocketException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -64,6 +65,7 @@ import java.util.Objects;
 
 
 import pl.sviete.dom.data.DomCustomRequest;
+import pl.sviete.dom.sip.EventManager;
 import pl.sviete.dom.sip.IncomingCallReceiver;
 
 import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
@@ -388,7 +390,17 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // SIP
         if (mConfig.getDoorbellMode()) {
             // enable sip
-            initializeSipManager();
+            // initializeSipManager();
+
+            //
+            try {
+                new EventManager();
+
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+
+
         } else {
             // disable sip
             destroySip();
