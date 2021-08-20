@@ -15,7 +15,6 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.net.sip.SipAudioCall;
 import android.net.sip.SipErrorCode;
-import android.net.sip.SipException;
 import android.net.sip.SipManager;
 import android.net.sip.SipProfile;
 import android.net.sip.SipRegistrationListener;
@@ -25,7 +24,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -35,14 +33,6 @@ import android.speech.tts.Voice;
 
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-
-import org.linphone.core.AccountCreator;
-import org.linphone.core.Core;
-import org.linphone.core.CoreListenerStub;
-import org.linphone.core.ProxyConfig;
-import org.linphone.core.RegistrationState;
-import org.linphone.core.TransportType;
 
 
 import android.util.Log;
@@ -57,14 +47,17 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
+import com.xuchongyang.easyphone.EasyLinphone;
+import com.xuchongyang.easyphone.callback.PhoneCallback;
+import com.xuchongyang.easyphone.callback.RegistrationCallback;
 
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.linphone.core.LinphoneCall;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -72,9 +65,9 @@ import java.util.Objects;
 
 
 import pl.sviete.dom.data.DomCustomRequest;
-import pl.sviete.dom.sip.IncomingCallReceiver;
 
 import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_SIP_CALL;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAST_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB;
@@ -84,7 +77,6 @@ import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_COMMAND;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_INCOMING_CALL;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_STATUS;
 import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND;
@@ -139,11 +131,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public static SipManager mAisSipManager = null;
     public static SipProfile mAisSipProfile = null;
     public static SipAudioCall mAisSipIncomingCall = null;
-    public IncomingCallReceiver mAisIncomingCallReceiver;
     //
-    private AccountCreator mSipAccountCreator;
-    private CoreListenerStub mSipCoreListener;
-
 
 
 
@@ -206,58 +194,63 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     // --- AIS SIP START  ----
     // -----------------------
     public void initializeSipManager() {
-
-        if (mAisIncomingCallReceiver != null) {
-            try {
-                this.unregisterReceiver(mAisIncomingCallReceiver);
-            } catch (Exception e){
-                Log.e(TAG, "initializeSipManager Exception " + e.toString());
+        // Start service
+        EasyLinphone.startService(getBaseContext());
+        // Add callback
+        EasyLinphone.addCallback(new RegistrationCallback() {
+            @Override
+            public void registrationOk() {
+                super.registrationOk();
+                updateAisSipStatus("registrationOk");
             }
+
+            @Override
+            public void registrationFailed() {
+                super.registrationFailed();
+                updateAisSipStatus("registrationFailed");
+            }
+        }, new PhoneCallback() {
+            @Override
+            public void incomingCall(LinphoneCall linphoneCall) {
+                super.incomingCall(linphoneCall);
+                updateAisSipStatus("incomingCall");
+                Intent camActivity = new Intent(getApplicationContext(), AisCamActivity.class);
+                camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Config config = new Config(getApplicationContext());
+                camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+                camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
+                getApplicationContext().startActivity(camActivity);
+            }
+
+            @Override
+            public void callConnected() {
+                super.callConnected();
+                updateAisSipStatus("callConnected");
+            }
+
+            @Override
+            public void callEnd() {
+                super.callEnd();
+                updateAisSipStatus("callEnd");
+            }
+        });
+
+        // Configure sip account
+        // At least the 3 below values are required
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String username = prefs.getString("setting_local_sip_client_name", "mob");
+        String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
+        String password = prefs.getString("setting_local_sip_client_password", "mob");
+        if (domain.equals("ais_auto")) {
+            domain = mConfig.getAppLocalGateIp();
         }
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BROADCAST_SIP_INCOMING_CALL);
-
-        mAisIncomingCallReceiver = new IncomingCallReceiver();
-        this.registerReceiver(mAisIncomingCallReceiver, filter);
-
-        if(mAisSipManager == null) {
-            mAisSipManager = SipManager.newInstance(this);
-        }
-        initializeLocalSipProfile();
+        EasyLinphone.setAccount(username, password, domain);
+        // Register to sip server
+        EasyLinphone.login();
     }
 
     public void destroySip() {
-        if (mAisSipIncomingCall != null) {
-            mAisSipIncomingCall.close();
-        }
-
-        closeLocalSipProfile();
-
-        if (mAisIncomingCallReceiver != null) {
-            try {
-                this.unregisterReceiver(mAisIncomingCallReceiver);
-            } catch (Exception e){
-                Log.e(TAG, "Exception " + e.toString());
-            }
-        }
-    }
-
-    /**
-     * Closes out your local profile, freeing associated objects into memory
-     * and unregistering your device from the server.
-     */
-    public void closeLocalSipProfile() {
-        if (mAisSipManager == null) {
-            return;
-        }
-        try {
-            if (mAisSipProfile != null) {
-                mAisSipManager.close(mAisSipProfile.getUriString());
-            }
-        } catch (Exception ee) {
-            Log.d(TAG, "Failed to close local profile.", ee);
-        }
+        // TODO
     }
 
     /**
@@ -269,65 +262,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         Intent intent = new Intent(BROADCAST_SIP_STATUS);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
         bm.sendBroadcast(intent);
-    }
-
-
-    /**
-     * Logs you into your SIP provider, registering this device as the location to
-     * send SIP calls to for your SIP address.
-     */
-    public void initializeLocalSipProfile() {
-        if (mAisSipManager == null) {
-            return;
-        }
-
-        if (mAisSipProfile != null) {
-            closeLocalSipProfile();
-        }
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String username = prefs.getString("setting_local_sip_client_name", "");
-        String domain = prefs.getString("setting_local_gate_ip", "");
-        String password = prefs.getString("setting_local_sip_client_password", "");
-        if (username.equals("ais_auto")) {
-            username = mConfig.getAppLocalGateIp();
-        }
-
-        if (domain.equals("ais_auto")) {
-            domain = mConfig.getAppLocalGateIp();
-        }
-
-        if (username.length() == 0 || domain.length() == 0 || password.length() == 0) {
-            // showDialog(UPDATE_SETTINGS_DIALOG);
-            return;
-        }
-
-        try {
-            SipProfile.Builder builder = new SipProfile.Builder(username, domain);
-            builder.setAutoRegistration(true);
-            builder.setSendKeepAlive(true);
-            builder.setPort(5060);
-            builder.setPassword(password);
-            builder.setAuthUserName(username);
-            mAisSipProfile = builder.build();
-
-            Intent i = new Intent();
-            i.setAction(BROADCAST_SIP_INCOMING_CALL);
-            SystemClock.sleep(1000);
-
-            PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, Intent.FILL_IN_DATA);
-            mAisSipManager.open(mAisSipProfile, pi, null);
-
-
-            // This listener must be added AFTER manager.open is called,
-            // Otherwise the methods aren't guaranteed to fire.
-            String sipUri = mAisSipProfile.getUriString();
-            mAisSipManager.setRegistrationListener(sipUri, getSipRegistrationListener());
-        } catch (ParseException pe) {
-            updateAisSipStatus("Connection Error.");
-        } catch (SipException se) {
-            updateAisSipStatus("Connection error.");
-        }
     }
 
     private SipRegistrationListener getSipRegistrationListener() {
@@ -400,22 +334,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // SIP
         if (mConfig.getDoorbellMode()) {
             // enable sip
-            // initializeSipManager();
-            
-            // At least the 3 below values are required
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            String username = prefs.getString("setting_local_sip_client_name", "mob");
-            String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
-            String password = prefs.getString("setting_local_sip_client_password", "mob");
-            if (domain.equals("ais_auto")) {
-                domain = mConfig.getAppLocalGateIp();
-            }
-            mSipAccountCreator.setUsername(username);
-            mSipAccountCreator.setDomain(domain);
-            mSipAccountCreator.setPassword(password);
-            mSipAccountCreator.setTransport(TransportType.Udp);
-            ProxyConfig cfg = mSipAccountCreator.createProxyConfig();
-
+            initializeSipManager();
         } else {
             // disable sip
             destroySip();

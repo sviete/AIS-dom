@@ -9,7 +9,7 @@ android {
     buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "pl.sviete.dom"
-        minSdkVersion 23
+        minSdkVersion 22
         targetSdkVersion 29
         versionCode 165
         versionName '2.1.2.SIP'
@@ -65,8 +65,8 @@ repositories {
     maven { url "https://jitpack.io" }
     mavenCentral()
     jcenter()
-    maven {
-        url "https://linphone.org/maven_repository/"
+    flatDir {
+        dirs 'libs' //this way we can find the .aar file in libs folder
     }
 }
 
@@ -98,8 +98,9 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'org.videolan.android:libvlc-all:3.3.4'
-    implementation 'org.linphone:linphone-sdk-android:5.0.1'
 
+    compile(name:'liblinphone-android-sdk', ext:'aar')
+    compile(name:'easylinphone-1.0.0', ext:'aar')
 }
 
 
