@@ -1,11 +1,7 @@
 package pl.sviete.dom.sip;
 
-
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.media.MediaMode;
@@ -13,22 +9,28 @@ import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
 import pl.sviete.dom.AisNetUtils;
 
-public class CustomConfig implements Config {
+public class CustomSipConfig implements Config {
 
     private InetAddress publicIpAddress;
+    private String sipUserPart;
+    private String sipPassword;
+    private String sipDomain;
+
 
     @Override public String getUserPart() {
-        return "u3";
+        return sipUserPart;
     }
     @Override public String getDomain() {
-        return "10.10.10.10";
+        return sipDomain;
     }
     @Override public String getPassword() {
-        return "p3";
+        return sipPassword;
     }
-    
+
     @Override
-    public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
+    public MediaMode getMediaMode() {
+        return MediaMode.captureAndPlayback;
+    }
 
     @Override public String getAuthorizationUsername() { return getUserPart(); }
 
@@ -43,9 +45,15 @@ public class CustomConfig implements Config {
     @Override public String getMediaFile() { return null; }
     @Override public int getRtpPort() { return 0; }
     @Override public void setLocalInetAddress(InetAddress inetAddress) { }
-    @Override public void setUserPart(String userPart) { }
-    @Override public void setDomain(String domain) { }
-    @Override public void setPassword(String password) { }
+    @Override public void setUserPart(String userPart) {
+        sipUserPart = userPart;
+    }
+    @Override public void setDomain(String domain) {
+        sipDomain = domain;
+    }
+    @Override public void setPassword(String password) {
+        sipPassword = password;
+    }
     @Override public void setOutboundProxy(SipURI outboundProxy) { }
     @Override public void setSipPort(int sipPort) { }
     @Override public void setMediaMode(MediaMode mediaMode) { }
