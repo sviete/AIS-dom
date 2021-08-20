@@ -23,8 +23,12 @@ import java.io.File;
 import java.text.DecimalFormat;
 
 import ai.picovoice.porcupine.PorcupineManager;
+import pl.sviete.dom.sip.EventSipManager;
 
 import static android.content.Context.BATTERY_SERVICE;
+
+import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class AisCoreUtils {
 
@@ -141,10 +145,12 @@ public class AisCoreUtils {
     public static String mAisSipStatus = "";
     public static SipAudioCall mAisSipIncomingCall;
     public static SipAudioCall mAisSipOutgoingCall;
-    public static Intent mAisSipIncomingCallIntent;
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
-    public static final String BROADCAST_SIP_INCOMING_CALL = "pl.sviete.dom.sip.BROADCAST_SIP_INCOMING_CALL";
+
+    public static EventSipManager mAisEventSipManager;
+    public static SipRequest mAisSipRequest = null;
+    public static SipResponse mAisSipResponse = null;
 
 
     /*

@@ -16,8 +16,6 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import android.util.Log;
 
-import java.net.SocketException;
-
 
 public class EventManager implements SipListener {
 
@@ -27,7 +25,7 @@ public class EventManager implements SipListener {
 
 
     public EventManager() throws SocketException {
-        Config config = new CustomConfig();
+        Config config = new CustomSipConfig();
         Logger logger = new FileLogger(null);
         //JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false, logger, null);
         AndroidSoundManager javaxSoundManager = new AndroidSoundManager();

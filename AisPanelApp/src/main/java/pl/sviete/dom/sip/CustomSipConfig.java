@@ -11,13 +11,22 @@ import net.sourceforge.peers.Config;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
+import pl.sviete.dom.AisNetUtils;
+
 public class CustomConfig implements Config {
 
     private InetAddress publicIpAddress;
 
-    @Override public String getUserPart() { return "u2"; }
-    @Override public String getDomain() { return "192.168.2.58"; }
-    @Override public String getPassword() { return "p2"; }
+    @Override public String getUserPart() {
+        return "u3";
+    }
+    @Override public String getDomain() {
+        return "10.10.10.10";
+    }
+    @Override public String getPassword() {
+        return "p3";
+    }
+    
     @Override
     public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
 
@@ -47,7 +56,9 @@ public class CustomConfig implements Config {
     @Override public void setAuthorizationUsername(String authorizationUsername) { }
 
     @Override
-    public InetAddress getPublicInetAddress() { return publicIpAddress; }
+    public InetAddress getPublicInetAddress() {
+        return publicIpAddress;
+    }
 
     @Override
     public InetAddress getLocalInetAddress() {
@@ -62,26 +73,7 @@ public class CustomConfig implements Config {
     }
 
     private static String getMyIp() {
-        String ip = null;
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface
-                    .getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface iface = interfaces.nextElement();
-                // filters out 127.0.0.1 and inactive interfaces
-                if (iface.isLoopback() || !iface.isUp())
-                    continue;
-
-                Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                while (addresses.hasMoreElements()) {
-                    InetAddress addr = addresses.nextElement();
-                    ip = addr.getHostAddress();
-                }
-            }
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
-        }
-        return ip;
+        return AisNetUtils.getIPAddress(true);
     }
 
 }

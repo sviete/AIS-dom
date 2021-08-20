@@ -5,7 +5,6 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.util.Log;
 
 import net.sourceforge.peers.media.AbstractSoundManager;
 
