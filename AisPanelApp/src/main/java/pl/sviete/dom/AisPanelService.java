@@ -37,6 +37,14 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 
+import org.linphone.core.AccountCreator;
+import org.linphone.core.Core;
+import org.linphone.core.CoreListenerStub;
+import org.linphone.core.ProxyConfig;
+import org.linphone.core.RegistrationState;
+import org.linphone.core.TransportType;
+
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -127,11 +135,15 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public PendingIntent mPendingIntentAisPrev;
     public PendingIntent mPendingIntentAisMic;
 
-    //
+    // SIP
     public static SipManager mAisSipManager = null;
     public static SipProfile mAisSipProfile = null;
     public static SipAudioCall mAisSipIncomingCall = null;
     public IncomingCallReceiver mAisIncomingCallReceiver;
+    //
+    private AccountCreator mSipAccountCreator;
+    private CoreListenerStub mSipCoreListener;
+
 
 
 
@@ -388,7 +400,22 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // SIP
         if (mConfig.getDoorbellMode()) {
             // enable sip
-            initializeSipManager();
+            // initializeSipManager();
+            
+            // At least the 3 below values are required
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            String username = prefs.getString("setting_local_sip_client_name", "mob");
+            String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
+            String password = prefs.getString("setting_local_sip_client_password", "mob");
+            if (domain.equals("ais_auto")) {
+                domain = mConfig.getAppLocalGateIp();
+            }
+            mSipAccountCreator.setUsername(username);
+            mSipAccountCreator.setDomain(domain);
+            mSipAccountCreator.setPassword(password);
+            mSipAccountCreator.setTransport(TransportType.Udp);
+            ProxyConfig cfg = mSipAccountCreator.createProxyConfig();
+
         } else {
             // disable sip
             destroySip();

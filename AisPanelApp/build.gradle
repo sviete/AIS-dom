@@ -9,13 +9,16 @@ android {
     buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "pl.sviete.dom"
-        minSdkVersion 22
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 165
         versionName '2.1.2.SIP'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
+    }
+    packagingOptions {
+        pickFirst '**/*.so'
     }
     compileOptions {
         sourceCompatibility 1.8
@@ -62,6 +65,9 @@ repositories {
     maven { url "https://jitpack.io" }
     mavenCentral()
     jcenter()
+    maven {
+        url "https://linphone.org/maven_repository/"
+    }
 }
 
 
@@ -92,6 +98,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'org.videolan.android:libvlc-all:3.3.4'
+    implementation 'org.linphone:linphone-sdk-android:5.0.1'
 
 }
 
