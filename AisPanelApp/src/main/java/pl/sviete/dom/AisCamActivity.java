@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import pl.sviete.dom.sip.SipSettings;
 import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
 
+import com.xuchongyang.easyphone.EasyLinphone;
+
 
 public class AisCamActivity extends AppCompatActivity  {
     private static final boolean USE_TEXTURE_VIEW = false;
@@ -120,18 +122,10 @@ public class AisCamActivity extends AppCompatActivity  {
                 //
                 if (AisCoreUtils.mAisSipIncomingCall != null){
                     try {
-                        Toast.makeText(getBaseContext(),R.string.sip_answering_call_text, Toast.LENGTH_SHORT).show();
-                        AisCoreUtils.mAisSipIncomingCall.answerCall(30);
-                        AisCoreUtils.mAisSipIncomingCall.startAudio();
-                        AisCoreUtils.mAisSipIncomingCall.setSpeakerMode(true);
-                        if(AisCoreUtils.mAisSipIncomingCall.isMuted()) {
-                            AisCoreUtils.mAisSipIncomingCall.toggleMute();
-                        }
+                        // Answer the current call
+                        EasyLinphone.acceptCall();
                     } catch (Exception e) {
                         Log.e("AIS", e.getMessage());
-                        if (AisCoreUtils.mAisSipIncomingCall != null) {
-                            AisCoreUtils.mAisSipIncomingCall.close();
-                        }
                     }
                 }
                 else {
@@ -165,7 +159,7 @@ public class AisCamActivity extends AppCompatActivity  {
 
                 // info to ha
                 try {
-                    // send camera button event
+                    // send button event
                     JSONObject jMessage = new JSONObject();
                     jMessage.put("event_type", "ais_video_ring_button_pressed");
                     JSONObject jData = new JSONObject();
@@ -178,34 +172,14 @@ public class AisCamActivity extends AppCompatActivity  {
                     Log.e("Exception", e.toString());
                 }
 
-                if (AisCoreUtils.mAisSipIncomingCall == null && AisCoreUtils.mAisSipOutgoingCall == null) {
-                    Toast.makeText(getBaseContext(), R.string.sip_ending_no_call_to_end_text, Toast.LENGTH_SHORT).show();
-                } else {
-
-                    // end incoming call
-                    if (AisCoreUtils.mAisSipIncomingCall != null) {
-                        try {
-                            AisCoreUtils.mAisSipIncomingCall.endCall();
-                        } catch (SipException se) {
-                            Log.d(TAG, "Error ending call.", se);
-                        }
-                        AisCoreUtils.mAisSipIncomingCall.close();
-                        AisCoreUtils.mAisSipIncomingCall = null;
-                        Toast.makeText(getBaseContext(), R.string.sip_ending_call_text, Toast.LENGTH_SHORT).show();
-                    }
-
-                    // end outgoing call
-                    if (AisCoreUtils.mAisSipOutgoingCall != null) {
-                        try {
-                            AisCoreUtils.mAisSipOutgoingCall.endCall();
-                        } catch (SipException se) {
-                            Log.d(TAG, "Error ending call.", se);
-                        }
-                        AisCoreUtils.mAisSipOutgoingCall.close();
-                        AisCoreUtils.mAisSipOutgoingCall = null;
-                        Toast.makeText(getBaseContext(), R.string.sip_ending_call_text, Toast.LENGTH_SHORT).show();
-                    }
+                // end incoming call
+                try {
+                    EasyLinphone.hangUp();
+                } catch (Exception se) {
+                    Log.d(TAG, "Error ending call.", se);
                 }
+                AisCoreUtils.mAisSipIncomingCall = null;
+                Toast.makeText(getBaseContext(), R.string.sip_ending_call_text, Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -236,7 +210,7 @@ public class AisCamActivity extends AppCompatActivity  {
             jData.put("button", "open");
             jData.put("camera_entity_id", mHaCamId);
             jData.put("calling_user_name", mCallingUserName);
-            jMessage.put("event_data", jData);
+            jMessage.put("event_data", jData);AisCoreUtils.mAisSipIncomingCall = null;
             DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
         } catch (Exception e) {
             Log.e("Exception", e.toString());
@@ -267,10 +241,11 @@ public class AisCamActivity extends AppCompatActivity  {
             String action = intent.getAction();
             if (action.equals(AisCoreUtils.BROADCAST_SIP_STATUS)) {
                 updateSipServerStatus(mAisSipStatus);
-            }
-            else if (action.equals(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING)){
-                Log.d(TAG, "HWL stopHotWordListening");
-
+                if (mAisSipStatus.equals("callEnd")){
+                    // end call
+                    AisCoreUtils.mAisSipIncomingCall = null;
+                    mRingsActive = false;
+                }
             }
         }
     };
@@ -310,80 +285,9 @@ public class AisCamActivity extends AppCompatActivity  {
         }
         if (sipCall) {
             try {
-                SipAudioCall.Listener listener = new SipAudioCall.Listener() {
-                    @Override
-                    public void onRinging(SipAudioCall call, SipProfile caller) {
-                        try {
-                            Log.e("AIS", "SipAudioCall onRinging" + caller.getUserName());
-                            updateSipCallStatus(call,"incoming onRinging");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    @Override
-                    public void onReadyToCall(SipAudioCall call) {
-                        Log.e("AIS", "SipAudioCall onReadyToCall" );
-                        updateSipCallStatus(call,"incoming onReadyToCall");
-                    }
-
-                    @Override
-                    public void onCalling(SipAudioCall call) {
-                        Log.e("AIS", "SipAudioCall onCalling" );
-                        updateSipCallStatus(call,"incoming onCalling");
-                    }
-
-                    @Override
-                    public void onRingingBack(SipAudioCall call) {
-                        Log.e("AIS", "SipAudioCall onRingingBack" );
-                        updateSipCallStatus(call,"incoming onRingingBack");
-                        mRingsActive = false;
-                    }
-
-                    @Override
-                    public void onCallEstablished(SipAudioCall call) {
-                        Log.e("AIS", "SipAudioCall onCallEstablished" );
-                        updateSipCallStatus(call,"incoming onCallEstablished");
-                        mRingsActive = false;
-                    }
-
-                    @Override
-                    public void onCallEnded(SipAudioCall call) {
-                        mRingsActive = false;
-                        AisCoreUtils.mAisSipIncomingCall = null;
-                        Log.e("AIS", "SipAudioCall onCallEnded" );
-                        updateSipCallStatus(call,"incoming onCallEnded");
-                    }
-
-                    @Override
-                    public void onCallBusy(SipAudioCall call) {
-                        Log.e("AIS", "SipAudioCall onCallBusy" );
-                        updateSipCallStatus(call,"incoming onCallBusy");
-                        mRingsActive = false;
-                    }
-
-                    @Override
-                    public void onCallHeld(SipAudioCall call) {
-                        Log.e("AIS", "SipAudioCall onCallHeld" );
-                        updateSipCallStatus(call,"incoming onCallHeld");
-                        mRingsActive = false;
-                    }
-
-                    @Override
-                    public void onError(SipAudioCall call, int errorCode, String errorMessage) {
-                        Log.e("AIS", "SipAudioCall SipAudioCall" );
-                        updateSipCallStatus(call,"incoming onError");
-                        mRingsActive = false;
-                    }
-
-                    @Override
-                    public void onChanged(SipAudioCall call) {
-                        Log.e("AIS", "SipAudioCall onChanged" );
-                        updateSipCallStatus(call,"incoming onChanged");
-                    }
-                };
-
-                AisCoreUtils.mAisSipIncomingCall = AisPanelService.mAisSipManager.takeAudioCall(AisCoreUtils.mAisSipIncomingCallIntent, listener);
-            } catch (SipException e) {
+                // TODO
+                Log.e(TAG, "onStart sipCall");
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -401,17 +305,15 @@ public class AisCamActivity extends AppCompatActivity  {
         //
         if (sipCall) {
             // we have sip call - ring
-            updateSipCallStatus(AisCoreUtils.mAisSipIncomingCall, " onStart");
             Intent ttsIntent = new Intent(AisCoreUtils.BROADCAST_SERVICE_SAY_IT);
-
             mCallingUserName = "dzwonek";
-            if (AisCoreUtils.mAisSipIncomingCall.getPeerProfile() != null) {
-                if (AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName() != null) {
-                    mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName();
-                } else {
-                    mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getUserName();
-                }
-            }
+//            if (AisCoreUtils.mAisSipIncomingCall.) {
+//                if (AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName() != null) {
+//                    mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName();
+//                } else {
+//                    mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getUserName();
+//                }
+//            }
             AisCoreUtils.AIS_DOM_LAST_TTS = "";
             ttsIntent.putExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT, mCallingUserName);
 
@@ -478,14 +380,14 @@ public class AisCamActivity extends AppCompatActivity  {
 
             // call animation
             final Animation animShake = AnimationUtils.loadAnimation(this, R.anim.shake);
-            Button answerSipCamButton = (Button) findViewById(R.id.cam_activity_answer_call);
+            Button answerSipCamButton = findViewById(R.id.cam_activity_answer_call);
             answerSipCamButton.startAnimation(animShake);
-            if (AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName() != null) {
-                Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName(), Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getUserName(), Toast.LENGTH_SHORT).show();
-            }
+//            if (AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName() != null) {
+//                Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName(), Toast.LENGTH_SHORT).show();
+//            }
+//            else {
+//                Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getUserName(), Toast.LENGTH_SHORT).show();
+//            }
         } else {
             Toast.makeText(getBaseContext(), "CAM url: " + mUrl, Toast.LENGTH_SHORT).show();
             // SIP when we get back from the preference setting Activity, assume
@@ -556,89 +458,6 @@ public class AisCamActivity extends AppCompatActivity  {
     public void initiateCall() {
 
         updateSipServerStatus(sipAddress);
-
-        try {
-            SipAudioCall.Listener listener = new SipAudioCall.Listener() {
-                // Much of the client's interaction with the SIP Stack will
-                // happen via listeners.  Even making an outgoing call, don't
-                // forget to set up a listener to set things up once the call is established.
-                @Override
-                public void onCallEstablished(SipAudioCall call) {
-                    Log.e("AIS", "SipAudioCall outgoing onCallEstablished" );
-                    call.startAudio();
-                    call.setSpeakerMode(true);
-                    if(call.isMuted()) {
-                        call.toggleMute();
-                    }
-                    updateSipCallStatus(call, "outgoing onCallEstablished");
-                }
-
-                @Override
-                public void onCallEnded(SipAudioCall call) {
-                    Log.e("AIS", "SipAudioCall outgoing onCallEnded ");
-                    updateSipCallStatus(call,"outgoing onCallEnded");
-                }
-
-                @Override
-                public void onRinging(SipAudioCall call, SipProfile caller) {
-                    try {
-                        Log.e("AIS", "SipAudioCall onRinging" + caller.getUserName());
-                        updateSipCallStatus(call,"outgoing onRinging");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                @Override
-                public void onReadyToCall(SipAudioCall call) {
-                    Log.e("AIS", "SipAudioCall onReadyToCall" );
-                    updateSipCallStatus(call,"outgoing onReadyToCall");
-                }
-
-                @Override
-                public void onCalling(SipAudioCall call) {
-                    Log.e("AIS", "SipAudioCall onCalling" );
-                    updateSipCallStatus(call,"outgoing onCalling");
-                }
-
-                @Override
-                public void onRingingBack(SipAudioCall call) {
-                    Log.e("AIS", "SipAudioCall onRingingBack" );
-                    updateSipCallStatus(call,"outgoing onRingingBack");
-                }
-
-                @Override
-                public void onCallBusy(SipAudioCall call) {
-                    Log.e("AIS", "SipAudioCall onCallBusy" );
-                    updateSipCallStatus(call,"outgoing onCallBusy");
-                }
-
-                @Override
-                public void onCallHeld(SipAudioCall call) {
-                    Log.e("AIS", "SipAudioCall onCallHeld" );
-                    updateSipCallStatus(call,"outgoing onCallHeld");
-                }
-
-                @Override
-                public void onError(SipAudioCall call, int errorCode, String errorMessage) {
-                    Log.e("AIS", "SipAudioCall SipAudioCall" );
-                    updateSipCallStatus(call,"outgoing onError");
-                }
-
-                @Override
-                public void onChanged(SipAudioCall call) {
-                    Log.e("AIS", "SipAudioCall onChanged" );
-                    updateSipCallStatus(call,"outgoing onChanged");
-                }
-            };
-
-            AisCoreUtils.mAisSipOutgoingCall = AisPanelService.mAisSipManager.makeAudioCall(
-                    AisPanelService.mAisSipProfile.getUriString(), sipAddress, listener, 30
-            );
-
-        }
-        catch (Exception e) {
-            Log.i(TAG, "Error when trying to close manager.", e);
-        }
     }
 
     /**
@@ -667,40 +486,6 @@ public class AisCamActivity extends AppCompatActivity  {
                 }
             }
         });
-    }
-
-    /**
-     * Updates the status box with the SIP address of the current call.
-     * @param call The current, active call.
-     */
-    public void updateSipCallStatus(SipAudioCall call, String text) {
-        String useName = "";
-        int state = 0;
-        try {
-             useName = call.getPeerProfile().getDisplayName();
-            if (useName == null) {
-                useName = call.getPeerProfile().getUserName();
-            }
-            state = AisCoreUtils.mAisSipIncomingCall.getState();
-        }  catch (Exception e) {
-            Log.d(TAG, "Error ", e);
-        }
-        String status = useName + " " + text + " state " + state;
-        this.runOnUiThread(new Runnable() {
-            public void run() {
-                try {
-                    String statusDisp = "No SIP connection, check settings -> ";
-                    if (status != null && !status.equals("")){
-                        statusDisp = status;
-                    }
-                    TextView labelView = findViewById(R.id.sipCallStatusLabel);
-                    labelView.setText(statusDisp);
-                } catch (Exception e) {
-                    Log.d(TAG, "Error ", e);
-                }
-            }
-        });
-
     }
 
 }

@@ -13,11 +13,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
-import android.net.sip.SipAudioCall;
-import android.net.sip.SipErrorCode;
-import android.net.sip.SipManager;
-import android.net.sip.SipProfile;
-import android.net.sip.SipRegistrationListener;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Build;
@@ -127,13 +122,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public PendingIntent mPendingIntentAisPrev;
     public PendingIntent mPendingIntentAisMic;
 
-    // SIP
-    public static SipManager mAisSipManager = null;
-    public static SipProfile mAisSipProfile = null;
-    public static SipAudioCall mAisSipIncomingCall = null;
-    //
-
-
 
     private Bitmap getSpeakerImage(){
         Bitmap largeIcon = null;
@@ -197,11 +185,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // Start service
         EasyLinphone.startService(getBaseContext());
         // Add callback
-        EasyLinphone.addCallback(new RegistrationCallback() {
+        EasyLinphone.addCallback(
+        new RegistrationCallback() {
             @Override
             public void registrationOk() {
                 super.registrationOk();
-                updateAisSipStatus("registrationOk");
+                updateAisSipStatus("Ready");
             }
 
             @Override
@@ -212,8 +201,13 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }, new PhoneCallback() {
             @Override
             public void incomingCall(LinphoneCall linphoneCall) {
+
+                EasyLinphone.getLC().stopRinging();
                 super.incomingCall(linphoneCall);
+
+                AisCoreUtils.mAisSipIncomingCall = linphoneCall;
                 updateAisSipStatus("incomingCall");
+
                 Intent camActivity = new Intent(getApplicationContext(), AisCamActivity.class);
                 camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 Config config = new Config(getApplicationContext());
@@ -249,10 +243,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         EasyLinphone.login();
     }
 
-    public void destroySip() {
-        // TODO
-    }
-
     /**
      * Updates the status box at the top of the UI with a message of your choice.
      * @param status The String to display in the status box.
@@ -262,23 +252,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         Intent intent = new Intent(BROADCAST_SIP_STATUS);
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
         bm.sendBroadcast(intent);
-    }
-
-    private SipRegistrationListener getSipRegistrationListener() {
-        return new SipRegistrationListener() {
-
-            public void onRegistering(String localProfileUri) {
-                updateAisSipStatus(getString(R.string.sip_video_door_intercom_text) + " Registering with SIP Server...");
-            }
-
-            public void onRegistrationDone(String localProfileUri, long expiryTime) {
-                updateAisSipStatus(getString(R.string.sip_video_door_intercom_text) + " Ready");
-            }
-
-            public void onRegistrationFailed(String localProfileUri, int errorCode, String errorMessage) {
-                updateAisSipStatus("Registration failed for " + localProfileUri + " [Error " + errorCode + ": " + SipErrorCode.toString(errorCode) + "] " + errorMessage);
-            }
-        };
     }
 
 
@@ -337,7 +310,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             initializeSipManager();
         } else {
             // disable sip
-            destroySip();
+            EasyLinphone.onDestroy();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -511,8 +484,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         } catch (Exception e){
             Log.e(TAG, "Exception " + e.toString());
         }
+        //
+        EasyLinphone.onDestroy();
 
         Log.i(TAG, "destroy");
+
     }
 
 

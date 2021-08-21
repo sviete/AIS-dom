@@ -1,2 +1,3 @@
-include ':AisPanelApp', ':porcupine'
+include ':AisPanelApp', ':porcupine', ':easylinphone'
+
 project(':porcupine').projectDir = new File('porcupine')

@@ -26,6 +26,8 @@ import ai.picovoice.porcupine.PorcupineManager;
 
 import static android.content.Context.BATTERY_SERVICE;
 
+import org.linphone.core.LinphoneCall;
+
 public class AisCoreUtils {
 
     // AIS_GATE ID
@@ -139,12 +141,11 @@ public class AisCoreUtils {
 
     // SIP
     public static String mAisSipStatus = "";
-    public static SipAudioCall mAisSipIncomingCall;
+
     public static SipAudioCall mAisSipOutgoingCall;
-    public static Intent mAisSipIncomingCallIntent;
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
-    public static final String BROADCAST_SIP_INCOMING_CALL = "pl.sviete.dom.sip.BROADCAST_SIP_INCOMING_CALL";
+    public static LinphoneCall mAisSipIncomingCall;
 
 
     /*
