@@ -196,7 +196,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             @Override
             public void registrationFailed() {
                 super.registrationFailed();
-                updateAisSipStatus("registrationFailed");
+                updateAisSipStatus("...");
             }
         }, new PhoneCallback() {
             @Override

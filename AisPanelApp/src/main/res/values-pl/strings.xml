@@ -401,7 +401,8 @@
 
     <string name="sip_call_someone_text">Zadzwoń do kogoś</string>
     <string name="sip_ending_call_text">Kończę połączenie</string>
-    <string name="sip_ending_no_call_to_end_text">Brak połączenia audio do zakończenia</string>
+    <string name="sip_ending_no_call_to_end_text">Brak połączenia do zakończenia</string>
+    <string name="sip_answering_no_call_to_answer_text">Brak połączenia odebrania</string>
     <string name="sip_opening_text">Otwieram</string>
     <string name="sip_cam_photo_text">Zdjęcie z kamery</string>
     <string name="sip_video_door_intercom_text">AIS Wideodomofon:</string>

@@ -402,7 +402,8 @@
 
     <string name="sip_call_someone_text">Call Someone</string>
     <string name="sip_ending_call_text">Ending call</string>
-    <string name="sip_ending_no_call_to_end_text">No audio call to end</string>
+    <string name="sip_ending_no_call_to_end_text">No call to end</string>
+    <string name="sip_answering_no_call_to_answer_text">No call to answer</string>
     <string name="sip_opening_text">Opening</string>
     <string name="sip_cam_photo_text">Camera photo</string>
     <string name="sip_video_door_intercom_text">AIS Video door intercom:</string>

@@ -141,8 +141,6 @@ public class AisCoreUtils {
 
     // SIP
     public static String mAisSipStatus = "";
-
-    public static SipAudioCall mAisSipOutgoingCall;
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
     public static LinphoneCall mAisSipIncomingCall;

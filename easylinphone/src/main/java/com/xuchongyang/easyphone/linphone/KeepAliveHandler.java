@@ -19,9 +19,9 @@ public class KeepAliveHandler extends BroadcastReceiver {
             LinphoneManager.getLc().refreshRegisters();
 //            SPUtils.save(context, "keepAlive", true);
             try {
-                Thread.sleep(20000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
-                Log.e(TAG, "Cannot sleep for 20s");
+                Log.e(TAG, "Cannot sleep for 2s");
             }
         }
     }

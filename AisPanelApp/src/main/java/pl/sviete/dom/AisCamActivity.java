@@ -9,10 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
-import android.net.sip.SipAudioCall;
-import android.net.sip.SipException;
-import android.net.sip.SipManager;
-import android.net.sip.SipProfile;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,7 +50,7 @@ public class AisCamActivity extends AppCompatActivity  {
 
     // SIP
     private static final int SIP_CALL_ADDRESS = 1;
-    public String sipAddress = null;
+    public String mCallToSipAddress = null;
 
     private static Config mConfig;
     private static final String TAG = "AIS SIP";
@@ -76,87 +72,68 @@ public class AisCamActivity extends AppCompatActivity  {
         mVideoLayout = findViewById(R.id.video_layout);
 
         // exit
-        Button exitCamButton = (Button) findViewById(R.id.cam_activity_exit);
-        exitCamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mRingsActive = false;
-                finish();
-            }
+        Button exitCamButton = findViewById(R.id.cam_activity_exit);
+        exitCamButton.setOnClickListener(v -> {
+            mRingsActive = false;
+            finish();
         });
 
         // picture
-        Button screenshotCamButton = (Button) findViewById(R.id.cam_activity_screenshot);
-        screenshotCamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                screenshotCamButton();
-            }
-        });
+        Button screenshotCamButton = findViewById(R.id.cam_activity_screenshot);
+        screenshotCamButton.setOnClickListener(v -> screenshotCamButton());
 
         // open
-        Button openGateCamButton = (Button) findViewById(R.id.cam_activity_open_gate);
-        openGateCamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGateCamButton();
-            }
-        });
+        Button openGateCamButton = findViewById(R.id.cam_activity_open_gate);
+        openGateCamButton.setOnClickListener(v -> openGateCamButton());
 
         // settings
-        Button settingsSipCamButton = (Button) findViewById(R.id.cam_activity_settings);
-        settingsSipCamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateSipPreferences();
-            }
-        });
+        Button settingsSipCamButton = findViewById(R.id.cam_activity_settings);
+        settingsSipCamButton.setOnClickListener(v -> updateSipPreferences());
 
         // answer
-        Button answerSipCamButton = (Button) findViewById(R.id.cam_activity_answer_call);
-        answerSipCamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mRingsActive = false;
-
-                //
-                if (AisCoreUtils.mAisSipIncomingCall != null){
-                    try {
-                        // Answer the current call
-                        EasyLinphone.acceptCall();
-                    } catch (Exception e) {
-                        Log.e("AIS", e.getMessage());
-                    }
-                }
-                else {
-                    showDialog(SIP_CALL_ADDRESS);
-                }
-
-                // info to ha
+        Button answerSipCamButton = findViewById(R.id.cam_activity_answer_call);
+        answerSipCamButton.setOnClickListener(v -> {
+            mRingsActive = false;
+            //
+            if (AisCoreUtils.mAisSipIncomingCall != null){
                 try {
-                    // send camera button event
-                    JSONObject jMessage = new JSONObject();
-                    jMessage.put("event_type", "ais_video_ring_button_pressed");
-                    JSONObject jData = new JSONObject();
-                    jData.put("button", "answer");
-                    jData.put("camera_entity_id", mHaCamId);
-                    jData.put("calling_user_name", mCallingUserName);
-                    jMessage.put("event_data", jData);
-                    DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
+                    // Answer the current call
+                    EasyLinphone.acceptCall();
+                    Toast.makeText(getBaseContext(), R.string.sip_answering_call_text, Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
-                    Log.e("Exception", e.toString());
+                    Log.e("AIS", e.getMessage());
                 }
-
             }
+            else {
+                // TODO call to someone
+                // showDialog(SIP_CALL_ADDRESS);
+                Toast.makeText(getBaseContext(), R.string.sip_answering_no_call_to_answer_text, Toast.LENGTH_SHORT).show();
+            }
+
+            // info to ha
+            try {
+                // send camera button event
+                JSONObject jMessage = new JSONObject();
+                jMessage.put("event_type", "ais_video_ring_button_pressed");
+                JSONObject jData = new JSONObject();
+                jData.put("button", "answer");
+                jData.put("camera_entity_id", mHaCamId);
+                jData.put("calling_user_name", mCallingUserName);
+                jMessage.put("event_data", jData);
+                DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
+            } catch (Exception e) {
+                Log.e("Exception", e.toString());
+            }
+
         });
 
         // end call
-        Button endCallSipCamButton = (Button) findViewById(R.id.cam_activity_end_call);
-        endCallSipCamButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mRingsActive = false;
+        Button endCallSipCamButton = findViewById(R.id.cam_activity_end_call);
+        endCallSipCamButton.setOnClickListener(v -> {
+            mRingsActive = false;
 
+            // end incoming call
+            if (AisCoreUtils.mAisSipIncomingCall != null) {
                 // info to ha
                 try {
                     // send button event
@@ -172,7 +149,6 @@ public class AisCamActivity extends AppCompatActivity  {
                     Log.e("Exception", e.toString());
                 }
 
-                // end incoming call
                 try {
                     EasyLinphone.hangUp();
                 } catch (Exception se) {
@@ -180,8 +156,10 @@ public class AisCamActivity extends AppCompatActivity  {
                 }
                 AisCoreUtils.mAisSipIncomingCall = null;
                 Toast.makeText(getBaseContext(), R.string.sip_ending_call_text, Toast.LENGTH_SHORT).show();
-
+            } else {
+                Toast.makeText(getBaseContext(), R.string.sip_ending_no_call_to_end_text, Toast.LENGTH_SHORT).show();
             }
+
         });
 
 
@@ -210,7 +188,7 @@ public class AisCamActivity extends AppCompatActivity  {
             jData.put("button", "open");
             jData.put("camera_entity_id", mHaCamId);
             jData.put("calling_user_name", mCallingUserName);
-            jMessage.put("event_data", jData);AisCoreUtils.mAisSipIncomingCall = null;
+            jMessage.put("event_data", jData);
             DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
         } catch (Exception e) {
             Log.e("Exception", e.toString());
@@ -245,6 +223,9 @@ public class AisCamActivity extends AppCompatActivity  {
                     // end call
                     AisCoreUtils.mAisSipIncomingCall = null;
                     mRingsActive = false;
+
+                } else if (mAisSipStatus.equals("incomingCall")) {
+                    // start call
                 }
             }
         }
@@ -256,10 +237,6 @@ public class AisCamActivity extends AppCompatActivity  {
         super.onDestroy();
         mMediaPlayer.release();
         mLibVLC.release();
-
-        if (AisCoreUtils.mAisSipOutgoingCall != null) {
-            AisCoreUtils.mAisSipOutgoingCall.close();
-        }
 
         try {
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(this);
@@ -283,15 +260,8 @@ public class AisCamActivity extends AppCompatActivity  {
         if  (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_SIP_CALL)) {
             sipCall = intent.getBooleanExtra(AisCoreUtils.BROADCAST_CAMERA_SIP_CALL, false);
         }
-        if (sipCall) {
-            try {
-                // TODO
-                Log.e(TAG, "onStart sipCall");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
+        // cam view
         mMediaPlayer.attachViews(mVideoLayout, null, ENABLE_SUBTITLES, USE_TEXTURE_VIEW);
         try {
             final Media media = new Media(mLibVLC, Uri.parse(mUrl));
@@ -302,21 +272,16 @@ public class AisCamActivity extends AppCompatActivity  {
         }
         mMediaPlayer.play();
 
-        //
+        // sip call
         if (sipCall) {
             // we have sip call - ring
             Intent ttsIntent = new Intent(AisCoreUtils.BROADCAST_SERVICE_SAY_IT);
             mCallingUserName = "dzwonek";
-//            if (AisCoreUtils.mAisSipIncomingCall.) {
-//                if (AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName() != null) {
-//                    mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName();
-//                } else {
-//                    mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getUserName();
-//                }
-//            }
+            mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getRemoteAddress().getUserName();
+
+            // say the calling name
             AisCoreUtils.AIS_DOM_LAST_TTS = "";
             ttsIntent.putExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT, mCallingUserName);
-
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
             bm.sendBroadcast(ttsIntent);
 
@@ -382,12 +347,6 @@ public class AisCamActivity extends AppCompatActivity  {
             final Animation animShake = AnimationUtils.loadAnimation(this, R.anim.shake);
             Button answerSipCamButton = findViewById(R.id.cam_activity_answer_call);
             answerSipCamButton.startAnimation(animShake);
-//            if (AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName() != null) {
-//                Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getAuthUserName(), Toast.LENGTH_SHORT).show();
-//            }
-//            else {
-//                Toast.makeText(getBaseContext(), "Call: " + AisCoreUtils.mAisSipIncomingCall.getPeerProfile().getUserName(), Toast.LENGTH_SHORT).show();
-//            }
         } else {
             Toast.makeText(getBaseContext(), "CAM url: " + mUrl, Toast.LENGTH_SHORT).show();
             // SIP when we get back from the preference setting Activity, assume
@@ -420,7 +379,7 @@ public class AisCamActivity extends AppCompatActivity  {
                     final View textBoxView = factory.inflate(R.layout.call_address_dialog, null);
                     EditText textField = (EditText) (textBoxView.findViewById(R.id.calladdress_edit));
 
-                    textField.setText("domofon@" + mConfig.getAppLocalGateIp());
+                    textField.setText("domofon");
                     return new AlertDialog.Builder(this)
                             .setTitle(R.string.sip_call_someone_text)
                             .setView(textBoxView)
@@ -429,7 +388,7 @@ public class AisCamActivity extends AppCompatActivity  {
                                         public void onClick(DialogInterface dialog, int whichButton) {
                                             EditText textField = (EditText)
                                                     (textBoxView.findViewById(R.id.calladdress_edit));
-                                            sipAddress = textField.getText().toString();
+                                            mCallToSipAddress = textField.getText().toString();
                                             initiateCall();
 
                                         }
@@ -456,8 +415,9 @@ public class AisCamActivity extends AppCompatActivity  {
      * Make an outgoing call.
      */
     public void initiateCall() {
-
-        updateSipServerStatus(sipAddress);
+        updateSipServerStatus(mCallToSipAddress);
+        // Make a call
+        EasyLinphone.callTo(mCallToSipAddress, false);
     }
 
     /**
@@ -470,15 +430,14 @@ public class AisCamActivity extends AppCompatActivity  {
             public void run() {
                 try {
                     String statusDisp = "No SIP connection, check settings -> ";
-                    //
-                    if(SipManager.isVoipSupported(getApplicationContext()) && SipManager.isApiSupported(getApplicationContext())){
-                        Log.d("VOIP:", "Supported!");
-                    } else{
-                        statusDisp = "VoIP calls using SIP are not supported on this device.";
-                    }
                     if (status != null && !status.equals("")){
                         statusDisp = status;
                     }
+
+                    if (mAisSipStatus.equals("incomingCall")) {
+                        statusDisp = "-> " + AisCoreUtils.mAisSipIncomingCall.getRemoteAddress().getUserName();
+                    }
+
                     TextView labelView = findViewById(R.id.sipServerStatusLabel);
                     labelView.setText(statusDisp);
                 } catch (Exception e) {
