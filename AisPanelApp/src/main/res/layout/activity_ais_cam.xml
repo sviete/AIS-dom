@@ -27,20 +27,6 @@
             android:textColor="@color/avatar1"
             tools:ignore="RtlCompat" />
 
-        <TextView
-            android:id="@+id/sipCallStatusLabel"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/sipServerStatusLabel"
-            android:layout_marginTop="60dp"
-            android:layout_marginLeft="45dp"
-            android:layout_marginRight="45dp"
-            android:text="call"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/avatar1"
-            tools:ignore="RtlCompat" />
-
         <Button
             android:id="@+id/cam_activity_exit"
             android:layout_width="30dp"
