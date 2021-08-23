@@ -331,7 +331,13 @@ public class AisCamActivity extends AppCompatActivity  {
                         // finish
                         try {
                             Thread.sleep(6000);
-                            finish();
+                            // go back to app
+                            // finish();
+                            Intent camActivity = new Intent(getApplicationContext(), BrowserActivityNative.class);
+                            camActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            getApplicationContext().startActivity(camActivity);
+
+
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
