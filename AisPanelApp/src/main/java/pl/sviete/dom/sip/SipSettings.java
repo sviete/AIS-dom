@@ -6,7 +6,7 @@ import android.preference.PreferenceActivity;
 import pl.sviete.dom.R;
 
 /**
- * Handles SIP authentication settings for the Walkie Talkie app.
+ * Handles SIP authentication settings for the AIS.
  */
 public class SipSettings extends PreferenceActivity {
 

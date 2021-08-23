@@ -27,8 +27,7 @@ import pl.sviete.dom.sip.EventSipManager;
 
 import static android.content.Context.BATTERY_SERVICE;
 
-import net.sourceforge.peers.sip.transport.SipRequest;
-import net.sourceforge.peers.sip.transport.SipResponse;
+import org.linphone.core.LinphoneCall;
 
 public class AisCoreUtils {
 
@@ -143,14 +142,9 @@ public class AisCoreUtils {
 
     // SIP
     public static String mAisSipStatus = "";
-    public static SipAudioCall mAisSipIncomingCall;
-    public static SipAudioCall mAisSipOutgoingCall;
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
-
-    public static EventSipManager mAisEventSipManager;
-    public static SipRequest mAisSipRequest = null;
-    public static SipResponse mAisSipResponse = null;
+    public static LinphoneCall mAisSipIncomingCall;
 
 
     /*

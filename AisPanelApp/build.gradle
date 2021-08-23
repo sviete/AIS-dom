@@ -11,11 +11,14 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 22
         targetSdkVersion 29
-        versionCode 165
-        versionName '2.1.2.SIP'
+        versionCode 167
+        versionName '2.2.1.SIP'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
+    }
+    packagingOptions {
+        pickFirst '**/*.so'
     }
     compileOptions {
         sourceCompatibility 1.8
@@ -62,6 +65,9 @@ repositories {
     maven { url "https://jitpack.io" }
     mavenCentral()
     jcenter()
+    flatDir {
+        dirs project(':easylinphone').file('libs')
+    }
 }
 
 
@@ -86,14 +92,13 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zbar:1.9.13'
     implementation 'com.redbooth:WelcomeCoordinator:1.0.1'
     implementation project(path: ':porcupine')
+    implementation project(path: ':easylinphone')
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.android.volley:volley:1.2.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'org.videolan.android:libvlc-all:3.3.4'
-    implementation files('libs/peers-lib-0.5.1-SNAPSHOT.jar')
-
 }
 
 

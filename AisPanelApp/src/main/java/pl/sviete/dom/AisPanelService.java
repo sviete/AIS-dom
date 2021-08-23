@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
@@ -40,10 +41,14 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
+import com.xuchongyang.easyphone.EasyLinphone;
+import com.xuchongyang.easyphone.callback.PhoneCallback;
+import com.xuchongyang.easyphone.callback.RegistrationCallback;
 
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.linphone.core.LinphoneCall;
 
 import java.math.BigDecimal;
 import java.net.SocketException;
@@ -55,9 +60,9 @@ import java.util.Objects;
 
 
 import pl.sviete.dom.data.DomCustomRequest;
-import pl.sviete.dom.sip.EventSipManager;
 
 import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_SIP_CALL;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAST_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB;
@@ -67,6 +72,7 @@ import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_COMMAND;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_STATUS;
 import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
@@ -175,13 +181,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
+        boolean sipCommand = false;
+        if (intent != null) {
+            sipCommand = intent.hasExtra(BROADCAST_SIP_COMMAND);
+        }
 
         // only sip change return
-        if (!intent.hasExtra(BROADCAST_SIP_COMMAND)) {
-
+        if (!sipCommand) {
             createNotificationChannel();
-
 
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction("ais_stop");
@@ -232,7 +239,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             }
         } else {
             // disable sip
-            mAisEventSipManager = null;
+            EasyLinphone.onDestroy();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -406,8 +413,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         } catch (Exception e){
             Log.e(TAG, "Exception " + e.toString());
         }
+        //
+        EasyLinphone.onDestroy();
 
         Log.i(TAG, "destroy");
+
     }
 
 
@@ -987,7 +997,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     }
 
     private void getAudioInfoForNotification() {
-        Log.e(TAG, "get info ");
+        Log.i(TAG, "get info ");
         if (AisCoreUtils.AIS_REMOTE_GATE_ID != null && AisCoreUtils.AIS_REMOTE_GATE_ID.startsWith("dom-")) {
             String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "get_audio_full_info";
             JSONObject audioInfo = new JSONObject();
@@ -1178,5 +1188,3 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     }
 
 }
-
-
