@@ -257,13 +257,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
+        boolean sipCommand = false;
+        if (intent != null) {
+            sipCommand = intent.hasExtra(BROADCAST_SIP_COMMAND);
+        }
 
         // only sip change return
-        if (!intent.hasExtra(BROADCAST_SIP_COMMAND)) {
-
+        if (!sipCommand) {
             createNotificationChannel();
-
 
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction("ais_stop");
@@ -1068,7 +1069,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     }
 
     private void getAudioInfoForNotification() {
-        Log.e(TAG, "get info ");
+        Log.i(TAG, "get info ");
         if (AisCoreUtils.AIS_REMOTE_GATE_ID != null && AisCoreUtils.AIS_REMOTE_GATE_ID.startsWith("dom-")) {
             String url = AisCoreUtils.getAisDomCloudWsUrl(true) + "get_audio_full_info";
             JSONObject audioInfo = new JSONObject();

@@ -156,7 +156,7 @@ public class LinphoneManager implements LinphoneCoreListener {
         mLc.setChatDatabasePath(mChatDatabaseFile);
 //        mLc.setCallErrorTone(Reason.NotFound, mErrorToneFile);//设置呼叫错误播放的铃声
 
-        setBackCamAsDefault();
+       // setBackCamAsDefault();
 
         int availableCores = Runtime.getRuntime().availableProcessors();
         Log.w(TAG, "MediaStreamer : " + availableCores + " cores detected and configured");
@@ -184,7 +184,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 
         mLc.setVideoPolicy(mLc.getVideoAutoInitiatePolicy(), true);
         mLc.setVideoPolicy(true, mLc.getVideoAutoAcceptPolicy());
-        mLc.enableVideo(true, true);
+        mLc.enableVideo(false, false);
 
         // 设置编码格式
         setCodecMime();
