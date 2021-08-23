@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -51,7 +52,6 @@ import org.json.JSONObject;
 import org.linphone.core.LinphoneCall;
 
 import java.math.BigDecimal;
-import java.net.SocketException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
@@ -77,7 +77,7 @@ import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_HA_ID;
-import static pl.sviete.dom.AisCoreUtils.mAisEventSipManager;
+import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
 
 
 public class AisPanelService extends Service implements TextToSpeech.OnInitListener, ExoPlayer.EventListener {
@@ -179,6 +179,83 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         mTts.setSpeechRate(1.0f);
     }
 
+    // ----------------------
+    // --- AIS SIP START  ----
+    // -----------------------
+    public void initializeSipManager() {
+        // Start service
+        EasyLinphone.startService(getBaseContext());
+        // Add callback
+        EasyLinphone.addCallback(
+                new RegistrationCallback() {
+                    @Override
+                    public void registrationOk() {
+                        super.registrationOk();
+                        updateAisSipStatus("Ready");
+                    }
+
+                    @Override
+                    public void registrationFailed() {
+                        super.registrationFailed();
+                        updateAisSipStatus("...");
+                    }
+                }, new PhoneCallback() {
+                    @Override
+                    public void incomingCall(LinphoneCall linphoneCall) {
+
+                        EasyLinphone.getLC().stopRinging();
+                        super.incomingCall(linphoneCall);
+
+                        AisCoreUtils.mAisSipIncomingCall = linphoneCall;
+                        updateAisSipStatus("incomingCall");
+
+                        Intent camActivity = new Intent(getApplicationContext(), AisCamActivity.class);
+                        camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        Config config = new Config(getApplicationContext());
+                        camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+                        camActivity.putExtra(BROADCAST_CAMERA_SIP_CALL, true);
+                        getApplicationContext().startActivity(camActivity);
+                    }
+
+                    @Override
+                    public void callConnected() {
+                        super.callConnected();
+                        updateAisSipStatus("callConnected");
+                    }
+
+                    @Override
+                    public void callEnd() {
+                        super.callEnd();
+                        updateAisSipStatus("callEnd");
+                    }
+                });
+
+        // Configure sip account
+        // At least the 3 below values are required
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String username = prefs.getString("setting_local_sip_client_name", "mob");
+        String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
+        String password = prefs.getString("setting_local_sip_client_password", "mob");
+        if (domain.equals("ais_auto")) {
+            domain = mConfig.getAppLocalGateIp();
+        }
+        EasyLinphone.setAccount(username, password, domain);
+        // Register to sip server
+        EasyLinphone.login();
+    }
+
+    /**
+     * Updates the status box at the top of the UI with a message of your choice.
+     * @param status The String to display in the status box.
+     */
+    public void updateAisSipStatus(final String status) {
+        mAisSipStatus = status;
+        Intent intent = new Intent(BROADCAST_SIP_STATUS);
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
+        bm.sendBroadcast(intent);
+    }
+
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         boolean sipCommand = false;
@@ -232,11 +309,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // SIP
         if (mConfig.getDoorbellMode()) {
             // enable sip
-            try {
-                mAisEventSipManager = new EventSipManager(getBaseContext());
-            } catch (SocketException e) {
-                e.printStackTrace();
-            }
+            initializeSipManager();
         } else {
             // disable sip
             EasyLinphone.onDestroy();

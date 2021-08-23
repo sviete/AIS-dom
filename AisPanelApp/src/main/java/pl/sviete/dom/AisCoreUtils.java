@@ -5,9 +5,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.sip.SipAudioCall;
-import android.net.sip.SipManager;
-import android.net.sip.SipProfile;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.speech.SpeechRecognizer;
@@ -23,7 +20,6 @@ import java.io.File;
 import java.text.DecimalFormat;
 
 import ai.picovoice.porcupine.PorcupineManager;
-import pl.sviete.dom.sip.EventSipManager;
 
 import static android.content.Context.BATTERY_SERVICE;
 
