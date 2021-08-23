@@ -58,6 +58,17 @@ public class DomWebInterface {
             }
             return "http://" + url + ".paczka.pro";
         }
+
+        // check if gate url is set in current session
+        String urlInSession = AisCoreUtils.getAisDomUrl();
+        if (urlInSession.equals("")) {
+            if (url.startsWith("http")) {
+                pl.sviete.dom.AisCoreUtils.setAisDomUrl(url);
+            } else {
+                // ip
+                pl.sviete.dom.AisCoreUtils.setAisDomUrl("http://" + url);
+            }
+        }
         return pl.sviete.dom.AisCoreUtils.getAisDomUrl().replaceAll("/$", "");
     }
 
