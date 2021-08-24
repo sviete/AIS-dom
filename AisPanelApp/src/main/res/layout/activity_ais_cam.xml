@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:keepScreenOn="true"
         android:gravity="center"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="false">
 
         <TextView
             android:id="@+id/sipServerStatusLabel"
