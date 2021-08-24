@@ -17,11 +17,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.format.DateFormat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -40,11 +38,9 @@ import org.json.JSONObject;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
-import org.videolan.libvlc.interfaces.IVLCVout;
 import org.videolan.libvlc.util.VLCVideoLayout;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -147,7 +143,7 @@ public class AisCamActivity extends AppCompatActivity  {
             }
 
 
-            mRingsActive = false;
+            // mRingsActive = false;
             //
             if (AisCoreUtils.mAisSipIncomingCall != null){
                 try {
