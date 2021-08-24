@@ -4,14 +4,11 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -24,8 +21,6 @@ import androidx.core.app.ActivityCompat;
 import ai.picovoice.hotword.PorcupineService;
 
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_HA_ID;
-import static pl.sviete.dom.AisCoreUtils.getAisDomCloudWsUrl;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity {

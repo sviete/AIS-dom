@@ -2,18 +2,24 @@ package pl.sviete.dom;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.text.format.DateFormat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -24,41 +30,33 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
+import org.videolan.libvlc.interfaces.IVLCVout;
 import org.videolan.libvlc.util.VLCVideoLayout;
-import java.util.ArrayList;
 
-import ai.picovoice.hotword.PorcupineService;
-import pl.sviete.dom.data.DomCustomRequest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+
 import pl.sviete.dom.sip.SipSettings;
 
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
-import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
-
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.xuchongyang.easyphone.EasyLinphone;
 
 
 public class AisCamActivity extends AppCompatActivity  {
-    private static final boolean USE_TEXTURE_VIEW = false;
-    private static final boolean ENABLE_SUBTITLES = false;
     private VLCVideoLayout mVideoLayout = null;
 
     private LibVLC mLibVLC = null;
@@ -258,8 +256,65 @@ public class AisCamActivity extends AppCompatActivity  {
         }
     }
 
+    private void takeScreenShot(View view) {
+
+        //This is used to provide file name with Date a format
+        Date date = new Date();
+        CharSequence format = DateFormat.format("yyyyMMdd_hhmmss", date);
+
+        //It will make sure to store file to given below Directory and If the file Directory dosen't exist then it will create it.
+        try {
+            File mainDir = new File(
+                    this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "FilShare");
+            if (!mainDir.exists()) {
+                boolean mkdir = mainDir.mkdir();
+            }
+
+            //Providing file name along with Bitmap to capture screenview
+            String path = mainDir + "/" + "AIS" + "-" + format + ".jpeg";
+            view.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+            view.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(path);
+            FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+
+            shareScreenShot(imageFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Share ScreenShot
+    private void shareScreenShot(File imageFile) {
+
+        //Using sub-class of Content provider
+        Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), this.getApplicationContext().getPackageName() + ".provider", imageFile);
+
+        //Explicit intent
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, "AIS Doorbell");
+        intent.putExtra(Intent.EXTRA_STREAM, photoURI);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        //It will show the application which are available to share Image; else Toast message will throw.
+        try {
+            this.startActivity(Intent.createChooser(intent, "Share With"));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "No App to Share Available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void screenshotCamButton() {
+
+        takeScreenShot(getWindow().getDecorView());
+
         try {
             // send camera button event
             JSONObject jMessage = new JSONObject();
@@ -309,6 +364,9 @@ public class AisCamActivity extends AppCompatActivity  {
         }
     }
 
+
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -329,9 +387,14 @@ public class AisCamActivity extends AppCompatActivity  {
 
         boolean sipCall = false;
         Intent intent = getIntent();
-        if (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL)) {
+
+        // get url from settings
+        mUrl = mConfig.getSipLocalCamUrl();
+        if (mUrl.equals("") && intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL)) {
             mUrl = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL);
         }
+
+
         if  (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_HA_ID)) {
             mHaCamId = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_HA_ID);
         }
@@ -340,7 +403,7 @@ public class AisCamActivity extends AppCompatActivity  {
         }
 
         // cam view
-        mMediaPlayer.attachViews(mVideoLayout, null, ENABLE_SUBTITLES, USE_TEXTURE_VIEW);
+        mMediaPlayer.attachViews(mVideoLayout, null, false, false);
         try {
             final Media media = new Media(mLibVLC, Uri.parse(mUrl));
             mMediaPlayer.setMedia(media);
@@ -348,6 +411,11 @@ public class AisCamActivity extends AppCompatActivity  {
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
+//        DisplayMetrics displayMetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//        mMediaPlayer.getVLCVout().setWindowSize(displayMetrics.widthPixels, displayMetrics.heightPixels );
+
         mMediaPlayer.play();
 
         // sip call
