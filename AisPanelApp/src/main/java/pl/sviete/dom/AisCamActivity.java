@@ -19,12 +19,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
@@ -32,9 +34,25 @@ import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.util.VLCVideoLayout;
 import java.util.ArrayList;
 
+import ai.picovoice.hotword.PorcupineService;
+import pl.sviete.dom.data.DomCustomRequest;
 import pl.sviete.dom.sip.SipSettings;
+
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND_TEXT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
+import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.xuchongyang.easyphone.EasyLinphone;
 
 
@@ -86,6 +104,8 @@ public class AisCamActivity extends AppCompatActivity  {
 
         mVideoLayout = findViewById(R.id.video_layout);
 
+        mConfig = new Config(getApplicationContext());
+
         // exit
         Button exitCamButton = findViewById(R.id.cam_activity_exit);
         exitCamButton.setOnClickListener(v -> {
@@ -97,9 +117,13 @@ public class AisCamActivity extends AppCompatActivity  {
         Button screenshotCamButton = findViewById(R.id.cam_activity_screenshot);
         screenshotCamButton.setOnClickListener(v -> screenshotCamButton());
 
-        // open
+        // open 1
         Button openGateCamButton = findViewById(R.id.cam_activity_open_gate);
         openGateCamButton.setOnClickListener(v -> openGateCamButton());
+
+        // open 2
+        Button openGate2CamButton = findViewById(R.id.cam_activity_open_gate2);
+        openGate2CamButton.setOnClickListener(v -> openGate2CamButton());
 
         // settings
         Button settingsSipCamButton = findViewById(R.id.cam_activity_settings);
@@ -183,7 +207,6 @@ public class AisCamActivity extends AppCompatActivity  {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         //
-        mConfig = new Config(getApplicationContext());
         updateSipServerStatus(mAisSipStatus);
 
         // BROADCAST
@@ -195,12 +218,17 @@ public class AisCamActivity extends AppCompatActivity  {
 
 
     private void openGateCamButton() {
+
+        // open gate1
+        doGet(mConfig.getSipLocalGate1OpenUrl(), getApplicationContext());
+
+        // infor to ha
         try {
             // send camera button event
             JSONObject jMessage = new JSONObject();
             jMessage.put("event_type", "ais_video_ring_button_pressed");
             JSONObject jData = new JSONObject();
-            jData.put("button", "open");
+            jData.put("button", "open1");
             jData.put("camera_entity_id", mHaCamId);
             jData.put("calling_user_name", mCallingUserName);
             jMessage.put("event_data", jData);
@@ -208,8 +236,28 @@ public class AisCamActivity extends AppCompatActivity  {
         } catch (Exception e) {
             Log.e("Exception", e.toString());
         }
-        Toast.makeText(getBaseContext(),R.string.sip_opening_text, Toast.LENGTH_SHORT).show();
     }
+
+    private void openGate2CamButton() {
+
+        // open gate2
+        doGet(mConfig.getSipLocalGate2OpenUrl(), getApplicationContext());
+
+        try {
+            // send camera button event
+            JSONObject jMessage = new JSONObject();
+            jMessage.put("event_type", "ais_video_ring_button_pressed");
+            JSONObject jData = new JSONObject();
+            jData.put("button", "open2");
+            jData.put("camera_entity_id", mHaCamId);
+            jData.put("calling_user_name", mCallingUserName);
+            jMessage.put("event_data", jData);
+            DomWebInterface.publishJson(jMessage, "event", getApplicationContext());
+        } catch (Exception e) {
+            Log.e("Exception", e.toString());
+        }
+    }
+
 
     private void screenshotCamButton() {
         try {
@@ -264,6 +312,21 @@ public class AisCamActivity extends AppCompatActivity  {
     @Override
     protected void onStart() {
         super.onStart();
+
+
+        // open 2
+        Button openGate2CamButton = findViewById(R.id.cam_activity_open_gate2);
+        openGate2CamButton.setOnClickListener(v -> openGate2CamButton());
+        // hide 2 button if not set
+        LinearLayout openGate2LinearLayout=  findViewById(R.id.cam_activity_open_gate2_ll);
+        LinearLayout.LayoutParams lParam;
+        if (mConfig.getSipLocalGate2OpenUrl().equals("")) {
+            openGate2LinearLayout.setVisibility(View.GONE);
+
+        } else {
+            openGate2LinearLayout.setVisibility(View.VISIBLE);
+        }
+
         boolean sipCall = false;
         Intent intent = getIntent();
         if (intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL)) {
@@ -466,6 +529,23 @@ public class AisCamActivity extends AppCompatActivity  {
                 }
             }
         });
+    }
+
+
+    private static void doGet(String urlToGet, Context context) {
+        // do the simple HTTP get
+        String webUrl = mConfig.getSipLocalGate1OpenUrl();
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(context);
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, urlToGet,
+                response -> {
+                    Toast.makeText(context, R.string.sip_opening_text, Toast.LENGTH_SHORT).show();
+                }, error -> Toast.makeText(context, "Error!", Toast.LENGTH_SHORT).show());
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
 }

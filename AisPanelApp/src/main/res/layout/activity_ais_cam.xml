@@ -53,8 +53,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center">
             <LinearLayout
+                android:id="@+id/cam_activity_screenshot_ll"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -66,13 +68,14 @@
                     android:layout_height="90dp"
                     android:drawableTop="@drawable/cam_icon_photo"
                     android:textSize = "14sp"
-                    android:text="photo"
+                    android:text="@string/sip_button_photo"
                     android:background = "@drawable/round_button"
                     android:textColor = "#FFA000"
                     />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/cam_activity_end_call_ll"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -86,12 +89,12 @@
                     android:layout_gravity="center"
                     android:background="@drawable/round_button"
                     android:drawableTop="@drawable/cam_icon_phone_end_call"
-                    android:text="end"
-
+                    android:text="@string/sip_button_end"
                     android:textColor="#E64A19"
                     android:textSize="14sp" />
              </LinearLayout>
             <LinearLayout
+                android:id="@+id/cam_activity_answer_call_ll"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -105,11 +108,12 @@
                     android:layout_gravity="center"
                     android:background="@drawable/round_button"
                     android:drawableTop="@drawable/cam_icon_phone_answer_call"
-                    android:text="answer"
+                    android:text="@string/sip_button_answer"
                     android:textColor="#689F38"
                     android:textSize="14sp" />
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/cam_activity_open_gate_ll"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -122,9 +126,27 @@
                     android:layout_height="90dp"
                     android:drawableTop="@drawable/cam_icon_open"
                     android:textSize = "14sp"
-                    android:text="open"
+                    android:text="@string/sip_button_open1"
                     android:background = "@drawable/round_button"
                     android:textColor = "#FF1976D2"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/cam_activity_open_gate2_ll"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight=".25"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/cam_activity_open_gate2"
+                    android:layout_width="120dp"
+                    android:layout_height="90dp"
+                    android:drawableTop="@drawable/cam_icon_open2"
+                    android:textSize = "14sp"
+                    android:text="@string/sip_button_open2"
+                    android:background = "@drawable/round_button"
+                    android:textColor = "#6200EA"/>
             </LinearLayout>
         </LinearLayout>
     </org.videolan.libvlc.util.VLCVideoLayout>

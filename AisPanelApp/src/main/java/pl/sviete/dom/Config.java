@@ -479,4 +479,12 @@ public class Config {
         return getStringPref(R.string.key_setting_local_sip_cam_url, R.string.default_setting_local_sip_cam_url);
     }
 
+    public String getSipLocalGate1OpenUrl() {
+        return getStringPref(R.string.key_setting_local_sip_gate_1_open_url, R.string.default_setting_local_sip_gate_1_open_url);
+    }
+
+    public String getSipLocalGate2OpenUrl() {
+        return getStringPref(R.string.key_setting_local_sip_gate_2_open_url, R.string.default_setting_local_sip_gate_2_open_url);
+    }
+
 }

@@ -25,4 +25,17 @@
         android:defaultValue="@string/default_setting_local_sip_cam_url"
         android:title="@string/setting_local_sip_cam_url_title_text"
         android:key="@string/key_setting_local_sip_cam_url" />
+    <EditTextPreference
+        android:name="@string/setting_local_sip_gate_1_open_url_name_text"
+        android:summary="@string/setting_local_sip_gate_1_open_url_summary_text"
+        android:defaultValue=""
+        android:title="@string/setting_local_sip_gate_1_open_url_title_text"
+        android:key="@string/key_setting_local_sip_gate_1_open_url" />
+
+    <EditTextPreference
+        android:name="@string/setting_local_sip_gate_2_open_url_name_text"
+        android:summary="@string/setting_local_sip_gate_2_open_url_summary_text"
+        android:defaultValue=""
+        android:title="@string/setting_local_sip_gate_2_open_url_title_text"
+        android:key="@string/key_setting_local_sip_gate_2_open_url" />
 </PreferenceScreen>
