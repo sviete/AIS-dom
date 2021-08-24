@@ -1,5 +1,6 @@
 package pl.sviete.dom;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -130,6 +133,20 @@ public class AisCamActivity extends AppCompatActivity  {
         // answer
         Button answerSipCamButton = findViewById(R.id.cam_activity_answer_call);
         answerSipCamButton.setOnClickListener(v -> {
+
+            // check the mic settings
+            int permissionMicrophone = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+            if (permissionMicrophone != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(
+                            new String[] { Manifest.permission.RECORD_AUDIO },
+                            AisCoreUtils.REQUEST_RECORD_PERMISSION);
+
+                    return;
+                }
+            }
+
+
             mRingsActive = false;
             //
             if (AisCoreUtils.mAisSipIncomingCall != null){
