@@ -129,6 +129,7 @@ public class AisCamActivity extends AppCompatActivity  {
         // answer
         Button answerSipCamButton = findViewById(R.id.cam_activity_answer_call);
         answerSipCamButton.setOnClickListener(v -> {
+            mRingsActive = false;
 
             // check the mic settings
             int permissionMicrophone = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
@@ -142,8 +143,6 @@ public class AisCamActivity extends AppCompatActivity  {
                 }
             }
 
-
-            // mRingsActive = false;
             //
             if (AisCoreUtils.mAisSipIncomingCall != null){
                 try {
