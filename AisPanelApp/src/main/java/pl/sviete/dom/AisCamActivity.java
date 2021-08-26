@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.format.DateFormat;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,9 @@ import org.videolan.libvlc.util.VLCVideoLayout;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import pl.sviete.dom.sip.SipSettings;
 
@@ -73,6 +76,10 @@ public class AisCamActivity extends AppCompatActivity  {
 
     private static boolean mRingsActive = false;
     private static  String mCallingUserName = "";
+    private static int mCallingTimeOut = 60;
+    Time mRingStartTime = new Time();
+    Time mcurrnetTime = new Time();
+
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -102,6 +109,9 @@ public class AisCamActivity extends AppCompatActivity  {
         mVideoLayout = findViewById(R.id.video_layout);
 
         mConfig = new Config(getApplicationContext());
+
+        // get timeout
+        mCallingTimeOut = mConfig.getSipTimeout();
 
         // exit
         Button exitCamButton = findViewById(R.id.cam_activity_exit);
@@ -445,6 +455,10 @@ public class AisCamActivity extends AppCompatActivity  {
 
             // ring
             try {
+                // ring start time
+                mRingStartTime.setToNow();
+
+
                 android.media.MediaPlayer mediaPlayer = new android.media.MediaPlayer();
                 AssetFileDescriptor descriptor = getApplicationContext().getAssets().openFd("find_my_phone.mp3");
                 mediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
@@ -460,6 +474,19 @@ public class AisCamActivity extends AppCompatActivity  {
                             try {
                                 Thread.sleep(1500); // Waits for 1.5 second (1500 milliseconds)
                                 mediaPlayer.start();
+                                // hangup after timeout
+                                mcurrnetTime.setToNow();
+                                long ringingTime = TimeUnit.MILLISECONDS.toSeconds(mcurrnetTime.toMillis(true) - mRingStartTime.toMillis(true));
+                                Log.d(TAG, "ringingTime " + ringingTime);
+                                if (ringingTime > mCallingTimeOut ) {
+                                    Log.i(TAG, "ringingTime hangUp after " + ringingTime);
+                                    try {
+                                        EasyLinphone.hangUp();
+                                    } catch (Exception se) {
+                                        Log.e(TAG, "Error ending call.", se);
+                                    }
+                                    mRingsActive = false;
+                                }
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }

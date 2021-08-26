@@ -33,18 +33,6 @@
                 android:summary="@string/summary_list_gesture"
                 android:icon="@drawable/ic_gesture_icon">
             </PreferenceScreen>
-    </PreferenceCategory>
-    <PreferenceCategory
-            android:title="@string/title_activity_settings_smart_panel"
-        android:layout="@layout/preferences_category_black"
-            android:key="pref_category_app_experimental"
-            app:initialExpandedChildrenCount="0">
-            <SwitchPreference
-                android:defaultValue="@string/default_setting_report_location"
-                android:title="@string/title_setting_report_location"
-                android:summary="@string/summary_setting_report_location"
-                android:key="@string/key_setting_report_location"
-                android:icon="@drawable/ic_report_location_to_ais_gate"/>
             <SwitchPreference
                 android:defaultValue="@string/default_setting_app_discovery"
                 android:title="@string/title_setting_app_discovery"
@@ -65,6 +53,18 @@
                 android:summary="@string/summary_pref_ais_dom_sip"
                 android:icon="@drawable/doorbell_icon_settings">
             </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/title_activity_settings_smart_panel"
+        android:layout="@layout/preferences_category_black"
+            android:key="pref_category_app_experimental"
+            app:initialExpandedChildrenCount="0">
+            <SwitchPreference
+                android:defaultValue="@string/default_setting_report_location"
+                android:title="@string/title_setting_report_location"
+                android:summary="@string/summary_setting_report_location"
+                android:key="@string/key_setting_report_location"
+                android:icon="@drawable/ic_report_location_to_ais_gate"/>
             <ListPreference
                 android:defaultValue="@string/default_setting_test_zoomlevel"
                 android:entries="@array/zoom_level_names"
