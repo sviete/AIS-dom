@@ -63,6 +63,7 @@ public class AisCamActivity extends AppCompatActivity  {
 
     private LibVLC mLibVLC = null;
     private MediaPlayer mMediaPlayer = null;
+    private int mMediaPlayerVloume = 0;
 
     public String mUrl = null;
     public String mHaCamId = null;
@@ -105,6 +106,8 @@ public class AisCamActivity extends AppCompatActivity  {
         final ArrayList<String> args = new ArrayList<>();
         mLibVLC = new LibVLC(this, args);
         mMediaPlayer = new MediaPlayer(mLibVLC);
+        mMediaPlayer.setVolume(100);
+        mMediaPlayerVloume = mMediaPlayer.getVolume();
 
         mVideoLayout = findViewById(R.id.video_layout);
 
@@ -157,6 +160,9 @@ public class AisCamActivity extends AppCompatActivity  {
             if (AisCoreUtils.mAisSipIncomingCall != null){
                 try {
                     // Answer the current call
+                    mMediaPlayerVloume = mMediaPlayer.getVolume();
+                    mMediaPlayer.setVolume(0);
+
                     EasyLinphone.acceptCall();
                     Toast.makeText(getBaseContext(), R.string.sip_answering_call_text, Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -210,6 +216,7 @@ public class AisCamActivity extends AppCompatActivity  {
 
                 try {
                     EasyLinphone.hangUp();
+                    mMediaPlayer.setVolume(mMediaPlayerVloume);
                 } catch (Exception se) {
                     Log.d(TAG, "Error ending call.", se);
                 }
@@ -363,7 +370,7 @@ public class AisCamActivity extends AppCompatActivity  {
                     // end call
                     AisCoreUtils.mAisSipIncomingCall = null;
                     mRingsActive = false;
-
+                    mMediaPlayer.setVolume(mMediaPlayerVloume);
                 } else if (mAisSipStatus.equals("incomingCall")) {
                     // start call
                 }
@@ -392,7 +399,6 @@ public class AisCamActivity extends AppCompatActivity  {
     @Override
     protected void onStart() {
         super.onStart();
-
 
         // open 2
         Button openGate2CamButton = findViewById(R.id.cam_activity_open_gate2);
@@ -482,6 +488,7 @@ public class AisCamActivity extends AppCompatActivity  {
                                     Log.i(TAG, "ringingTime hangUp after " + ringingTime);
                                     try {
                                         EasyLinphone.hangUp();
+                                        mMediaPlayer.setVolume(mMediaPlayerVloume);
                                     } catch (Exception se) {
                                         Log.e(TAG, "Error ending call.", se);
                                     }
