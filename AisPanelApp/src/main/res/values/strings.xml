@@ -413,13 +413,19 @@
     <string name="setting_local_sip_gate_1_open_url_name_text">Relay 1 code</string>
     <string name="setting_local_sip_gate_1_open_url_summary_text">Code to open relay 1</string>
     <string name="setting_local_sip_gate_1_open_url_title_text">URL to call under the Open button1</string>
-    <string name="default_setting_local_sip_gate_1_open_url"></string>
+    <string name="default_setting_local_sip_gate_1_open_url">http://10.10.10.40/fcgi/do?action=OpenDoor&amp;UserName=admin&amp;Password=admin&amp;DoorNum=1</string>
 
     <string name="key_setting_local_sip_gate_2_open_url">setting_local_sip_gate_2_open_url</string>
     <string name="setting_local_sip_gate_2_open_url_name_text">Relay 2 code</string>
     <string name="setting_local_sip_gate_2_open_url_summary_text">Code to open relay 2</string>
     <string name="setting_local_sip_gate_2_open_url_title_text">URL to call under the Open button2</string>
-    <string name="default_setting_local_sip_gate_2_open_url"></string>
+    <string name="default_setting_local_sip_gate_2_open_url">http://10.10.10.40/fcgi/do?action=OpenDoor&amp;UserName=admin&amp;Password=admin&amp;DoorNum=2</string>
+
+    <string name="key_setting_local_sip_pick_up_time">setting_local_sip_pick_up_time</string>
+    <string name="setting_local_sip_pick_up_tim_name_text">Time to pick up</string>
+    <string name="setting_local_sip_pick_up_tim_summary_text">Time to pick up</string>
+    <string name="setting_local_sip_pick_up_tim_title_text">Set time to pick up</string>
+    <string name="default_setting_local_sip_pick_up_tim">60</string>
 
     <string name="sip_button_photo">Photo</string>
     <string name="sip_button_end">End</string>

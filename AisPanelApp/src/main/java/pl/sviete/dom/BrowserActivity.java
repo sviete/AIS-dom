@@ -62,6 +62,8 @@ import ai.picovoice.hotword.PorcupineService;
 import pl.sviete.dom.views.RecognitionProgressView;
 
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_SIP_CALL;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
 import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 
@@ -94,6 +96,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     private SwitchIconView mSwitchIconModeGesture;
     private View mButtonModeGesture;
     private View mButtonModeConnection;
+    private View mButtonGoToCam;
 
     // browser speech
     private TextToSpeech mBrowserTts;
@@ -104,6 +107,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //
+        mConfig = new Config(this.getApplicationContext());
+
 
         // we need to finish this activity if we are going to work off display
         AisCoreUtils.mBrowserActivity = this;
@@ -160,8 +167,23 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
         }
 
+        // show videophone
+        mButtonGoToCam = findViewById(R.id.btnGoToCamLayout);
+        if (mConfig.getDoorbellMode()) {
+            mButtonGoToCam.setOnClickListener(v -> {
+                // go to cam view
+                Intent camActivity = new Intent(getApplicationContext(), AisCamActivity.class);
+                camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Config config = new Config(getApplicationContext());
+                camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, mConfig.getSipLocalCamUrl());
+                getApplicationContext().startActivity(camActivity);
+            });
+        } else {
+            mButtonGoToCam.setVisibility(View.GONE);
+        }
 
-        // buton check connection
+
+        // button check connection
         mButtonModeConnection = findViewById(R.id.btnControlModeConnection);
         if (AisCoreUtils.onBox()){
             mButtonModeConnection.setVisibility(View.GONE);
@@ -253,9 +275,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 //
 //            return true;
 //        });
-
-        //
-        mConfig = new Config(this.getApplicationContext());
 
         //
         btnGoToSettings = findViewById(R.id.switchControlGoToSettings);

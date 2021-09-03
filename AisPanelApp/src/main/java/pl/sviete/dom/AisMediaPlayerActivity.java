@@ -96,8 +96,6 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
             mCastPlayerNotificationManager.setUseNextAction(false);
             mCastPlayerNotificationManager.setUsePreviousAction(false);
             mCastPlayerNotificationManager.setUseStopAction(true);
-            mCastPlayerNotificationManager.setRewindIncrementMs(0);
-            mCastPlayerNotificationManager.setFastForwardIncrementMs(0);
             mCastPlayerNotificationManager.setSmallIcon(R.drawable.ais_icon_cast);
             Drawable drawable = getDrawable(R.drawable.ic_ais_logo);
             playerView.setDefaultArtwork(drawable);

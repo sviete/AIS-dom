@@ -420,6 +420,12 @@
     <string name="setting_local_sip_gate_2_open_url_title_text">URL do wywołania pod przyciskiem Otwórz2</string>
     <string name="default_setting_local_sip_gate_2_open_url"></string>
 
+    <string name="key_setting_local_sip_pick_up_time">setting_local_sip_pick_up_time</string>
+    <string name="setting_local_sip_pick_up_tim_name_text">Czas na odebranie</string>
+    <string name="setting_local_sip_pick_up_tim_summary_text">Czas na odebranie</string>
+    <string name="setting_local_sip_pick_up_tim_title_text">Ustaw czas na odebranie</string>
+    <string name="default_setting_local_sip_pick_up_tim">60</string>
+
     <string name="sip_button_photo">Zdjęcie</string>
     <string name="sip_button_end">Zakończ</string>
     <string name="sip_button_answer">Odbierz</string>

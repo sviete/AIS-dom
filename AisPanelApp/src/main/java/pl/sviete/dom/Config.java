@@ -487,4 +487,9 @@ public class Config {
         return getStringPref(R.string.key_setting_local_sip_gate_2_open_url, R.string.default_setting_local_sip_gate_2_open_url);
     }
 
+    public int getSipTimeout() {
+        String timeOut = getStringPref(R.string.key_setting_local_sip_pick_up_time, R.string.default_setting_local_sip_pick_up_tim);
+        return Integer.parseInt(timeOut);
+    }
+
 }

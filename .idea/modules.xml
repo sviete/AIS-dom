@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AIS-dom.iml" filepath="$PROJECT_DIR$/.idea/modules/AIS-dom.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AisPanelApp/AIS-dom.AisPanelApp.iml" filepath="$PROJECT_DIR$/.idea/modules/AisPanelApp/AIS-dom.AisPanelApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/easylinphone/AIS-dom.easylinphone.iml" filepath="$PROJECT_DIR$/.idea/modules/easylinphone/AIS-dom.easylinphone.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/porcupine/AIS-dom.porcupine.iml" filepath="$PROJECT_DIR$/.idea/modules/porcupine/AIS-dom.porcupine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/AIS-dom.iml" filepath="$PROJECT_DIR$/.idea/AIS-dom.iml" />
     </modules>
   </component>
 </project>
