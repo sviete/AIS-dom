@@ -1,5 +1,7 @@
 package pl.sviete.dom;
 
+import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,15 +13,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.text.format.DateFormat;
 import android.text.format.Time;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.PixelCopy;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -30,36 +39,37 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.json.JSONObject;
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.Media;
-import org.videolan.libvlc.MediaPlayer;
-import org.videolan.libvlc.util.VLCVideoLayout;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import pl.sviete.dom.sip.SipSettings;
-
-import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.xuchongyang.easyphone.EasyLinphone;
 
+import org.json.JSONObject;
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
+import org.videolan.libvlc.interfaces.IVLCVout;
 
-public class AisCamActivity extends AppCompatActivity  {
-    private VLCVideoLayout mVideoLayout = null;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import pl.sviete.dom.sip.SipSettings;
+
+
+public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+    private SurfaceView mSurface = null;
+    private SurfaceHolder holder;
 
     private LibVLC mLibVLC = null;
     private MediaPlayer mMediaPlayer = null;
@@ -105,13 +115,21 @@ public class AisCamActivity extends AppCompatActivity  {
 
         final ArrayList<String> args = new ArrayList<>();
         mLibVLC = new LibVLC(this, args);
+
         mMediaPlayer = new MediaPlayer(mLibVLC);
         mMediaPlayer.setVolume(100);
         mMediaPlayerVloume = mMediaPlayer.getVolume();
 
-        mVideoLayout = findViewById(R.id.video_layout);
-
         mConfig = new Config(getApplicationContext());
+
+        if (mConfig.getSipAspectRatio().contains(":")) {
+            mMediaPlayer.setAspectRatio(mConfig.getSipAspectRatio());
+        } else {
+            mMediaPlayer.setAspectRatio("2:1");
+        }
+
+
+        mSurface = findViewById(R.id.video_layout);
 
         // get timeout
         mCallingTimeOut = mConfig.getSipTimeout();
@@ -340,9 +358,65 @@ public class AisCamActivity extends AppCompatActivity  {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void getBitMapFromSurfaceView(SurfaceView videoView) {
+        Bitmap bitmap = Bitmap.createBitmap(
+                videoView.getWidth(),
+                videoView.getHeight(),
+                Bitmap.Config.ARGB_8888
+        );
+        try {
+            // Create a handler thread to offload the processing of the image.
+            HandlerThread handlerThread = new HandlerThread("PixelCopier");
+            handlerThread.start();
+
+            // Make the request to copy.
+            PixelCopy.request(videoView, bitmap, (copyResult) -> {
+                if (copyResult == PixelCopy.SUCCESS) {
+
+
+                    try {
+                        // save to file
+                        Date date = new Date();
+                        CharSequence format = DateFormat.format("yyyyMMdd_hhmmss", date);
+                        File mainDir = new File(
+                                this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "FilShare");
+                        if (!mainDir.exists()) {
+                            boolean mkdir = mainDir.mkdir();
+                        }
+                        String path = mainDir + "/" + "AIS" + "-" + format + ".jpeg";
+                        File imageFile = new File(path);
+                        FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 90, fileOutputStream);
+                        fileOutputStream.flush();
+                        fileOutputStream.close();
+
+                        shareScreenShot(imageFile);
+                    } catch (IOException e) {
+                        Toast toast = Toast.makeText(AisCamActivity.this, e.toString(), Toast.LENGTH_LONG);
+                        toast.show();
+                        return;
+                    }
+                } else {
+                    Toast toast = Toast.makeText(AisCamActivity.this,
+                            "Failed to copyPixels: " + copyResult, Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                handlerThread.quitSafely();
+            }, new Handler(handlerThread.getLooper()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private void screenshotCamButton() {
 
-        takeScreenShot(getWindow().getDecorView());
+        //takeScreenShot(mVideoLayout);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            getBitMapFromSurfaceView(mSurface);
+        }
 
         try {
             // send camera button event
@@ -394,11 +468,32 @@ public class AisCamActivity extends AppCompatActivity  {
     }
 
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
+        // Checks the orientation of the screen
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+        IVLCVout vout = mMediaPlayer.getVLCVout();
+        vout.detachViews();
+        vout.setVideoView(mSurface);
+        vout.setWindowSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        vout.attachViews();
+
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        //
+        if (mConfig.getSipAspectRatio().contains(":")) {
+            mMediaPlayer.setAspectRatio(mConfig.getSipAspectRatio());
+        } else {
+            mMediaPlayer.setAspectRatio("2:1");
+        }
+
 
         // open 2
         Button openGate2CamButton = findViewById(R.id.cam_activity_open_gate2);
@@ -431,7 +526,23 @@ public class AisCamActivity extends AppCompatActivity  {
         }
 
         // cam view
-        mMediaPlayer.attachViews(mVideoLayout, null, false, false);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+        IVLCVout vout = mMediaPlayer.getVLCVout();
+        vout.detachViews();
+        vout.setVideoView(mSurface);
+        vout.setWindowSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        vout.attachViews();
+//        DisplayMetrics displayMetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+//        holder = mSurface.getHolder();
+//        holder.addCallback(this);
+//        IVLCVout vout = mMediaPlayer.getVLCVout();
+//        vout.setVideoView(mSurface);
+//        vout.setWindowSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
+//        vout.attachViews();
+
+
         try {
             final Media media = new Media(mLibVLC, Uri.parse(mUrl));
             mMediaPlayer.setMedia(media);
@@ -439,10 +550,6 @@ public class AisCamActivity extends AppCompatActivity  {
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-
-//        DisplayMetrics displayMetrics = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//        mMediaPlayer.getVLCVout().setWindowSize(displayMetrics.widthPixels, displayMetrics.heightPixels );
 
         mMediaPlayer.play();
 
@@ -549,11 +656,9 @@ public class AisCamActivity extends AppCompatActivity  {
             Toast.makeText(getBaseContext(), "CAM url: " + mUrl, Toast.LENGTH_SHORT).show();
             // SIP when we get back from the preference setting Activity, assume
             // settings have changed, and re-login with new auth info.
-            if (!mAisSipStatus.equals("Ready")) {
-                Intent sipIntent = new Intent(getBaseContext(), AisPanelService.class);
-                sipIntent.putExtra(AisCoreUtils.BROADCAST_SIP_COMMAND, "SIP_ON");
-                getBaseContext().startService(sipIntent);
-            }
+            Intent sipIntent = new Intent(getBaseContext(), AisPanelService.class);
+            sipIntent.putExtra(AisCoreUtils.BROADCAST_SIP_COMMAND, "SIP_ON");
+            getBaseContext().startService(sipIntent);
         }
 
         updateSipServerStatus(mAisSipStatus);
@@ -662,4 +767,20 @@ public class AisCamActivity extends AppCompatActivity  {
         queue.add(stringRequest);
     }
 
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        // cam view
+
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
+    }
 }

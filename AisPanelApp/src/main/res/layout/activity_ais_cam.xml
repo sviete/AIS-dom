@@ -3,19 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    android:background="@android:color/background_dark">
+    android:background="@android:color/background_dark"
+    android:gravity="center"
+    android:layout_gravity="center"
+    >
 
 
-
-    <org.videolan.libvlc.util.VLCVideoLayout
+    <SurfaceView
         android:id="@+id/video_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:keepScreenOn="true"
         android:gravity="center"
-        android:fitsSystemWindows="false">
+        android:keepScreenOn="true"
+        android:layout_gravity="center"
+        />
 
-        <TextView
+    <TextView
             android:id="@+id/sipServerStatusLabel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -151,6 +154,5 @@
                     android:textColor = "#6200EA"/>
             </LinearLayout>
         </LinearLayout>
-    </org.videolan.libvlc.util.VLCVideoLayout>
 
 </FrameLayout>

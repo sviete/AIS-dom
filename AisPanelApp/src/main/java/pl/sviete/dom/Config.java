@@ -5,11 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebStorage;
-import android.webkit.WebView;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -145,14 +144,14 @@ public class Config {
                         }
 
                         // save sip settings
-                        try {
-                            setSipLocalClientName(response.getString("sip_local_client_name"));
-                            setSipLocalClientPassword(response.getString("sip_local_client_password"));
-                            setSipLocalCamUrl(response.getString("sip_local_cam_url"));
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+//                        try {
+//                            setSipLocalClientName(response.getString("sip_local_client_name"));
+//                            setSipLocalClientPassword(response.getString("sip_local_client_password"));
+//                            setSipLocalCamUrl(response.getString("sip_local_cam_url"));
+//
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
 
                         //
                         if (!localGateIpFromCloud[0].equals("ais-dom")) {
@@ -490,6 +489,11 @@ public class Config {
     public int getSipTimeout() {
         String timeOut = getStringPref(R.string.key_setting_local_sip_pick_up_time, R.string.default_setting_local_sip_pick_up_tim);
         return Integer.parseInt(timeOut);
+    }
+
+    public String getSipAspectRatio() {
+        String aspectRatio = getStringPref(R.string.key_setting_local_sip_cam_aspect_ratio, R.string.default_setting_local_sip_cam_aspect_ratio);
+        return aspectRatio;
     }
 
 }

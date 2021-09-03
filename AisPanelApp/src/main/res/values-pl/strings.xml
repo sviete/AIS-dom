@@ -373,15 +373,15 @@
     <string name="report_button">WYŚLIJ STATUS</string>
 
     <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>
-    <string name="default_setting_local_gate_ip">ais-dom.local</string>
+    <string name="default_setting_local_gate_ip">10.10.10.10</string>
 
     <!-- SIP-->
     <string name="key_setting_local_sip_client_name">setting_local_sip_client_name</string>
     <string name="default_setting_local_sip_client_name"></string>
     <string name="key_setting_local_sip_client_password">setting_local_sip_client_password</string>
-    <string name="default_setting_local_sip_client_password"></string>
+    <string name="default_setting_local_sip_client_password">*****</string>
     <string name="key_setting_local_sip_cam_url">setting_local_sip_cam_url</string>
-    <string name="default_setting_local_sip_cam_url"></string>
+    <string name="default_setting_local_sip_cam_url">rtsp://10.10.10.10</string>
 
     <string name="setting_local_sip_client_name_text">Nazwa użytkownika SIP</string>
     <string name="setting_local_sip_client_summary_text">Nazwa użytkownika dla twojego konta SIP</string>
@@ -425,6 +425,12 @@
     <string name="setting_local_sip_pick_up_tim_summary_text">Czas na odebranie</string>
     <string name="setting_local_sip_pick_up_tim_title_text">Ustaw czas na odebranie</string>
     <string name="default_setting_local_sip_pick_up_tim">60</string>
+
+    <string name="key_setting_local_sip_cam_aspect_ratio">setting_local_sip_cam_aspect_ratio</string>
+    <string name="setting_local_sip_cam_aspect_ratio_name_text">Proporcje obrazu</string>
+    <string name="setting_local_sip_cam_aspect_ratio_summary_text">Proporcje obrazu</string>
+    <string name="setting_local_sip_cam_aspect_ratio_title_text">Ustaw Proporcje obrazu</string>
+    <string name="default_setting_local_sip_cam_aspect_ratio">2:1</string>
 
     <string name="sip_button_photo">Zdjęcie</string>
     <string name="sip_button_end">Zakończ</string>

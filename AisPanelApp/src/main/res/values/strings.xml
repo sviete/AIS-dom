@@ -374,15 +374,15 @@
     <string name="report_button">SEND STATUS</string>
 
     <string name="key_setting_local_gate_ip">setting_local_gate_ip</string>
-    <string name="default_setting_local_gate_ip">ais-dom.local</string>
+    <string name="default_setting_local_gate_ip">10.10.10.10</string>
 
     <!-- SIP-->
     <string name="key_setting_local_sip_client_name">setting_local_sip_client_name</string>
-    <string name="default_setting_local_sip_client_name"></string>
+    <string name="default_setting_local_sip_client_name">tablet</string>
     <string name="key_setting_local_sip_client_password">setting_local_sip_client_password</string>
-    <string name="default_setting_local_sip_client_password"></string>
+    <string name="default_setting_local_sip_client_password">*****</string>
     <string name="key_setting_local_sip_cam_url">setting_local_sip_cam_url</string>
-    <string name="default_setting_local_sip_cam_url"></string>
+    <string name="default_setting_local_sip_cam_url">rtsp://10.10.10.10</string>
 
     <string name="setting_local_sip_client_name_text">SIP Username</string>
     <string name="setting_local_sip_client_summary_text">Username for your SIP Account</string>
@@ -426,6 +426,12 @@
     <string name="setting_local_sip_pick_up_tim_summary_text">Time to pick up</string>
     <string name="setting_local_sip_pick_up_tim_title_text">Set time to pick up</string>
     <string name="default_setting_local_sip_pick_up_tim">60</string>
+
+    <string name="key_setting_local_sip_cam_aspect_ratio">setting_local_sip_cam_aspect_ratio</string>
+    <string name="setting_local_sip_cam_aspect_ratio_name_text">Aspect Ratio</string>
+    <string name="setting_local_sip_cam_aspect_ratio_summary_text">Aspect Ratio</string>
+    <string name="setting_local_sip_cam_aspect_ratio_title_text">Set Aspect Ratio</string>
+    <string name="default_setting_local_sip_cam_aspect_ratio">2:1</string>
 
     <string name="sip_button_photo">Photo</string>
     <string name="sip_button_end">End</string>

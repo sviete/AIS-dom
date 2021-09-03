@@ -1,5 +1,23 @@
 package pl.sviete.dom;
 
+import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_HA_ID;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_SIP_CALL;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAST_COMMAND;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_COMMAND;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_STATUS;
+import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
+import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,13 +43,11 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-
-import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,13 +55,11 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
 import com.xuchongyang.easyphone.EasyLinphone;
 import com.xuchongyang.easyphone.callback.PhoneCallback;
 import com.xuchongyang.easyphone.callback.RegistrationCallback;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,26 +72,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-
 import pl.sviete.dom.data.DomCustomRequest;
-
-import static pl.sviete.dom.AisCoreUtils.AIS_DOM_CHANNEL_ID;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_SIP_CALL;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAST_COMMAND;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_EXO_PLAYER_COMMAND;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_SPEECH_TO_TEXT_MOB;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_SPEECH_TO_TEXT_MOB;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_COMMAND;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SIP_STATUS;
-import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_HA_ID;
-import static pl.sviete.dom.AisCoreUtils.mAisSipStatus;
 
 
 public class AisPanelService extends Service implements TextToSpeech.OnInitListener, ExoPlayer.EventListener {
@@ -204,6 +199,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     public void incomingCall(LinphoneCall linphoneCall) {
 
                         EasyLinphone.getLC().stopRinging();
+                        EasyLinphone.getLC().enableEchoCancellation(true);
+                        EasyLinphone.getLC().enableEchoLimiter(true);
+
                         super.incomingCall(linphoneCall);
 
                         AisCoreUtils.mAisSipIncomingCall = linphoneCall;
@@ -309,6 +307,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // SIP
         if (mConfig.getDoorbellMode()) {
             // enable sip
+            EasyLinphone.onDestroy();
             initializeSipManager();
         } else {
             // disable sip

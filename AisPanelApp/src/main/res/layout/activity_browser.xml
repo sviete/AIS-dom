@@ -58,7 +58,7 @@
 
             <LinearLayout
                 android:id="@+id/btnGoToSettingsLayout"
-                android:layout_width="76dp"
+                android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:background="?selectableItemBackgroundBorderless"
@@ -90,10 +90,10 @@
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/btnControlModeConnection"
-                android:layout_width="76dp"
+                android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="52dp"
+                android:layout_marginStart="42dp"
                 android:background="?selectableItemBackgroundBorderless"
                 android:focusable="true"
                 android:gravity="center"
@@ -123,8 +123,8 @@
 
             <LinearLayout
                 android:id="@+id/btnGoToCamLayout"
-                android:layout_marginStart="112dp"
-                android:layout_width="76dp"
+                android:layout_marginStart="92dp"
+                android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:background="?selectableItemBackgroundBorderless"

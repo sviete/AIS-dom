@@ -8,12 +8,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="AisPanelApp/src/main/res/layout/activity_ais_cam.xml" value="0.23333333333333334" />
+        <entry key="AisPanelApp/src/main/res/layout/activity_browser.xml" value="0.209375" />
+        <entry key="AisPanelApp/src/main/res/layout/pref_connection_buttons.xml" value="0.24270833333333333" />
         <entry key="AisPanelApp/src/main/res/layout/welcome_page_2_2.xml" value="0.228125" />
+        <entry key="AisPanelApp/src/main/res/xml/pref_sip.xml" value="0.209375" />
       </map>
     </option>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

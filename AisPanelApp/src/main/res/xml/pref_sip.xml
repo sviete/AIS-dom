@@ -44,4 +44,11 @@
         android:inputType="number"
         android:title="@string/setting_local_sip_pick_up_tim_title_text"
         android:key="@string/key_setting_local_sip_pick_up_time" />
+
+    <EditTextPreference
+        android:name="@string/setting_local_sip_cam_aspect_ratio_name_text"
+        android:summary="@string/setting_local_sip_cam_aspect_ratio_summary_text"
+        android:defaultValue="2:1"
+        android:title="@string/setting_local_sip_cam_aspect_ratio_title_text"
+        android:key="@string/key_setting_local_sip_cam_aspect_ratio" />
 </PreferenceScreen>
