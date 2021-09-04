@@ -41,8 +41,8 @@ public class LinphoneUtils {
 
     private LinphoneUtils() {
         mLinphoneCore = LinphoneManager.getLc();
-        mLinphoneCore.enableEchoCancellation(true);
-        mLinphoneCore.enableEchoLimiter(true);
+        // mLinphoneCore.enableEchoCancellation(true);
+        // mLinphoneCore.enableEchoLimiter(true);
     }
 
     /**

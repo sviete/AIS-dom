@@ -60,7 +60,6 @@ import com.koushikdutta.async.http.server.AsyncHttpServer;
 import com.xuchongyang.easyphone.EasyLinphone;
 import com.xuchongyang.easyphone.callback.PhoneCallback;
 import com.xuchongyang.easyphone.callback.RegistrationCallback;
-import com.xuchongyang.easyphone.service.LinphoneService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -190,10 +189,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     public void registrationOk() {
                         super.registrationOk();
                         updateAisSipStatus("Ready");
-
-                        //
-                        EasyLinphone.getLC().enableEchoCancellation(true);
-                        EasyLinphone.getLC().enableEchoLimiter(true);
                     }
 
                     @Override
@@ -207,8 +202,15 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
                         //
                         // EasyLinphone.getLC().stopRinging();
+                        // if (EasyLinphone.getLC().hasBuiltInEchoCanceler()) {
+
+                        EasyLinphone.getLC().enableEchoCancellation(true);
+                        EasyLinphone.getLC().enableEchoLimiter(true);
+
+                        // }
+
                         EasyLinphone.getLC().muteMic(false);
-                        EasyLinphone.getLC().enableSpeaker(true);
+                        // EasyLinphone.getLC().enableSpeaker(true);
 
                         super.incomingCall(linphoneCall);
 
