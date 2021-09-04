@@ -12,17 +12,12 @@ import com.xuchongyang.easyphone.linphone.LinphoneUtils;
 import com.xuchongyang.easyphone.linphone.PhoneBean;
 import com.xuchongyang.easyphone.service.LinphoneService;
 
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.CallParams;
+import org.linphone.core.Core;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 
 import static java.lang.Thread.sleep;
 
-/**
- * Created by Mark Xu on 2017/9/20.
- * Site: http://xuchongyang.com
- */
 
 public class EasyLinphone {
     private static ServiceWaitThread mServiceWaitThread;
@@ -30,10 +25,7 @@ public class EasyLinphone {
     private static AndroidVideoWindowImpl mAndroidVideoWindow;
     private static SurfaceView mRenderingView, mPreviewView;
 
-    /**
-     * 开启服务
-     * @param context 上下文
-     */
+
     public static void startService(Context context) {
         if (!LinphoneService.isReady()) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -42,23 +34,13 @@ public class EasyLinphone {
         }
     }
 
-    /**
-     * 设置 sip 账户信息
-     * @param username sip 账户
-     * @param password 密码
-     * @param serverIP sip 服务器
-     */
     public static void setAccount(String username, String password, String serverIP) {
         mUsername = username;
         mPassword = password;
         mServerIP = serverIP;
     }
 
-    /**
-     * 添加注册状态、通话状态回调
-     * @param phoneCallback 通话回调
-     * @param registrationCallback 注册状态回调
-     */
+
     public static void addCallback(RegistrationCallback registrationCallback,
                                    PhoneCallback phoneCallback) {
         if (LinphoneService.isReady()) {
@@ -110,8 +92,8 @@ public class EasyLinphone {
      */
     public static void acceptCall() {
         try {
-            LinphoneManager.getLc().acceptCall(LinphoneManager.getLc().getCurrentCall());
-        } catch (LinphoneCoreException e) {
+            LinphoneManager.getLc().getCurrentCall().accept();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -173,14 +155,9 @@ public class EasyLinphone {
                 throw new RuntimeException("The sip account is not configured.");
             }
             LinphoneUtils.getInstance().registerUserAuth(mUsername, mPassword, mServerIP);
-        } catch (LinphoneCoreException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static boolean getVideoEnabled() {
-        LinphoneCallParams remoteParams = LinphoneManager.getLc().getCurrentCall().getRemoteParams();
-        return remoteParams != null && remoteParams.getVideoEnabled();
     }
 
     /**
@@ -207,12 +184,12 @@ public class EasyLinphone {
             @Override
             public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl androidVideoWindow, SurfaceView surfaceView) {
                 mPreviewView = surfaceView;
-                setPreviewWindow(mPreviewView);
+                //setPreviewWindow(mPreviewView);
             }
 
             @Override
             public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl androidVideoWindow) {
-                removePreviewWindow();
+                //removePreviewWindow();
             }
         });
     }
@@ -224,24 +201,12 @@ public class EasyLinphone {
         if (mRenderingView != null) {
             ((GLSurfaceView) mRenderingView).onResume();
         }
-
-        if (mAndroidVideoWindow != null) {
-            synchronized (mAndroidVideoWindow) {
-                LinphoneManager.getLc().setVideoWindow(mAndroidVideoWindow);
-            }
-        }
     }
 
     /**
      * onPause
      */
     public static void onPause() {
-        if (mAndroidVideoWindow != null) {
-            synchronized (mAndroidVideoWindow) {
-                LinphoneManager.getLc().setVideoWindow(null);
-            }
-        }
-
         if (mRenderingView != null) {
             ((GLSurfaceView) mRenderingView).onPause();
         }
@@ -267,29 +232,21 @@ public class EasyLinphone {
     }
 
     private static void setVideoWindow(Object o) {
-        LinphoneManager.getLc().setVideoWindow(o);
+        //LinphoneManager.getLc().setVideoWindow(o);
     }
 
     private static void removeVideoWindow() {
-        LinphoneCore linphoneCore = LinphoneManager.getLc();
-        if (linphoneCore != null) {
-            linphoneCore.setVideoWindow(null);
-        }
-    }
-
-    private static void setPreviewWindow(Object o) {
-        LinphoneManager.getLc().setPreviewWindow(o);
-    }
-
-    private static void removePreviewWindow() {
-        LinphoneManager.getLc().setPreviewWindow(null);
+        Core linphoneCore = LinphoneManager.getLc();
+//        if (linphoneCore != null) {
+//            linphoneCore.setVideoWindow(null);
+//        }
     }
 
     /**
      * 获取 LinphoneCore
      * @return LinphoneCore
      */
-    public static LinphoneCore getLC() {
+    public static Core getLC() {
         return LinphoneManager.getLc();
     }
 }

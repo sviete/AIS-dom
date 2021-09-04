@@ -1,6 +1,6 @@
 package com.xuchongyang.easyphone.callback;
 
-import org.linphone.core.LinphoneCall;
+import org.linphone.core.Call;
 
 /**
  * Created by Mark Xu on 17/3/13.
@@ -12,7 +12,7 @@ public abstract class PhoneCallback {
      * 来电状态
      * @param linphoneCall
      */
-    public void incomingCall(LinphoneCall linphoneCall) {}
+    public void incomingCall(Call linphoneCall) {}
 
     /**
      * 呼叫初始化

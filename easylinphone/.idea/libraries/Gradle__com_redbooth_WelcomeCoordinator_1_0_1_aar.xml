@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.redbooth:WelcomeCoordinator:1.0.1@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/ae7f8efb5e4a1bdf42e0c4c0510c3584/transformed/jetified-WelcomeCoordinator-1.0.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/ae7f8efb5e4a1bdf42e0c4c0510c3584/transformed/jetified-WelcomeCoordinator-1.0.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/ae7f8efb5e4a1bdf42e0c4c0510c3584/transformed/jetified-WelcomeCoordinator-1.0.1/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.redbooth/WelcomeCoordinator/1.0.1/73a3cf4f875ced2f0dcbaf5918cdeabb71a029d3/WelcomeCoordinator-1.0.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.redbooth/WelcomeCoordinator/1.0.1/c94726cafbff110930619a1021cb16b5c40254b0/WelcomeCoordinator-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -7,26 +7,37 @@ import android.os.Looper;
 
 import com.xuchongyang.easyphone.R;
 
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneAuthInfo;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCallStats;
-import org.linphone.core.LinphoneChatMessage;
-import org.linphone.core.LinphoneChatRoom;
-import org.linphone.core.LinphoneContent;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListener;
-import org.linphone.core.LinphoneEvent;
-import org.linphone.core.LinphoneFriend;
-import org.linphone.core.LinphoneFriendList;
-import org.linphone.core.LinphoneInfoMessage;
-import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.Account;
+import org.linphone.core.Address;
+import org.linphone.core.AudioDevice;
+import org.linphone.core.AuthInfo;
+import org.linphone.core.AuthMethod;
+import org.linphone.core.Call;
+import org.linphone.core.CallLog;
+import org.linphone.core.CallStats;
+import org.linphone.core.ChatMessage;
+import org.linphone.core.ChatRoom;
+import org.linphone.core.Conference;
+import org.linphone.core.ConfiguringState;
+import org.linphone.core.Content;
+import org.linphone.core.Core;
+import org.linphone.core.CoreException;
+import org.linphone.core.EcCalibratorStatus;
+import org.linphone.core.Factory;
+import org.linphone.core.CoreListener;
+import org.linphone.core.Event;
+import org.linphone.core.Friend;
+import org.linphone.core.FriendList;
+import org.linphone.core.GlobalState;
+import org.linphone.core.InfoMessage;
+import org.linphone.core.PresenceModel;
+import org.linphone.core.ProxyConfig;
 import org.linphone.core.PayloadType;
 import org.linphone.core.PublishState;
+import org.linphone.core.RegistrationState;
 import org.linphone.core.SubscriptionState;
 import org.linphone.core.ToneID;
+import org.linphone.core.VersionUpdateCheckResult;
 import org.linphone.mediastream.Log;
 
 import java.io.File;
@@ -40,11 +51,11 @@ import java.util.TimerTask;
  * Linphone 管理器
  */
 
-public class LinphoneManager implements LinphoneCoreListener {
+public class LinphoneManager implements CoreListener {
     private static final String TAG = "LinphoneManager";
     private static LinphoneManager instance;
     private Context mServiceContext;
-    private LinphoneCore mLc;
+    private Core mLc;
     private Timer mTimer;
     private static boolean sExited;
 
@@ -60,7 +71,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 
     public LinphoneManager(Context serviceContext) {
         mServiceContext = serviceContext;
-        LinphoneCoreFactory.instance().setDebugMode(false, "ais-sip");
+        Factory.instance().setDebugMode(false, "ais-sip");
         sExited = false;
 
         String basePath = mServiceContext.getFilesDir().getAbsolutePath();
@@ -84,7 +95,7 @@ public class LinphoneManager implements LinphoneCoreListener {
         return instance;
     }
 
-    public static synchronized LinphoneCore getLcIfManagerNotDestroyOrNull() {
+    public static synchronized Core getLcIfManagerNotDestroyOrNull() {
         if (sExited || instance == null) {
             Log.e("Trying to get linphone core while LinphoneManager already destroyed or not created");
             return null;
@@ -96,7 +107,7 @@ public class LinphoneManager implements LinphoneCoreListener {
         return instance != null;
     }
 
-    public static synchronized final LinphoneCore getLc() {
+    public static synchronized final Core getLc() {
         return getInstance().mLc;
     }
 
@@ -114,13 +125,12 @@ public class LinphoneManager implements LinphoneCoreListener {
     private synchronized void startLibLinphone(Context context) {
         try {
             copyAssetsFromPackage();
-            mLc = LinphoneCoreFactory.instance().createLinphoneCore(this, mLinphoneConfigFile,
-                    mLinphoneFactoryConfigFile, null, context);
-            mLc.addListener((LinphoneCoreListener)context);
+            mLc = Factory.instance().createCore(mLinphoneConfigFile, mLinphoneFactoryConfigFile, context);
+            mLc.addListener((CoreListener)context);
 
             try {
                 initLibLinphone();
-            } catch (LinphoneCoreException e) {
+            } catch (Exception e) {
                 Log.e(e);
             }
 
@@ -145,8 +155,8 @@ public class LinphoneManager implements LinphoneCoreListener {
         }
     }
 
-    private synchronized void initLibLinphone() throws LinphoneCoreException {
-        mLc.setContext(mServiceContext);
+    private synchronized void initLibLinphone() throws CoreException {
+        // mLc.setContext(mServiceContext);
         setUserAgent();
         //mLc.setRemoteRingbackTone(mRingSoundFile);
         //mLc.setTone(ToneID.CallWaiting, mRingSoundFile);
@@ -160,7 +170,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 
         int availableCores = Runtime.getRuntime().availableProcessors();
         Log.w(TAG, "MediaStreamer : " + availableCores + " cores detected and configured");
-        mLc.setCpuCount(availableCores);
+        // mLc.setCpuCount(availableCores);
 
         int migrationResult = getLc().migrateToMultiTransport();
         Log.d(TAG, "Migration to multi transport result = " + migrationResult);
@@ -178,29 +188,25 @@ public class LinphoneManager implements LinphoneCoreListener {
         //audio 码率设置
         LinphoneUtils.getConfig(mServiceContext).setInt("audio", "codec_bitrate_limit", 36);
 
-        mLc.setPreferredVideoSizeByName("720p");
+        // mLc.setPreferredVideoDefinitionByName("720p");
         mLc.setUploadBandwidth(1536);
         mLc.setDownloadBandwidth(1536);
 
-        mLc.setVideoPolicy(mLc.getVideoAutoInitiatePolicy(), true);
-        mLc.setVideoPolicy(true, mLc.getVideoAutoAcceptPolicy());
-        mLc.enableVideo(false, false);
+        //mLc.setVideoPolicy(mLc.getVideoAutoInitiatePolicy(), true);
+        //mLc.setVideoPolicy(true, mLc.getVideoAutoAcceptPolicy());
+        //mLc.enableVideo(false, false);
 
         // 设置编码格式
         setCodecMime();
-
-//        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-//        filter.addAction(Intent.ACTION_SCREEN_OFF);
-//        mServiceContext.registerReceiver(mKeepAliveReceiver, filter);
     }
 
     private void setCodecMime() {
-        for (PayloadType payloadType : mLc.getAudioCodecs()) {
-            try {
-                mLc.enablePayloadType(payloadType, true);
-            } catch (LinphoneCoreException e) {
-                e.printStackTrace();
-            }
+//        for (PayloadType payloadType : mLc.getAudioCodecs()) {
+//            try {
+//                mLc.enablePayloadType(payloadType, true);
+//            } catch (LinphoneCoreException e) {
+//                e.printStackTrace();
+//            }
 //            android.util.Log.e(TAG, "setCodecMime = " + payloadType.getMime() + " Rate " + payloadType.getRate() + " receviceFmtp " + payloadType.getRecvFmtp());
 //            if (payloadType.getMime().equals("PCMA") && payloadType.getRate() == 8000) {
 //                try {
@@ -216,15 +222,15 @@ public class LinphoneManager implements LinphoneCoreListener {
 //                    e.printStackTrace();
 //                }
 //            }
-        }
-        for (PayloadType payloadType : mLc.getVideoCodecs()) {
-            try {
-                android.util.Log.e(TAG, "setCodecMime: mime: " + payloadType.getMime() + " rate: " + payloadType.getRate());
-                mLc.enablePayloadType(payloadType, true);
-            } catch (LinphoneCoreException e) {
-                e.printStackTrace();
-            }
-        }
+//        }
+//        for (PayloadType payloadType : mLc.getVideoCodecs()) {
+//            try {
+//                android.util.Log.e(TAG, "setCodecMime: mime: " + payloadType.getMime() + " rate: " + payloadType.getRate());
+//                mLc.enablePayloadType(payloadType, true);
+//            } catch (LinphoneCoreException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     private void copyAssetsFromPackage() throws IOException {
@@ -261,7 +267,7 @@ public class LinphoneManager implements LinphoneCoreListener {
     private void doDestroy() {
         try {
             mTimer.cancel();
-            mLc.destroy();
+            mLc.stop();
         } catch (RuntimeException e) {
             e.printStackTrace();
         } finally {
@@ -270,181 +276,240 @@ public class LinphoneManager implements LinphoneCoreListener {
         }
     }
 
+
+
     @Override
-    public void authInfoRequested(LinphoneCore linphoneCore, String s, String s1, String s2) {
+    public void onAudioDeviceChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull AudioDevice audioDevice) {
 
     }
 
     @Override
-    public void authenticationRequested(LinphoneCore linphoneCore, LinphoneAuthInfo linphoneAuthInfo, LinphoneCore.AuthMethod authMethod) {
+    public void onReferReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull String referTo) {
 
     }
 
     @Override
-    public void callStatsUpdated(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCallStats linphoneCallStats) {
+    public void onCallStatsUpdated(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Call call, @androidx.annotation.NonNull CallStats callStats) {
 
     }
 
     @Override
-    public void newSubscriptionRequest(LinphoneCore linphoneCore, LinphoneFriend linphoneFriend, String s) {
+    public void onIsComposingReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ChatRoom chatRoom) {
 
     }
 
     @Override
-    public void notifyPresenceReceived(LinphoneCore linphoneCore, LinphoneFriend linphoneFriend) {
+    public void onFriendListCreated(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull FriendList friendList) {
 
     }
 
     @Override
-    public void dtmfReceived(LinphoneCore linphoneCore, LinphoneCall linphoneCall, int i) {
+    public void onQrcodeFound(@androidx.annotation.NonNull Core core, @androidx.annotation.Nullable String result) {
 
     }
 
     @Override
-    public void notifyReceived(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneAddress linphoneAddress, byte[] bytes) {
+    public void onNotifyReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Event linphoneEvent, @androidx.annotation.NonNull String notifiedEvent, @androidx.annotation.NonNull Content body) {
 
     }
 
     @Override
-    public void transferState(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCall.State state) {
+    public void onSubscribeReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Event linphoneEvent, @androidx.annotation.NonNull String subscribeEvent, @androidx.annotation.NonNull Content body) {
 
     }
 
     @Override
-    public void infoReceived(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneInfoMessage linphoneInfoMessage) {
+    public void onSubscriptionStateChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Event linphoneEvent, SubscriptionState state) {
 
     }
 
     @Override
-    public void subscriptionStateChanged(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent, SubscriptionState subscriptionState) {
+    public void onEcCalibrationResult(@androidx.annotation.NonNull Core core, EcCalibratorStatus status, int delayMs) {
 
     }
 
     @Override
-    public void publishStateChanged(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent, PublishState publishState) {
+    public void onImeeUserRegistration(@androidx.annotation.NonNull Core core, boolean status, @androidx.annotation.NonNull String userId, @androidx.annotation.NonNull String info) {
 
     }
 
     @Override
-    public void show(LinphoneCore linphoneCore) {
+    public void onCallIdUpdated(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull String previousCallId, @androidx.annotation.NonNull String currentCallId) {
 
     }
 
     @Override
-    public void displayStatus(LinphoneCore linphoneCore, String s) {
+    public void onAudioDevicesListUpdated(@androidx.annotation.NonNull Core core) {
 
     }
 
     @Override
-    public void displayMessage(LinphoneCore linphoneCore, String s) {
+    public void onNetworkReachable(@androidx.annotation.NonNull Core core, boolean reachable) {
 
     }
 
     @Override
-    public void displayWarning(LinphoneCore linphoneCore, String s) {
+    public void onInfoReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Call call, @androidx.annotation.NonNull InfoMessage message) {
 
     }
 
     @Override
-    public void fileTransferProgressIndication(LinphoneCore linphoneCore, LinphoneChatMessage linphoneChatMessage, LinphoneContent linphoneContent, int i) {
+    public void onMessageSent(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ChatRoom chatRoom, @androidx.annotation.NonNull ChatMessage message) {
 
     }
 
     @Override
-    public void fileTransferRecv(LinphoneCore linphoneCore, LinphoneChatMessage linphoneChatMessage, LinphoneContent linphoneContent, byte[] bytes, int i) {
+    public void onCallLogUpdated(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull CallLog callLog) {
 
     }
 
     @Override
-    public int fileTransferSend(LinphoneCore linphoneCore, LinphoneChatMessage linphoneChatMessage, LinphoneContent linphoneContent, ByteBuffer byteBuffer, int i) {
-        return 0;
-    }
-
-    @Override
-    public void callEncryptionChanged(LinphoneCore linphoneCore, LinphoneCall linphoneCall, boolean b, String s) {
+    public void onNotifyPresenceReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Friend linphoneFriend) {
 
     }
 
     @Override
-    public void callState(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCall.State state, String s) {
+    public void onLastCallEnded(@androidx.annotation.NonNull Core core) {
 
     }
 
     @Override
-    public void isComposingReceived(LinphoneCore linphoneCore, LinphoneChatRoom linphoneChatRoom) {
+    public void onCallCreated(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Call call) {
 
     }
 
     @Override
-    public void ecCalibrationStatus(LinphoneCore linphoneCore, LinphoneCore.EcCalibratorStatus ecCalibratorStatus, int i, Object o) {
+    public void onMessageReceivedUnableDecrypt(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ChatRoom chatRoom, @androidx.annotation.NonNull ChatMessage message) {
 
     }
 
     @Override
-    public void globalState(LinphoneCore linphoneCore, LinphoneCore.GlobalState globalState, String s) {
+    public void onNewSubscriptionRequested(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Friend linphoneFriend, @androidx.annotation.NonNull String url) {
 
     }
 
     @Override
-    public void uploadProgressIndication(LinphoneCore linphoneCore, int i, int i1) {
+    public void onConfiguringStatus(@androidx.annotation.NonNull Core core, ConfiguringState status, @androidx.annotation.Nullable String message) {
 
     }
 
     @Override
-    public void uploadStateChanged(LinphoneCore linphoneCore, LinphoneCore.LogCollectionUploadState logCollectionUploadState, String s) {
+    public void onLogCollectionUploadProgressIndication(@androidx.annotation.NonNull Core core, int offset, int total) {
 
     }
 
     @Override
-    public void friendListCreated(LinphoneCore linphoneCore, LinphoneFriendList linphoneFriendList) {
+    public void onMessageReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ChatRoom chatRoom, @androidx.annotation.NonNull ChatMessage message) {
 
     }
 
     @Override
-    public void friendListRemoved(LinphoneCore linphoneCore, LinphoneFriendList linphoneFriendList) {
+    public void onAuthenticationRequested(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull AuthInfo authInfo, @androidx.annotation.NonNull AuthMethod method) {
 
     }
 
     @Override
-    public void networkReachableChanged(LinphoneCore linphoneCore, boolean b) {
+    public void onChatRoomSubjectChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ChatRoom chatRoom) {
 
     }
 
     @Override
-    public void messageReceived(LinphoneCore linphoneCore, LinphoneChatRoom linphoneChatRoom, LinphoneChatMessage linphoneChatMessage) {
+    public void onBuddyInfoUpdated(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Friend linphoneFriend) {
 
     }
 
     @Override
-    public void messageReceivedUnableToDecrypted(LinphoneCore linphoneCore, LinphoneChatRoom linphoneChatRoom, LinphoneChatMessage linphoneChatMessage) {
+    public void onNotifyPresenceReceivedForUriOrTel(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Friend linphoneFriend, @androidx.annotation.NonNull String uriOrTel, @androidx.annotation.NonNull PresenceModel presenceModel) {
 
     }
 
     @Override
-    public void notifyReceived(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent, String s, LinphoneContent linphoneContent) {
+    public void onEcCalibrationAudioUninit(@androidx.annotation.NonNull Core core) {
 
     }
 
     @Override
-    public void registrationState(LinphoneCore linphoneCore, LinphoneProxyConfig linphoneProxyConfig, LinphoneCore.RegistrationState registrationState, String s) {
+    public void onCallStateChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Call call, Call.State state, @androidx.annotation.NonNull String message) {
 
     }
 
     @Override
-    public void configuringStatus(LinphoneCore linphoneCore, LinphoneCore.RemoteProvisioningState remoteProvisioningState, String s) {
+    public void onGlobalStateChanged(@androidx.annotation.NonNull Core core, GlobalState state, @androidx.annotation.NonNull String message) {
 
     }
 
-    private void setBackCamAsDefault() {
-//        int camId = 0;
-//        AndroidCameraConfiguration.AndroidCamera[] cameras = AndroidCameraConfiguration.retrieveCameras();
-//        for (AndroidCameraConfiguration.AndroidCamera androidCamera :
-//                cameras) {
-//            if (!androidCamera.frontFacing) {
-//                camId = androidCamera.id;
-//            }
-//        }
-//        android.util.Log.e(TAG, "setBackCamAsDefault: cameraId is " + camId);
-        mLc.setVideoDevice(0);
+    @Override
+    public void onRegistrationStateChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ProxyConfig proxyConfig, RegistrationState state, @androidx.annotation.NonNull String message) {
+
+    }
+
+    @Override
+    public void onFriendListRemoved(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull FriendList friendList) {
+
+    }
+
+    @Override
+    public void onLogCollectionUploadStateChanged(@androidx.annotation.NonNull Core core, Core.LogCollectionUploadState state, @androidx.annotation.NonNull String info) {
+
+    }
+
+    @Override
+    public void onTransferStateChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Call transfered, Call.State callState) {
+
+    }
+
+    @Override
+    public void onChatRoomStateChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ChatRoom chatRoom, ChatRoom.State state) {
+
+    }
+
+    @Override
+    public void onChatRoomEphemeralMessageDeleted(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ChatRoom chatRoom) {
+
+    }
+
+    @Override
+    public void onPublishStateChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Event linphoneEvent, PublishState state) {
+
+    }
+
+    @Override
+    public void onEcCalibrationAudioInit(@androidx.annotation.NonNull Core core) {
+
+    }
+
+    @Override
+    public void onAccountRegistrationStateChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Account account, RegistrationState state, @androidx.annotation.NonNull String message) {
+
+    }
+
+    @Override
+    public void onVersionUpdateCheckResultReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull VersionUpdateCheckResult result, String version, @androidx.annotation.Nullable String url) {
+
+    }
+
+    @Override
+    public void onDtmfReceived(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Call call, int dtmf) {
+
+    }
+
+    @Override
+    public void onConferenceStateChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Conference conference, Conference.State state) {
+
+    }
+
+    @Override
+    public void onCallEncryptionChanged(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull Call call, boolean mediaEncryptionEnabled, @androidx.annotation.Nullable String authenticationToken) {
+
+    }
+
+    @Override
+    public void onChatRoomRead(@androidx.annotation.NonNull Core core, @androidx.annotation.NonNull ChatRoom chatRoom) {
+
+    }
+
+    @Override
+    public void onFirstCallStarted(@androidx.annotation.NonNull Core core) {
+
     }
 }

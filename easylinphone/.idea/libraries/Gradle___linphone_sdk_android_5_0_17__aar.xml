@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: :linphone-sdk-android-5.0.17:@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/62aa18f370500b61c606b91546a91cba/transformed/jetified-linphone-sdk-android-5.0.17/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/62aa18f370500b61c606b91546a91cba/transformed/jetified-linphone-sdk-android-5.0.17/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/62aa18f370500b61c606b91546a91cba/transformed/jetified-linphone-sdk-android-5.0.17/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

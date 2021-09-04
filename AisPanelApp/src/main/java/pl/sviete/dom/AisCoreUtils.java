@@ -23,7 +23,7 @@ import ai.picovoice.porcupine.PorcupineManager;
 
 import static android.content.Context.BATTERY_SERVICE;
 
-import org.linphone.core.LinphoneCall;
+import org.linphone.core.Call;
 
 public class AisCoreUtils {
 
@@ -140,7 +140,7 @@ public class AisCoreUtils {
     public static String mAisSipStatus = "";
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
-    public static LinphoneCall mAisSipIncomingCall;
+    public static Call mAisSipIncomingCall;
 
 
     /*

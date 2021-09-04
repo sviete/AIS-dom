@@ -556,7 +556,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             // we have sip call - ring
             Intent ttsIntent = new Intent(AisCoreUtils.BROADCAST_SERVICE_SAY_IT);
             mCallingUserName = "dzwonek";
-            mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getRemoteAddress().getUserName();
+            mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getRemoteAddress().getUsername();
 
             // say the calling name
             AisCoreUtils.AIS_DOM_LAST_TTS = "";
@@ -736,7 +736,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                     }
 
                     if (mAisSipStatus.equals("incomingCall")) {
-                        statusDisp = "-> " + AisCoreUtils.mAisSipIncomingCall.getRemoteAddress().getUserName();
+                        statusDisp = "-> " + AisCoreUtils.mAisSipIncomingCall.getRemoteAddress().getUsername();
                     }
 
                     TextView labelView = findViewById(R.id.sipServerStatusLabel);

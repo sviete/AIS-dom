@@ -63,9 +63,11 @@ import com.xuchongyang.easyphone.callback.RegistrationCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.linphone.core.LinphoneAuthInfo;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.AudioDevice;
+import org.linphone.core.AuthInfo;
+import org.linphone.core.Call;
+import org.linphone.core.ProxyConfig;
+import org.linphone.core.Core;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -194,25 +196,36 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     @Override
                     public void registrationFailed() {
                         super.registrationFailed();
-                        updateAisSipStatus("...");
+                        updateAisSipStatus("registrationFailed");
                     }
                 }, new PhoneCallback() {
                     @Override
-                    public void incomingCall(LinphoneCall linphoneCall) {
+                    public void incomingCall(Call linphoneCall) {
+                        super.incomingCall(linphoneCall);
 
-                        //
-                        // EasyLinphone.getLC().stopRinging();
-                        // if (EasyLinphone.getLC().hasBuiltInEchoCanceler()) {
-
+                        Core core = EasyLinphone.getLC();
                         EasyLinphone.getLC().enableEchoCancellation(true);
                         EasyLinphone.getLC().enableEchoLimiter(true);
 
-                        // }
+                        EasyLinphone.getLC().enableMic(true);
 
-                        EasyLinphone.getLC().muteMic(false);
-                        // EasyLinphone.getLC().enableSpeaker(true);
+                        //
+                        // Get the currently used audio device
+                        AudioDevice currentAudioDevice = EasyLinphone.getLC().getCurrentCall().getOutputAudioDevice();
+                        boolean speakerEnabled = currentAudioDevice.getType() == AudioDevice.Type.Speaker;
 
-                        super.incomingCall(linphoneCall);
+                        // We can get a list of all available audio devices using
+                        // Note that on tablets for example, there may be no Earpiece device
+                        for (AudioDevice audioDevice : EasyLinphone.getLC().getAudioDevices()) {
+                            if (speakerEnabled && audioDevice.getType() == AudioDevice.Type.Earpiece) {
+                                core.getCurrentCall().setOutputAudioDevice(audioDevice);
+                            } else if (!speakerEnabled && audioDevice.getType() == AudioDevice.Type.Speaker) {
+                                core.getCurrentCall().setOutputAudioDevice(audioDevice);
+                            }/* If we wanted to route the audio to a bluetooth headset
+                                else if (audioDevice.type == AudioDevice.Type.Bluetooth) {
+                                    core.currentCall?.outputAudioDevice = audioDevice
+                                }*/
+                        }
 
                         AisCoreUtils.mAisSipIncomingCall = linphoneCall;
                         updateAisSipStatus("incomingCall");
@@ -255,24 +268,17 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     public void stopSip(boolean stopService){
         try {
-            LinphoneProxyConfig[] proxyConfigs = EasyLinphone.getLC().getProxyConfigList();
-            for (int i = 0; i < proxyConfigs.length; i++) {
-                EasyLinphone.getLC().removeProxyConfig(proxyConfigs[i]);
-            }
-            LinphoneAuthInfo[] authInfos = EasyLinphone.getLC().getAuthInfosList();
-            for (int i = 0; i < authInfos.length; i++) {
-                EasyLinphone.getLC().removeAuthInfo(authInfos[i]);
-            }
+            // To remove all accounts use
+            EasyLinphone.getLC().clearAccounts();
+
+            // Same for auth info
+            EasyLinphone.getLC().clearAllAuthInfo();
+
+            //
             EasyLinphone.onDestroy();
         } catch (Exception e){
             Log.e(TAG, e.toString());
         }
-        // this can crash app...
-        //        if (stopService) {
-        //            Intent sipService = new Intent(getBaseContext(), LinphoneService.class);
-        //            getBaseContext().stopService(sipService);
-        //        }
-
     }
 
     /**

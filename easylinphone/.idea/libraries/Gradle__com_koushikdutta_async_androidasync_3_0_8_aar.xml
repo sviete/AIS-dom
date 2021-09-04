@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.koushikdutta.async:androidasync:3.0.8@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/60a9911f1a24c4b616f1a5388c438ae7/transformed/jetified-androidasync-3.0.8/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/60a9911f1a24c4b616f1a5388c438ae7/transformed/jetified-androidasync-3.0.8/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/60a9911f1a24c4b616f1a5388c438ae7/transformed/jetified-androidasync-3.0.8/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.koushikdutta.async/androidasync/3.0.8/acc128904a96c73a0cbc51bdc9665e5467a39297/androidasync-3.0.8-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.koushikdutta.async/androidasync/3.0.8/d4f35f075f099b030541f4a8186064badaf19bf7/androidasync-3.0.8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

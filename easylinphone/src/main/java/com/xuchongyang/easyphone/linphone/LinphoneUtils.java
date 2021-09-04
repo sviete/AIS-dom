@@ -3,15 +3,19 @@ package com.xuchongyang.easyphone.linphone;
 import android.content.Context;
 import android.util.Log;
 
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneAuthInfo;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.LpConfig;
+import org.linphone.core.AVPFMode;
+import org.linphone.core.Account;
+import org.linphone.core.AccountParams;
+import org.linphone.core.Address;
+import org.linphone.core.AuthInfo;
+import org.linphone.core.Call;
+import org.linphone.core.CallParams;
+import org.linphone.core.Core;
+import org.linphone.core.CoreException;
+import org.linphone.core.Factory;
+import org.linphone.core.ProxyConfig;
+import org.linphone.core.Config;
+import org.linphone.core.TransportType;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +30,7 @@ import java.io.InputStream;
 public class LinphoneUtils {
     private static final String TAG = "LinphoneUtils";
     private static volatile LinphoneUtils sLinphoneUtils;
-    private LinphoneCore mLinphoneCore = null;
+    private Core mLinphoneCore = null;
 
     public static LinphoneUtils getInstance() {
         if (sLinphoneUtils == null) {
@@ -50,51 +54,68 @@ public class LinphoneUtils {
      * @param name
      * @param password
      * @param host
-     * @throws LinphoneCoreException
+     * @throws CoreException
      */
-    public void registerUserAuth(String name, String password, String host) throws LinphoneCoreException {
+    public void registerUserAuth(String name, String password, String host) throws CoreException {
         Log.e(TAG, "registerUserAuth name = " + name);
         Log.e(TAG, "registerUserAuth pw = " + password);
         Log.e(TAG, "registerUserAuth host = " + host);
+
+
+        // The auth info can be created from the Factory as it's only a data class
+        // userID is set to null as it's the same as the username in our case
+        // ha1 is set to null as we are using the clear text password. Upon first register, the hash will be computed automatically.
+        // The realm will be determined automatically from the first register, as well as the algorithm
+        AuthInfo authInfo = Factory.instance().createAuthInfo(name, null, password, null, null, host, null);
+
+        // Account object replaces deprecated ProxyConfig object
+        // Account object is configured through an AccountParams object that we can obtain from the Core
+        AccountParams accountParams = mLinphoneCore.createAccountParams();
+
+        // A SIP account is identified by an identity address that we can construct from the username and domain
         String identify = "sip:" + name + "@" + host;
+        Address identifyAddr = Factory.instance().createAddress(identify);
+        accountParams.setIdentityAddress(identifyAddr);
+
+        // We also need to configure where the proxy server is located
         String proxy = "sip:" + host;
-        LinphoneAddress proxyAddr = LinphoneCoreFactory.instance().createLinphoneAddress(proxy);
-        LinphoneAddress identifyAddr = LinphoneCoreFactory.instance().createLinphoneAddress(identify);
-        LinphoneAuthInfo authInfo = LinphoneCoreFactory.instance().createAuthInfo(name, null, password,
-                null, null, host);
-        LinphoneProxyConfig prxCfg = mLinphoneCore.createProxyConfig(identifyAddr.asString(),
-                proxyAddr.asStringUriOnly(), proxyAddr.asStringUriOnly(), true);
-        prxCfg.enableAvpf(false);
-        prxCfg.setAvpfRRInterval(0);
-        prxCfg.enableQualityReporting(false);
-        prxCfg.setQualityReportingCollector(null);
-        prxCfg.setQualityReportingInterval(0);
-        prxCfg.enableRegister(true);
-        mLinphoneCore.addProxyConfig(prxCfg);
+        Address address = Factory.instance().createAddress(proxy);
+
+        // We use the Address object to easily set the transport protocol
+        address.setTransport(TransportType.Udp);
+        accountParams.setServerAddress(address);
+        // And we ensure the account will start the registration process
+        accountParams.setRegisterEnabled(true);
+
+
+        // Now that our AccountParams is configured, we can create the Account object
+        Account account = mLinphoneCore.createAccount(accountParams);
+
+        // Now let's add our objects to the Core
         mLinphoneCore.addAuthInfo(authInfo);
-        mLinphoneCore.setDefaultProxyConfig(prxCfg);
+        mLinphoneCore.addAccount(account);
+
+        // Also set the newly added account as default
+        mLinphoneCore.setDefaultAccount(account);
+
+        // Finally we need the Core to be started for the registration to happen (it could have been started before)
+        mLinphoneCore.start();
     }
 
-    public LinphoneCall startSingleCallingTo(PhoneBean bean, boolean isVideoCall) {
-        LinphoneAddress address;
-        LinphoneCall call = null;
+    public Call startSingleCallingTo(PhoneBean bean, boolean isVideoCall) {
+        Address address;
+        Call call = null;
         try {
             address = mLinphoneCore.interpretUrl(bean.getUserName() + "@" + bean.getHost());
-        } catch (LinphoneCoreException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
         address.setDisplayName(bean.getDisplayName());
-        LinphoneCallParams params = mLinphoneCore.createCallParams(null);
-        if (isVideoCall) {
-            params.setVideoEnabled(true);
-            params.enableLowBandwidth(false);
-        } else {
-            params.setVideoEnabled(false);
-        }
+        CallParams params = mLinphoneCore.createCallParams(null);
         try {
             call = mLinphoneCore.inviteAddressWithParams(address, params);
-        } catch (LinphoneCoreException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return call;
@@ -104,9 +125,9 @@ public class LinphoneUtils {
      * 挂断电话
      */
     public void hangUp() {
-        LinphoneCall currentCall = mLinphoneCore.getCurrentCall();
+        Call currentCall = mLinphoneCore.getCurrentCall();
         if (currentCall != null) {
-            mLinphoneCore.terminateCall(currentCall);
+            mLinphoneCore.terminateAllCalls();
         } else if (mLinphoneCore.isInConference()) {
             mLinphoneCore.terminateConference();
         } else {
@@ -119,7 +140,7 @@ public class LinphoneUtils {
      * @param isMicMuted
      */
     public void toggleMicro(boolean isMicMuted) {
-        mLinphoneCore.muteMic(isMicMuted);
+        mLinphoneCore.enableMic(isMicMuted);
     }
 
     /**
@@ -127,7 +148,8 @@ public class LinphoneUtils {
      * @param isSpeakerEnabled
      */
      public void toggleSpeaker(boolean isSpeakerEnabled) {
-         mLinphoneCore.enableSpeaker(isSpeakerEnabled);
+         // TODO
+         //mLinphoneCore.enableSpeaker(isSpeakerEnabled);
      }
 
     public static void copyIfNotExist(Context context, int resourceId, String target) throws IOException {
@@ -150,18 +172,18 @@ public class LinphoneUtils {
         inputStream.close();
     }
 
-    public static LpConfig getConfig(Context context) {
-        LinphoneCore lc = getLc();
+    public static Config getConfig(Context context) {
+        Core lc = getLc();
         if (lc != null) {
             return lc.getConfig();
         }
 
         if (LinphoneManager.isInstanceiated()) {
             org.linphone.mediastream.Log.w("LinphoneManager not instanciated yet...");
-            return LinphoneCoreFactory.instance().createLpConfig(context.getFilesDir().getAbsolutePath() + "/.linphonerc");
+            return Factory.instance().createConfig(context.getFilesDir().getAbsolutePath() + "/.linphonerc");
         }
 
-        return LinphoneCoreFactory.instance().createLpConfig(LinphoneManager.getInstance().mLinphoneConfigFile);
+        return Factory.instance().createConfig(LinphoneManager.getInstance().mLinphoneConfigFile);
     }
 
     public static void sleep(int time) {
@@ -172,7 +194,7 @@ public class LinphoneUtils {
         }
     }
 
-    private static LinphoneCore getLc() {
+    private static Core getLc() {
         if (!LinphoneManager.isInstanceiated()) {
             return null;
         }
