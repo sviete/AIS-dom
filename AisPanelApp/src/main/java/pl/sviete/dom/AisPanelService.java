@@ -203,10 +203,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                         Core core = EasyLinphone.getLC();
                         if (!core.hasBuiltinEchoCanceller()) {
                             core.enableEchoCancellation(true);
-                            // EasyLinphone.getLC().enableEchoLimiter(true);
+                            core.enableEchoLimiter(true);
                         }
 
-                        core.enableMic(true);
+
+                        // core.setPlaybackGainDb(5);
 
                         // int ret = core.startEchoTester(44100);
                         // Log.i(TAG, "startEchoTester " + ret);

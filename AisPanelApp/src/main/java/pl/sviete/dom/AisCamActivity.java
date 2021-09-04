@@ -116,8 +116,8 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         mLibVLC = new LibVLC(this, args);
 
         mMediaPlayer = new MediaPlayer(mLibVLC);
-        mMediaPlayer.setVolume(100);
-        mMediaPlayerVloume = mMediaPlayer.getVolume();
+        mMediaPlayer.setVolume(0);
+        // mMediaPlayerVloume = mMediaPlayer.getVolume();
 
         mConfig = new Config(getApplicationContext());
 
@@ -177,7 +177,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             if (AisCoreUtils.mAisSipActiveCall != null){
                 try {
                     // Answer the current call
-                    mMediaPlayerVloume = mMediaPlayer.getVolume();
+                    // mMediaPlayerVloume = mMediaPlayer.getVolume();
                     mMediaPlayer.setVolume(0);
 
                     EasyLinphone.acceptCall();
@@ -232,7 +232,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
 
                 try {
                     EasyLinphone.hangUp();
-                    mMediaPlayer.setVolume(mMediaPlayerVloume);
+                    //mMediaPlayer.setVolume(mMediaPlayerVloume);
                 } catch (Exception se) {
                     Log.d(TAG, "Error ending call.", se);
                 }
@@ -439,7 +439,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                     // end call
                     AisCoreUtils.mAisSipActiveCall = null;
                     mRingsActive = false;
-                    mMediaPlayer.setVolume(mMediaPlayerVloume);
+                    //mMediaPlayer.setVolume(mMediaPlayerVloume);
                 } else if (mAisSipStatus.equals("incomingCall")) {
                     // start call
                 }
@@ -585,7 +585,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                                     Log.i(TAG, "ringingTime hangUp after " + ringingTime);
                                     try {
                                         EasyLinphone.hangUp();
-                                        mMediaPlayer.setVolume(mMediaPlayerVloume);
+                                        //mMediaPlayer.setVolume(mMediaPlayerVloume);
                                     } catch (Exception se) {
                                         Log.e(TAG, "Error ending call.", se);
                                     }
