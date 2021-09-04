@@ -12,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -569,22 +568,25 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                 // ring start time
                 mRingStartTime.setToNow();
 
+                // switch to sip ring
+//                android.media.MediaPlayer mediaPlayer = new android.media.MediaPlayer();
+//                AssetFileDescriptor descriptor = getApplicationContext().getAssets().openFd("find_my_phone.mp3");
+//                mediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+//                descriptor.close();
+//                mediaPlayer.prepare();
+//                mediaPlayer.setVolume(1f, 1f);
+//                mediaPlayer.setLooping(false);
 
-                android.media.MediaPlayer mediaPlayer = new android.media.MediaPlayer();
-                AssetFileDescriptor descriptor = getApplicationContext().getAssets().openFd("find_my_phone.mp3");
-                mediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
-                descriptor.close();
-                mediaPlayer.prepare();
-                mediaPlayer.setVolume(1f, 1f);
-                mediaPlayer.setLooping(false);
+
                 mRingsActive = true;
+
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
                         while (mRingsActive) {
                             try {
                                 Thread.sleep(1500); // Waits for 1.5 second (1500 milliseconds)
-                                mediaPlayer.start();
+                                // mediaPlayer.start();
                                 // hangup after timeout
                                 mcurrnetTime.setToNow();
                                 long ringingTime = TimeUnit.MILLISECONDS.toSeconds(mcurrnetTime.toMillis(true) - mRingStartTime.toMillis(true));
@@ -603,7 +605,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                                 e.printStackTrace();
                             }
                         }
-                        mediaPlayer.stop();
+                        // mediaPlayer.stop();
 
                     };
                 };

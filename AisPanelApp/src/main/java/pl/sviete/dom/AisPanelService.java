@@ -63,10 +63,7 @@ import com.xuchongyang.easyphone.callback.RegistrationCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.linphone.core.AudioDevice;
-import org.linphone.core.AuthInfo;
 import org.linphone.core.Call;
-import org.linphone.core.ProxyConfig;
 import org.linphone.core.Core;
 
 import java.math.BigDecimal;
@@ -211,21 +208,21 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
                         //
                         // Get the currently used audio device
-                        AudioDevice currentAudioDevice = EasyLinphone.getLC().getCurrentCall().getOutputAudioDevice();
-                        boolean speakerEnabled = currentAudioDevice.getType() == AudioDevice.Type.Speaker;
-
-                        // We can get a list of all available audio devices using
-                        // Note that on tablets for example, there may be no Earpiece device
-                        for (AudioDevice audioDevice : EasyLinphone.getLC().getAudioDevices()) {
-                            if (speakerEnabled && audioDevice.getType() == AudioDevice.Type.Earpiece) {
-                                core.getCurrentCall().setOutputAudioDevice(audioDevice);
-                            } else if (!speakerEnabled && audioDevice.getType() == AudioDevice.Type.Speaker) {
-                                core.getCurrentCall().setOutputAudioDevice(audioDevice);
-                            }/* If we wanted to route the audio to a bluetooth headset
-                                else if (audioDevice.type == AudioDevice.Type.Bluetooth) {
-                                    core.currentCall?.outputAudioDevice = audioDevice
-                                }*/
-                        }
+//                        AudioDevice currentAudioDevice = linphoneCall.getOutputAudioDevice();
+//                        boolean speakerEnabled = currentAudioDevice.getType() == AudioDevice.Type.Speaker;
+//
+//                        // We can get a list of all available audio devices using
+//                        // Note that on tablets for example, there may be no Earpiece device
+//                        for (AudioDevice audioDevice : EasyLinphone.getLC().getAudioDevices()) {
+//                            if (speakerEnabled && audioDevice.getType() == AudioDevice.Type.Earpiece) {
+//                                core.getCurrentCall().setOutputAudioDevice(audioDevice);
+//                            } else if (!speakerEnabled && audioDevice.getType() == AudioDevice.Type.Speaker) {
+//                                core.getCurrentCall().setOutputAudioDevice(audioDevice);
+//                            }/* If we wanted to route the audio to a bluetooth headset
+//                                else if (audioDevice.type == AudioDevice.Type.Bluetooth) {
+//                                    core.currentCall?.outputAudioDevice = audioDevice
+//                                }*/
+//                        }
 
                         AisCoreUtils.mAisSipIncomingCall = linphoneCall;
                         updateAisSipStatus("incomingCall");
