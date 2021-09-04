@@ -124,7 +124,7 @@
     <string name="default_setting_app_discovery">false</string>
 
     <string name="key_pref_ais_dom_doorbell">pref_ais_dom_doorbell</string>
-    <string name="default_setting_doorbell">false</string>
+    <string name="default_setting_doorbell">true</string>
     <string name="title_setting_doorbell">Wideodomofon</string>
     <string name="summary_setting_doorbell">Dwukierunkowa komunikacja audio oraz widok z kamery w domofonie (wymagany serwer SIP na bramce AIS).</string>
 

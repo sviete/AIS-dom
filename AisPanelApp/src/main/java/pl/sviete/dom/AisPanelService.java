@@ -257,19 +257,19 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             for (int i = 0; i < proxyConfigs.length; i++) {
                 EasyLinphone.getLC().removeProxyConfig(proxyConfigs[i]);
             }
-
             LinphoneAuthInfo[] authInfos = EasyLinphone.getLC().getAuthInfosList();
             for (int i = 0; i < authInfos.length; i++) {
                 EasyLinphone.getLC().removeAuthInfo(authInfos[i]);
             }
+            EasyLinphone.onDestroy();
         } catch (Exception e){
             Log.e(TAG, e.toString());
         }
-// this can crash app...
-//        if (stopService) {
-//            Intent sipService = new Intent(getBaseContext(), LinphoneService.class);
-//            getBaseContext().stopService(sipService);
-//        }
+        // this can crash app...
+        //        if (stopService) {
+        //            Intent sipService = new Intent(getBaseContext(), LinphoneService.class);
+        //            getBaseContext().stopService(sipService);
+        //        }
 
     }
 
@@ -517,7 +517,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             Log.e(TAG, "Exception " + e.toString());
         }
         //
-        EasyLinphone.onDestroy();
+        stopSip(false);
 
         Log.i(TAG, "destroy");
 

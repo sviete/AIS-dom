@@ -46,6 +46,8 @@ public class Config {
     }
 
     private boolean getBoolPref(int resId, int defId) {
+        //Log.d(TAG, "PREF: " + myContext.getString(resId) + " default " + myContext.getString(defId));
+        //Log.d(TAG, "PREF: " + myContext.getString(resId) + " -> " + sharedPreferences.getBoolean(myContext.getString(resId), Boolean.valueOf(myContext.getString(defId))));
         return sharedPreferences.getBoolean(
                 myContext.getString(resId),
                 Boolean.valueOf(myContext.getString(defId))
@@ -321,7 +323,7 @@ public class Config {
     }
 
     public Boolean getDoorbellMode() {
-        return getBoolPref(R.string.key_pref_ais_dom_doorbell, R.string.default_setting_hot_word_mode);
+        return getBoolPref(R.string.key_pref_ais_dom_doorbell, R.string.default_setting_doorbell);
     }
 
     public Boolean getHotWordMode() {

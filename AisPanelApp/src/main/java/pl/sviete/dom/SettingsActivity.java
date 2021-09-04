@@ -191,13 +191,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                     if (prefKey.equals("setting_app_discovery")) {
                         if ((boolean) newValue) {
-                            Intent aisAudioService = new Intent(preference.getContext(), AisPanelService.class);
-                            preference.getContext().startService(aisAudioService);
                             // show doorbell settings
                             Preference preferenceDoorbell = findPreference("pref_ais_dom_doorbell");
                             preferenceDoorbell.setVisible((Boolean) true);
                             Preference preferenceSip = findPreference("pref_ais_dom_sip");
                             preferenceSip.setVisible((Boolean) true);
+                            //
+                            config.setDoorbellMode(true);
+                            //
+                            Intent aisAudioService = new Intent(preference.getContext(), AisPanelService.class);
+                            preference.getContext().startService(aisAudioService);
                         }
 
                         else {
