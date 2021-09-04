@@ -140,7 +140,7 @@ public class AisCoreUtils {
     public static String mAisSipStatus = "";
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
-    public static Call mAisSipIncomingCall;
+    public static Call mAisSipActiveCall;
 
 
     /*

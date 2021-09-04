@@ -12,6 +12,7 @@ import com.xuchongyang.easyphone.linphone.LinphoneUtils;
 import com.xuchongyang.easyphone.linphone.PhoneBean;
 import com.xuchongyang.easyphone.service.LinphoneService;
 
+import org.linphone.core.Call;
 import org.linphone.core.CallParams;
 import org.linphone.core.Core;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
@@ -71,20 +72,19 @@ public class EasyLinphone {
         }).start();
     }
 
-    /**
-     * 呼叫指定号码
-     * @param num 呼叫号码
-     */
-    public static void callTo(String num, boolean isVideoCall) {
+
+    public static Call callTo(String num, boolean isVideoCall) {
+        Call call = null;
         if (!LinphoneService.isReady() || !LinphoneManager.isInstanceiated()) {
-            return;
+            return call;
         }
         if (!num.equals("")) {
             PhoneBean phone = new PhoneBean();
             phone.setUserName(num);
             phone.setHost(mServerIP);
-            LinphoneUtils.getInstance().startSingleCallingTo(phone, isVideoCall);
+             call = LinphoneUtils.getInstance().startSingleCallingTo(phone, isVideoCall);
         }
+        return call;
     }
 
     /**

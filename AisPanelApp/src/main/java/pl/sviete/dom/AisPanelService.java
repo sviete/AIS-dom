@@ -201,11 +201,15 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                         super.incomingCall(linphoneCall);
 
                         Core core = EasyLinphone.getLC();
-                        EasyLinphone.getLC().enableEchoCancellation(true);
-                        EasyLinphone.getLC().enableEchoLimiter(true);
+                        if (!core.hasBuiltinEchoCanceller()) {
+                            core.enableEchoCancellation(true);
+                            // EasyLinphone.getLC().enableEchoLimiter(true);
+                        }
 
-                        EasyLinphone.getLC().enableMic(true);
+                        core.enableMic(true);
 
+                        // int ret = core.startEchoTester(44100);
+                        // Log.i(TAG, "startEchoTester " + ret);
                         //
                         // Get the currently used audio device
 //                        AudioDevice currentAudioDevice = linphoneCall.getOutputAudioDevice();
@@ -224,7 +228,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 //                                }*/
 //                        }
 
-                        AisCoreUtils.mAisSipIncomingCall = linphoneCall;
+                        AisCoreUtils.mAisSipActiveCall = linphoneCall;
                         updateAisSipStatus("incomingCall");
 
                         Intent camActivity = new Intent(getApplicationContext(), AisCamActivity.class);

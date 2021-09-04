@@ -13,6 +13,7 @@ import org.linphone.core.CallParams;
 import org.linphone.core.Core;
 import org.linphone.core.CoreException;
 import org.linphone.core.Factory;
+import org.linphone.core.MediaEncryption;
 import org.linphone.core.ProxyConfig;
 import org.linphone.core.Config;
 import org.linphone.core.TransportType;
@@ -105,14 +106,19 @@ public class LinphoneUtils {
     public Call startSingleCallingTo(PhoneBean bean, boolean isVideoCall) {
         Address address;
         Call call = null;
+
+        // As for everything we need to get the SIP URI of the remote and convert it to an Address
         try {
-            address = mLinphoneCore.interpretUrl(bean.getUserName() + "@" + bean.getHost());
+            address = Factory.instance().createAddress("sip:" + bean.getUserName() + "@" + bean.getHost());
+            address.setDisplayName(bean.getDisplayName());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        address.setDisplayName(bean.getDisplayName());
+        // Create call params expects a Call object for incoming calls, but for outgoing we must use null safely
         CallParams params = mLinphoneCore.createCallParams(null);
+        params.setMediaEncryption(MediaEncryption.None);
+
         try {
             call = mLinphoneCore.inviteAddressWithParams(address, params);
         } catch (Exception e) {
@@ -125,11 +131,12 @@ public class LinphoneUtils {
      * 挂断电话
      */
     public void hangUp() {
+        if (mLinphoneCore.getCallsNb() == 0) {
+            return;
+        }
         Call currentCall = mLinphoneCore.getCurrentCall();
         if (currentCall != null) {
-            mLinphoneCore.terminateAllCalls();
-        } else if (mLinphoneCore.isInConference()) {
-            mLinphoneCore.terminateConference();
+            currentCall.terminate();
         } else {
             mLinphoneCore.terminateAllCalls();
         }

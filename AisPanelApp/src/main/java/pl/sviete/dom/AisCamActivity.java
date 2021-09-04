@@ -79,7 +79,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
 
     // SIP
     private static final int SIP_CALL_ADDRESS = 1;
-    public String mCallToSipAddress = null;
+    public String mCallToSipAddress = "domofon";
 
     private static Config mConfig;
     private static final String TAG = "AIS SIP";
@@ -174,7 +174,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             }
 
             //
-            if (AisCoreUtils.mAisSipIncomingCall != null){
+            if (AisCoreUtils.mAisSipActiveCall != null){
                 try {
                     // Answer the current call
                     mMediaPlayerVloume = mMediaPlayer.getVolume();
@@ -187,9 +187,8 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                 }
             }
             else {
-                // TODO call to someone
-                // showDialog(SIP_CALL_ADDRESS);
-                Toast.makeText(getBaseContext(), R.string.sip_answering_no_call_to_answer_text, Toast.LENGTH_SHORT).show();
+                // call to someone
+                showDialog(SIP_CALL_ADDRESS);
             }
 
             // info to ha
@@ -215,7 +214,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             mRingsActive = false;
 
             // end incoming call
-            if (AisCoreUtils.mAisSipIncomingCall != null) {
+            if (AisCoreUtils.mAisSipActiveCall != null) {
                 // info to ha
                 try {
                     // send button event
@@ -237,7 +236,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                 } catch (Exception se) {
                     Log.d(TAG, "Error ending call.", se);
                 }
-                AisCoreUtils.mAisSipIncomingCall = null;
+                AisCoreUtils.mAisSipActiveCall = null;
                 Toast.makeText(getBaseContext(), R.string.sip_ending_call_text, Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getBaseContext(), R.string.sip_ending_no_call_to_end_text, Toast.LENGTH_SHORT).show();
@@ -266,7 +265,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         // open gate1
         doGet(mConfig.getSipLocalGate1OpenUrl(), getApplicationContext());
 
-        // infor to ha
+        // info to ha
         try {
             // send camera button event
             JSONObject jMessage = new JSONObject();
@@ -372,7 +371,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             PixelCopy.request(videoView, bitmap, (copyResult) -> {
                 if (copyResult == PixelCopy.SUCCESS) {
 
-
                     try {
                         // save to file
                         Date date = new Date();
@@ -439,7 +437,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                 updateSipServerStatus(mAisSipStatus);
                 if (mAisSipStatus.equals("callEnd")){
                     // end call
-                    AisCoreUtils.mAisSipIncomingCall = null;
+                    AisCoreUtils.mAisSipActiveCall = null;
                     mRingsActive = false;
                     mMediaPlayer.setVolume(mMediaPlayerVloume);
                 } else if (mAisSipStatus.equals("incomingCall")) {
@@ -530,15 +528,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         vout.setVideoView(mSurface);
         vout.setWindowSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
         vout.attachViews();
-//        DisplayMetrics displayMetrics = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
-//        holder = mSurface.getHolder();
-//        holder.addCallback(this);
-//        IVLCVout vout = mMediaPlayer.getVLCVout();
-//        vout.setVideoView(mSurface);
-//        vout.setWindowSize(displayMetrics.widthPixels, displayMetrics.heightPixels);
-//        vout.attachViews();
-
 
         try {
             final Media media = new Media(mLibVLC, Uri.parse(mUrl));
@@ -555,8 +544,9 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             // we have sip call - ring
             Intent ttsIntent = new Intent(AisCoreUtils.BROADCAST_SERVICE_SAY_IT);
             mCallingUserName = "dzwonek";
-            mCallingUserName = AisCoreUtils.mAisSipIncomingCall.getRemoteAddress().getUsername();
-
+            mCallingUserName = AisCoreUtils.mAisSipActiveCall.getRemoteAddress().getUsername();
+            // to allow recall
+            mCallToSipAddress = mCallingUserName;
             // say the calling name
             AisCoreUtils.AIS_DOM_LAST_TTS = "";
             ttsIntent.putExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT, mCallingUserName);
@@ -620,7 +610,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                 Runnable myRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        while (mRingsActive || AisCoreUtils.mAisSipIncomingCall != null) {
+                        while (mRingsActive || AisCoreUtils.mAisSipActiveCall != null) {
                             try {
                                 Thread.sleep(3000);
                             } catch (InterruptedException e) {
@@ -682,7 +672,9 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                     final View textBoxView = factory.inflate(R.layout.call_address_dialog, null);
                     EditText textField = (EditText) (textBoxView.findViewById(R.id.calladdress_edit));
 
-                    textField.setText("domofon");
+                    textField.setText(mCallToSipAddress);
+
+
                     return new AlertDialog.Builder(this)
                             .setTitle(R.string.sip_call_someone_text)
                             .setView(textBoxView)
@@ -720,7 +712,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
     public void initiateCall() {
         updateSipServerStatus(mCallToSipAddress);
         // Make a call
-        EasyLinphone.callTo(mCallToSipAddress, false);
+        AisCoreUtils.mAisSipActiveCall = EasyLinphone.callTo(mCallToSipAddress, false);
     }
 
     /**
@@ -738,7 +730,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                     }
 
                     if (mAisSipStatus.equals("incomingCall")) {
-                        statusDisp = "-> " + AisCoreUtils.mAisSipIncomingCall.getRemoteAddress().getUsername();
+                        statusDisp = "-> " + AisCoreUtils.mAisSipActiveCall.getRemoteAddress().getUsername();
                     }
 
                     TextView labelView = findViewById(R.id.sipServerStatusLabel);
