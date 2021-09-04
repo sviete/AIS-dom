@@ -17,6 +17,9 @@ android {
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
     }
     packagingOptions {
         pickFirst '**/*.so'
@@ -97,7 +100,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'org.videolan.android:libvlc-all:3.3.14'
-    implementation 'org.linphone:linphone-sdk-android:5.1.0-alpha.25+9acabf8'
+    implementation 'org.linphone.no-video:linphone-sdk-android:5.0.17'
 }
 
 
