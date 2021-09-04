@@ -60,10 +60,13 @@ import com.koushikdutta.async.http.server.AsyncHttpServer;
 import com.xuchongyang.easyphone.EasyLinphone;
 import com.xuchongyang.easyphone.callback.PhoneCallback;
 import com.xuchongyang.easyphone.callback.RegistrationCallback;
+import com.xuchongyang.easyphone.service.LinphoneService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneProxyConfig;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -177,7 +180,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     // ----------------------
     // --- AIS SIP START  ----
     // -----------------------
-    public void initializeSipManager() {
+    public void startSip() {
         // Start service
         EasyLinphone.startService(getBaseContext());
         // Add callback
@@ -187,6 +190,10 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     public void registrationOk() {
                         super.registrationOk();
                         updateAisSipStatus("Ready");
+
+                        //
+                        EasyLinphone.getLC().enableEchoCancellation(true);
+                        EasyLinphone.getLC().enableEchoLimiter(true);
                     }
 
                     @Override
@@ -198,9 +205,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     @Override
                     public void incomingCall(LinphoneCall linphoneCall) {
 
-                        EasyLinphone.getLC().stopRinging();
+                        //
                         EasyLinphone.getLC().enableEchoCancellation(true);
                         EasyLinphone.getLC().enableEchoLimiter(true);
+
+                        EasyLinphone.getLC().stopRinging();
 
                         super.incomingCall(linphoneCall);
 
@@ -219,6 +228,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     public void callConnected() {
                         super.callConnected();
                         updateAisSipStatus("callConnected");
+                        //
+                        EasyLinphone.getLC().enableEchoCancellation(true);
+                        EasyLinphone.getLC().enableEchoLimiter(true);
                     }
 
                     @Override
@@ -231,15 +243,38 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // Configure sip account
         // At least the 3 below values are required
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String username = prefs.getString("setting_local_sip_client_name", "mob");
+        String username = prefs.getString("setting_local_sip_client_name", "tablet");
         String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
-        String password = prefs.getString("setting_local_sip_client_password", "mob");
+        String password = prefs.getString("setting_local_sip_client_password", "*****");
         if (domain.equals("ais_auto")) {
             domain = mConfig.getAppLocalGateIp();
         }
         EasyLinphone.setAccount(username, password, domain);
+
         // Register to sip server
         EasyLinphone.login();
+    }
+
+    public void stopSip(boolean stopService){
+        try {
+            LinphoneProxyConfig[] proxyConfigs = EasyLinphone.getLC().getProxyConfigList();
+            for (int i = 0; i < proxyConfigs.length; i++) {
+                EasyLinphone.getLC().removeProxyConfig(proxyConfigs[i]);
+            }
+
+            LinphoneAuthInfo[] authInfos = EasyLinphone.getLC().getAuthInfosList();
+            for (int i = 0; i < authInfos.length; i++) {
+                EasyLinphone.getLC().removeAuthInfo(authInfos[i]);
+            }
+        } catch (Exception e){
+            Log.e(TAG, e.toString());
+        }
+// this can crash app...
+//        if (stopService) {
+//            Intent sipService = new Intent(getBaseContext(), LinphoneService.class);
+//            getBaseContext().stopService(sipService);
+//        }
+
     }
 
     /**
@@ -307,11 +342,11 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // SIP
         if (mConfig.getDoorbellMode()) {
             // enable sip
-            EasyLinphone.onDestroy();
-            initializeSipManager();
+            stopSip(false);
+            startSip();
         } else {
             // disable sip
-            EasyLinphone.onDestroy();
+            stopSip(true);
         }
         return super.onStartCommand(intent, flags, startId);
     }
