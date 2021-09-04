@@ -303,6 +303,28 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         }
     }
 
+    //Share ScreenShot
+    private void shareScreenShot(File imageFile) {
+
+        //Using sub-class of Content provider
+        Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), this.getApplicationContext().getPackageName() + ".provider", imageFile);
+
+        //Explicit intent
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, "AIS Doorbell");
+        intent.putExtra(Intent.EXTRA_STREAM, photoURI);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        //It will show the application which are available to share Image; else Toast message will throw.
+        try {
+            this.startActivity(Intent.createChooser(intent, "AIS Share With"));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "No App to Share Available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void takeScreenShot(View view) {
 
         //This is used to provide file name with Date a format
@@ -334,29 +356,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             e.printStackTrace();
         }
     }
-
-    //Share ScreenShot
-    private void shareScreenShot(File imageFile) {
-
-        //Using sub-class of Content provider
-        Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), this.getApplicationContext().getPackageName() + ".provider", imageFile);
-
-        //Explicit intent
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
-        intent.setType("image/*");
-        intent.putExtra(android.content.Intent.EXTRA_TEXT, "AIS Doorbell");
-        intent.putExtra(Intent.EXTRA_STREAM, photoURI);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        //It will show the application which are available to share Image; else Toast message will throw.
-        try {
-            this.startActivity(Intent.createChooser(intent, "Share With"));
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "No App to Share Available", Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void getBitMapFromSurfaceView(SurfaceView videoView) {
@@ -393,20 +392,17 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
 
                         shareScreenShot(imageFile);
                     } catch (IOException e) {
-                        Toast toast = Toast.makeText(AisCamActivity.this, e.toString(), Toast.LENGTH_LONG);
-                        toast.show();
+                        Log.e(TAG, e.toString());
                         return;
                     }
                 } else {
-                    Toast toast = Toast.makeText(AisCamActivity.this,
-                            "Failed to copyPixels: " + copyResult, Toast.LENGTH_LONG);
-                    toast.show();
+                    Log.e(TAG, "Failed to copyPixels: " + copyResult);
                 }
                 handlerThread.quitSafely();
             }, new Handler(handlerThread.getLooper()));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e.toString());
         }
     }
 
@@ -416,6 +412,8 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         //takeScreenShot(mVideoLayout);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             getBitMapFromSurfaceView(mSurface);
+        } else {
+            takeScreenShot(mSurface);
         }
 
         try {

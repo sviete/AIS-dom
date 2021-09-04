@@ -148,12 +148,12 @@ public class LinphoneManager implements LinphoneCoreListener {
     private synchronized void initLibLinphone() throws LinphoneCoreException {
         mLc.setContext(mServiceContext);
         setUserAgent();
-        mLc.setRemoteRingbackTone(mRingSoundFile);
-        mLc.setTone(ToneID.CallWaiting, mRingSoundFile);
-        mLc.setRing(mRingSoundFile);
-        mLc.setRootCA(mLinphoneRootCaFile);
-        mLc.setPlayFile(mPauseSoundFile);
-        mLc.setChatDatabasePath(mChatDatabaseFile);
+        //mLc.setRemoteRingbackTone(mRingSoundFile);
+        //mLc.setTone(ToneID.CallWaiting, mRingSoundFile);
+        //mLc.setRing(mRingSoundFile);
+        //mLc.setRootCA(mLinphoneRootCaFile);
+        //mLc.setPlayFile(mPauseSoundFile);
+        //mLc.setChatDatabasePath(mChatDatabaseFile);
 //        mLc.setCallErrorTone(Reason.NotFound, mErrorToneFile);//设置呼叫错误播放的铃声
 
        // setBackCamAsDefault();

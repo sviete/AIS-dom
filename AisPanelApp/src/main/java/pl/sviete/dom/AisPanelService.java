@@ -206,10 +206,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     public void incomingCall(LinphoneCall linphoneCall) {
 
                         //
-                        EasyLinphone.getLC().enableEchoCancellation(true);
-                        EasyLinphone.getLC().enableEchoLimiter(true);
-
-                        EasyLinphone.getLC().stopRinging();
+                        // EasyLinphone.getLC().stopRinging();
+                        EasyLinphone.getLC().muteMic(false);
+                        EasyLinphone.getLC().enableSpeaker(true);
 
                         super.incomingCall(linphoneCall);
 
@@ -228,9 +227,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     public void callConnected() {
                         super.callConnected();
                         updateAisSipStatus("callConnected");
-                        //
-                        EasyLinphone.getLC().enableEchoCancellation(true);
-                        EasyLinphone.getLC().enableEchoLimiter(true);
                     }
 
                     @Override
