@@ -3,10 +3,13 @@ package com.xuchongyang.easyphone.linphone;
 import android.content.Context;
 import android.util.Log;
 
+import com.xuchongyang.easyphone.EasyLinphone;
+
 import org.linphone.core.AVPFMode;
 import org.linphone.core.Account;
 import org.linphone.core.AccountParams;
 import org.linphone.core.Address;
+import org.linphone.core.AudioDevice;
 import org.linphone.core.AuthInfo;
 import org.linphone.core.Call;
 import org.linphone.core.CallParams;
@@ -46,8 +49,15 @@ public class LinphoneUtils {
 
     private LinphoneUtils() {
         mLinphoneCore = LinphoneManager.getLc();
-        // mLinphoneCore.enableEchoCancellation(true);
-        // mLinphoneCore.enableEchoLimiter(true);
+        if (!mLinphoneCore.hasBuiltinEchoCanceller()) {
+            Log.i(TAG, "hasBuiltinEchoCanceller FALSE");
+        } else {
+            Log.i(TAG, "hasBuiltinEchoCanceller TRUE");
+        }
+
+        mLinphoneCore.enableEchoCancellation(true);
+        mLinphoneCore.enableEchoLimiter(true);
+        enableSpeaker();
     }
 
     /**
@@ -150,13 +160,23 @@ public class LinphoneUtils {
         mLinphoneCore.enableMic(isMicMuted);
     }
 
-    /**
-     * 是否外放
-     * @param isSpeakerEnabled
-     */
-     public void toggleSpeaker(boolean isSpeakerEnabled) {
+     public void enableSpeaker() {
          // TODO
-         //mLinphoneCore.enableSpeaker(isSpeakerEnabled);
+         AudioDevice defaultOutputAudioDevice = mLinphoneCore.getDefaultOutputAudioDevice();
+         Log.i(TAG, "defaultOutputAudioDevice " + defaultOutputAudioDevice.getDeviceName() + " type: " + defaultOutputAudioDevice.getType() );
+         // We can get a list of all available audio devices using
+         // Note that on tablets for example, there may be no Earpiece device
+         for (AudioDevice audioDevice : mLinphoneCore.getAudioDevices()) {
+             Log.i(TAG, "defaultOutputAudioDevice audioDevice " + audioDevice.getDeviceName() + " type: " + defaultOutputAudioDevice.getType());
+              if (audioDevice.getType() == AudioDevice.Type.Speaker) {
+                 mLinphoneCore.setDefaultOutputAudioDevice(audioDevice);
+             }
+         }
+
+         //
+         defaultOutputAudioDevice = mLinphoneCore.getDefaultOutputAudioDevice();
+         Log.i(TAG, "defaultOutputAudioDevice " + defaultOutputAudioDevice.getDeviceName() + " type: " + defaultOutputAudioDevice.getType());
+
      }
 
     public static void copyIfNotExist(Context context, int resourceId, String target) throws IOException {

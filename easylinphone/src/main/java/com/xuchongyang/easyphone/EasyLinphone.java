@@ -2,8 +2,6 @@ package com.xuchongyang.easyphone;
 
 import android.content.Context;
 import android.content.Intent;
-import android.opengl.GLSurfaceView;
-import android.view.SurfaceView;
 
 import com.xuchongyang.easyphone.callback.PhoneCallback;
 import com.xuchongyang.easyphone.callback.RegistrationCallback;
@@ -13,9 +11,7 @@ import com.xuchongyang.easyphone.linphone.PhoneBean;
 import com.xuchongyang.easyphone.service.LinphoneService;
 
 import org.linphone.core.Call;
-import org.linphone.core.CallParams;
 import org.linphone.core.Core;
-import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 
 import static java.lang.Thread.sleep;
 
@@ -23,8 +19,6 @@ import static java.lang.Thread.sleep;
 public class EasyLinphone {
     private static ServiceWaitThread mServiceWaitThread;
     private static String mUsername, mPassword, mServerIP;
-    private static AndroidVideoWindowImpl mAndroidVideoWindow;
-    private static SurfaceView mRenderingView, mPreviewView;
 
 
     public static void startService(Context context) {
@@ -113,12 +107,8 @@ public class EasyLinphone {
         LinphoneUtils.getInstance().toggleMicro(isMicMuted);
     }
 
-    /**
-     * 切换免提
-     * @param isSpeakerEnabled 是否免提
-     */
-    public static void toggleSpeaker(boolean isSpeakerEnabled) {
-        LinphoneUtils.getInstance().toggleSpeaker(isSpeakerEnabled);
+    public static void enableSpeaker() {
+        LinphoneUtils.getInstance().enableSpeaker();
     }
 
     private static class ServiceWaitThread extends Thread {
@@ -160,87 +150,21 @@ public class EasyLinphone {
         }
     }
 
-    /**
-     * 设置 SurfaceView
-     * @param renderingView 远程 SurfaceView
-     * @param previewView 本地 SurfaceView
-     */
-    public static void setAndroidVideoWindow(final SurfaceView[] renderingView, final SurfaceView[] previewView) {
-        mRenderingView = renderingView[0];
-        mPreviewView = previewView[0];
-        fixZOrder(mRenderingView, mPreviewView);
-        mAndroidVideoWindow = new AndroidVideoWindowImpl(renderingView[0], previewView[0], new AndroidVideoWindowImpl.VideoWindowListener() {
-            @Override
-            public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl androidVideoWindow, SurfaceView surfaceView) {
-                setVideoWindow(androidVideoWindow);
-                renderingView[0] = surfaceView;
-            }
-
-            @Override
-            public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl androidVideoWindow) {
-                removeVideoWindow();
-            }
-
-            @Override
-            public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl androidVideoWindow, SurfaceView surfaceView) {
-                mPreviewView = surfaceView;
-                //setPreviewWindow(mPreviewView);
-            }
-
-            @Override
-            public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl androidVideoWindow) {
-                //removePreviewWindow();
-            }
-        });
-    }
 
     /**
      * onResume
      */
-    public static void onResume() {
-        if (mRenderingView != null) {
-            ((GLSurfaceView) mRenderingView).onResume();
-        }
-    }
+    public static void onResume() { }
 
     /**
      * onPause
      */
-    public static void onPause() {
-        if (mRenderingView != null) {
-            ((GLSurfaceView) mRenderingView).onPause();
-        }
-    }
+    public static void onPause() { }
 
     /**
      * onDestroy
      */
-    public static void onDestroy() {
-        mPreviewView = null;
-        mRenderingView = null;
-
-        if (mAndroidVideoWindow != null) {
-            mAndroidVideoWindow.release();
-            mAndroidVideoWindow = null;
-        }
-    }
-
-    private static void fixZOrder(SurfaceView rendering, SurfaceView preview) {
-        rendering.setZOrderOnTop(false);
-        preview.setZOrderOnTop(true);
-        preview.setZOrderMediaOverlay(true); // Needed to be able to display control layout over
-    }
-
-    private static void setVideoWindow(Object o) {
-        //LinphoneManager.getLc().setVideoWindow(o);
-    }
-
-    private static void removeVideoWindow() {
-        Core linphoneCore = LinphoneManager.getLc();
-//        if (linphoneCore != null) {
-//            linphoneCore.setVideoWindow(null);
-//        }
-    }
+    public static void onDestroy() { }
 
     /**
      * 获取 LinphoneCore

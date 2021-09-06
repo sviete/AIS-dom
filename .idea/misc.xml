@@ -8,6 +8,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="AisPanelApp/src/main/res/drawable/ais_echo_off.xml" value="0.3104166666666667" />
+        <entry key="AisPanelApp/src/main/res/drawable/ais_echo_on.xml" value="0.3104166666666667" />
+        <entry key="AisPanelApp/src/main/res/drawable/ais_icon_cast.xml" value="0.3104166666666667" />
+        <entry key="AisPanelApp/src/main/res/drawable/cam_icon_exit_to_app_rotate.xml" value="0.3104166666666667" />
         <entry key="AisPanelApp/src/main/res/layout/activity_ais_cam.xml" value="0.23333333333333334" />
         <entry key="AisPanelApp/src/main/res/layout/activity_browser.xml" value="0.209375" />
         <entry key="AisPanelApp/src/main/res/layout/pref_connection_buttons.xml" value="0.24270833333333333" />

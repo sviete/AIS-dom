@@ -200,34 +200,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     public void incomingCall(Call linphoneCall) {
                         super.incomingCall(linphoneCall);
 
-                        Core core = EasyLinphone.getLC();
-                        if (!core.hasBuiltinEchoCanceller()) {
-                            core.enableEchoCancellation(true);
-                            core.enableEchoLimiter(true);
-                        }
-
 
                         // core.setPlaybackGainDb(5);
 
                         // int ret = core.startEchoTester(44100);
                         // Log.i(TAG, "startEchoTester " + ret);
                         //
-                        // Get the currently used audio device
-//                        AudioDevice currentAudioDevice = linphoneCall.getOutputAudioDevice();
-//                        boolean speakerEnabled = currentAudioDevice.getType() == AudioDevice.Type.Speaker;
-//
-//                        // We can get a list of all available audio devices using
-//                        // Note that on tablets for example, there may be no Earpiece device
-//                        for (AudioDevice audioDevice : EasyLinphone.getLC().getAudioDevices()) {
-//                            if (speakerEnabled && audioDevice.getType() == AudioDevice.Type.Earpiece) {
-//                                core.getCurrentCall().setOutputAudioDevice(audioDevice);
-//                            } else if (!speakerEnabled && audioDevice.getType() == AudioDevice.Type.Speaker) {
-//                                core.getCurrentCall().setOutputAudioDevice(audioDevice);
-//                            }/* If we wanted to route the audio to a bluetooth headset
-//                                else if (audioDevice.type == AudioDevice.Type.Bluetooth) {
-//                                    core.currentCall?.outputAudioDevice = audioDevice
-//                                }*/
-//                        }
 
                         AisCoreUtils.mAisSipActiveCall = linphoneCall;
                         updateAisSipStatus("incomingCall");

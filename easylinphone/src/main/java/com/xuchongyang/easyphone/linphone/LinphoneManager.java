@@ -8,7 +8,6 @@ import android.os.Looper;
 import com.xuchongyang.easyphone.R;
 
 import org.linphone.core.Account;
-import org.linphone.core.Address;
 import org.linphone.core.AudioDevice;
 import org.linphone.core.AuthInfo;
 import org.linphone.core.AuthMethod;
@@ -32,24 +31,16 @@ import org.linphone.core.GlobalState;
 import org.linphone.core.InfoMessage;
 import org.linphone.core.PresenceModel;
 import org.linphone.core.ProxyConfig;
-import org.linphone.core.PayloadType;
 import org.linphone.core.PublishState;
 import org.linphone.core.RegistrationState;
 import org.linphone.core.SubscriptionState;
-import org.linphone.core.ToneID;
 import org.linphone.core.VersionUpdateCheckResult;
 import org.linphone.mediastream.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
-
-/**
- * Created by Mark Xu on 17/3/11.
- * Linphone 管理器
- */
 
 public class LinphoneManager implements CoreListener {
     private static final String TAG = "LinphoneManager";
@@ -63,11 +54,6 @@ public class LinphoneManager implements CoreListener {
     private String mLinphoneFactoryConfigFile = null;
     public String mLinphoneConfigFile = null;
     private String mLinphoneRootCaFile = null;
-    private String mRingSoundFile = null;
-    private String mRingBackSoundFile = null;
-    private String mPauseSoundFile = null;
-    private String mChatDatabaseFile = null;
-//    private String mErrorToneFile = null;
 
     public LinphoneManager(Context serviceContext) {
         mServiceContext = serviceContext;
@@ -79,11 +65,6 @@ public class LinphoneManager implements CoreListener {
         mLinphoneFactoryConfigFile = basePath + "/linphonerc";
         mLinphoneConfigFile = basePath + "/.linphonerc";
         mLinphoneRootCaFile = basePath + "/rootca.pem";
-        mRingSoundFile = basePath + "/oldphone_mono.wav";
-        mRingBackSoundFile = basePath + "/ringback.wav";
-        mPauseSoundFile = basePath + "/toy_mono.wav";
-        mChatDatabaseFile = basePath + "/linphone-history.db";
-//        mErrorToneFile = basePath + "/error.wav";
     }
 
     public synchronized static final LinphoneManager createAndStart(Context context) {
@@ -156,87 +137,30 @@ public class LinphoneManager implements CoreListener {
     }
 
     private synchronized void initLibLinphone() throws CoreException {
-        // mLc.setContext(mServiceContext);
+
+        //
         setUserAgent();
-        //mLc.setRemoteRingbackTone(mRingSoundFile);
-        //mLc.setTone(ToneID.CallWaiting, mRingSoundFile);
-        //mLc.setRing(mRingSoundFile);
-        //mLc.setRootCA(mLinphoneRootCaFile);
-        //mLc.setPlayFile(mPauseSoundFile);
-        //mLc.setChatDatabasePath(mChatDatabaseFile);
-//        mLc.setCallErrorTone(Reason.NotFound, mErrorToneFile);//设置呼叫错误播放的铃声
-
-       // setBackCamAsDefault();
-
-        int availableCores = Runtime.getRuntime().availableProcessors();
-        Log.w(TAG, "MediaStreamer : " + availableCores + " cores detected and configured");
-        // mLc.setCpuCount(availableCores);
 
         int migrationResult = getLc().migrateToMultiTransport();
         Log.d(TAG, "Migration to multi transport result = " + migrationResult);
 
         mLc.setNetworkReachable(true);
 
-        //回声消除
-//        boolean isEchoCancellation = (boolean) SPUtils.get(mServiceContext, "echo_cancellation", true);
+        //
         mLc.enableEchoCancellation(true);
 
-        //自适应码率控制
-//        boolean isAdaptiveRateControl = (boolean) SPUtils.get(mServiceContext, "adaptive_rate_control", true);
+        //
         mLc.enableAdaptiveRateControl(true);
 
-        //audio 码率设置
+        //audio
         LinphoneUtils.getConfig(mServiceContext).setInt("audio", "codec_bitrate_limit", 36);
 
         // mLc.setPreferredVideoDefinitionByName("720p");
         mLc.setUploadBandwidth(1536);
         mLc.setDownloadBandwidth(1536);
-
-        //mLc.setVideoPolicy(mLc.getVideoAutoInitiatePolicy(), true);
-        //mLc.setVideoPolicy(true, mLc.getVideoAutoAcceptPolicy());
-        //mLc.enableVideo(false, false);
-
-        // 设置编码格式
-        setCodecMime();
-    }
-
-    private void setCodecMime() {
-//        for (PayloadType payloadType : mLc.getAudioCodecs()) {
-//            try {
-//                mLc.enablePayloadType(payloadType, true);
-//            } catch (LinphoneCoreException e) {
-//                e.printStackTrace();
-//            }
-//            android.util.Log.e(TAG, "setCodecMime = " + payloadType.getMime() + " Rate " + payloadType.getRate() + " receviceFmtp " + payloadType.getRecvFmtp());
-//            if (payloadType.getMime().equals("PCMA") && payloadType.getRate() == 8000) {
-//                try {
-//                    android.util.Log.e(TAG, "setCodecMime: " + payloadType.getMime() + " " + payloadType.getRate());
-//                    mLc.enablePayloadType(payloadType, true);
-//                } catch (LinphoneCoreException e) {
-//                    android.util.Log.e(TAG, "setCodecMime: " + e);
-//                }
-//            } else {
-//                try {
-//                    mLc.enablePayloadType(payloadType, false);
-//                } catch (LinphoneCoreException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        for (PayloadType payloadType : mLc.getVideoCodecs()) {
-//            try {
-//                android.util.Log.e(TAG, "setCodecMime: mime: " + payloadType.getMime() + " rate: " + payloadType.getRate());
-//                mLc.enablePayloadType(payloadType, true);
-//            } catch (LinphoneCoreException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     private void copyAssetsFromPackage() throws IOException {
-        LinphoneUtils.copyIfNotExist(mServiceContext, R.raw.oldphone_mono, mRingSoundFile);
-        LinphoneUtils.copyIfNotExist(mServiceContext, R.raw.ringback, mRingBackSoundFile);
-        LinphoneUtils.copyIfNotExist(mServiceContext, R.raw.toy_mono, mPauseSoundFile);
         LinphoneUtils.copyIfNotExist(mServiceContext, R.raw.linphonerc_default, mLinphoneConfigFile);
         LinphoneUtils.copyIfNotExist(mServiceContext, R.raw.linphonerc_factory, new File(mLinphoneFactoryConfigFile).getName());
         LinphoneUtils.copyIfNotExist(mServiceContext, R.raw.lpconfig, mLPConfigXsd);

@@ -141,6 +141,7 @@ public class AisCoreUtils {
     public static final String BROADCAST_SIP_COMMAND = "BROADCAST_SIP_COMMAND";
     public static final String BROADCAST_SIP_STATUS = "BROADCAST_SIP_STATUS";
     public static Call mAisSipActiveCall;
+    public static String mLastCallingSipAddress = "domofon";
 
 
     /*

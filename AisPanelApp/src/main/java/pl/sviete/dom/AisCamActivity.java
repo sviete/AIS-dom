@@ -79,7 +79,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
 
     // SIP
     private static final int SIP_CALL_ADDRESS = 1;
-    public String mCallToSipAddress = "domofon";
 
     private static Config mConfig;
     private static final String TAG = "AIS SIP";
@@ -138,6 +137,19 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         exitCamButton.setOnClickListener(v -> {
             mRingsActive = false;
             finish();
+        });
+
+        // echo on
+        Button echoOnButton = findViewById(R.id.cam_activity_eho_on);
+        echoOnButton.setOnClickListener(v -> {
+            int ec = EasyLinphone.getLC().startEchoCancellerCalibration();
+            Log.i(TAG, "startEchoCancellerCalibration " + ec);
+        });
+
+        // echo off
+        Button echoOffButton = findViewById(R.id.cam_activity_eho_off);
+        echoOffButton.setOnClickListener(v -> {
+            //EasyLinphone.getLC().echo;
         });
 
         // picture
@@ -546,7 +558,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             mCallingUserName = "dzwonek";
             mCallingUserName = AisCoreUtils.mAisSipActiveCall.getRemoteAddress().getUsername();
             // to allow recall
-            mCallToSipAddress = mCallingUserName;
+            AisCoreUtils.mLastCallingSipAddress = mCallingUserName;
             // say the calling name
             AisCoreUtils.AIS_DOM_LAST_TTS = "";
             ttsIntent.putExtra(AisCoreUtils.BROADCAST_SAY_IT_TEXT, mCallingUserName);
@@ -672,7 +684,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                     final View textBoxView = factory.inflate(R.layout.call_address_dialog, null);
                     EditText textField = (EditText) (textBoxView.findViewById(R.id.calladdress_edit));
 
-                    textField.setText(mCallToSipAddress);
+                    textField.setText(AisCoreUtils.mLastCallingSipAddress);
 
 
                     return new AlertDialog.Builder(this)
@@ -683,7 +695,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                                         public void onClick(DialogInterface dialog, int whichButton) {
                                             EditText textField = (EditText)
                                                     (textBoxView.findViewById(R.id.calladdress_edit));
-                                            mCallToSipAddress = textField.getText().toString();
+                                            AisCoreUtils.mLastCallingSipAddress = textField.getText().toString();
                                             initiateCall();
 
                                         }
@@ -710,9 +722,9 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
      * Make an outgoing call.
      */
     public void initiateCall() {
-        updateSipServerStatus(mCallToSipAddress);
+        updateSipServerStatus(AisCoreUtils.mLastCallingSipAddress);
         // Make a call
-        AisCoreUtils.mAisSipActiveCall = EasyLinphone.callTo(mCallToSipAddress, false);
+        AisCoreUtils.mAisSipActiveCall = EasyLinphone.callTo(AisCoreUtils.mLastCallingSipAddress, false);
     }
 
     /**
