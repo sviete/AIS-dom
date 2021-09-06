@@ -64,7 +64,6 @@ import com.xuchongyang.easyphone.callback.RegistrationCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.linphone.core.Call;
-import org.linphone.core.Core;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -199,13 +198,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     @Override
                     public void incomingCall(Call linphoneCall) {
                         super.incomingCall(linphoneCall);
-
-
-                        // core.setPlaybackGainDb(5);
-
-                        // int ret = core.startEchoTester(44100);
-                        // Log.i(TAG, "startEchoTester " + ret);
-                        //
 
                         AisCoreUtils.mAisSipActiveCall = linphoneCall;
                         updateAisSipStatus("incomingCall");

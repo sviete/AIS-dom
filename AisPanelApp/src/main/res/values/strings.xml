@@ -433,6 +433,19 @@
     <string name="setting_local_sip_cam_aspect_ratio_title_text">Set Aspect Ratio</string>
     <string name="default_setting_local_sip_cam_aspect_ratio">2:1</string>
 
+    <string name="key_setting_local_sip_speaker_device">setting_local_sip_speaker_device</string>
+    <string name="setting_local_sip_speaker_device_name_text">Audio output</string>
+    <string name="setting_local_sip_speaker_device_summary_text">Audio output</string>
+    <string name="setting_local_sip_speaker_device_title_text">Set default Audio output</string>
+    <string name="default_setting_local_sip_speaker_device"></string>
+
+    <string name="key_setting_local_sip_mic_gain">setting_local_sip_mic_gain</string>
+    <string name="setting_local_sip_mic_gain_name_text">Microphone gain</string>
+    <string name="setting_local_sip_mic_gain_summary_text">Microphone gain</string>
+    <string name="setting_local_sip_mic_gain_title_text">Set Microphone gain in decibels</string>
+    <string name="default_setting_local_sip_mic_gain">0.0</string>
+
+
     <string name="sip_button_photo">Photo</string>
     <string name="sip_button_end">End</string>
     <string name="sip_button_answer">Answer</string>

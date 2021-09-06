@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +52,9 @@ import com.android.volley.toolbox.Volley;
 import com.xuchongyang.easyphone.EasyLinphone;
 
 import org.json.JSONObject;
+import org.linphone.core.Core;
+import org.linphone.core.CoreListenerStub;
+import org.linphone.core.EcCalibratorStatus;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
@@ -68,11 +72,9 @@ import pl.sviete.dom.sip.SipSettings;
 
 public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     private SurfaceView mSurface = null;
-    private SurfaceHolder holder;
 
     private LibVLC mLibVLC = null;
     private MediaPlayer mMediaPlayer = null;
-    private int mMediaPlayerVloume = 0;
 
     public String mUrl = null;
     public String mHaCamId = null;
@@ -115,8 +117,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         mLibVLC = new LibVLC(this, args);
 
         mMediaPlayer = new MediaPlayer(mLibVLC);
-        mMediaPlayer.setVolume(0);
-        // mMediaPlayerVloume = mMediaPlayer.getVolume();
 
         mConfig = new Config(getApplicationContext());
 
@@ -139,18 +139,27 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             finish();
         });
 
+
         // echo on
         Button echoOnButton = findViewById(R.id.cam_activity_eho_on);
         echoOnButton.setOnClickListener(v -> {
-            int ec = EasyLinphone.getLC().startEchoCancellerCalibration();
-            Log.i(TAG, "startEchoCancellerCalibration " + ec);
+            Core core = EasyLinphone.getLC();
+            if (core != null) {
+                core.addListener(
+                        new CoreListenerStub() {
+                            @Override
+                            public void onEcCalibrationResult(
+                                    Core core, EcCalibratorStatus status, int delayMs) {
+                                Log.d(TAG, "startEchoCancellerCalibration status " + status + ", delay " + delayMs);
+                                if (status == EcCalibratorStatus.InProgress) return;
+                                core.removeListener(this);
+                            }
+                        });
+                int ec = core.startEchoCancellerCalibration();
+                Log.i(TAG, "startEchoCancellerCalibration " + ec);
+            }
         });
 
-        // echo off
-        Button echoOffButton = findViewById(R.id.cam_activity_eho_off);
-        echoOffButton.setOnClickListener(v -> {
-            //EasyLinphone.getLC().echo;
-        });
 
         // picture
         Button screenshotCamButton = findViewById(R.id.cam_activity_screenshot);
@@ -189,11 +198,11 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             if (AisCoreUtils.mAisSipActiveCall != null){
                 try {
                     // Answer the current call
-                    // mMediaPlayerVloume = mMediaPlayer.getVolume();
-                    mMediaPlayer.setVolume(0);
-
                     EasyLinphone.acceptCall();
                     Toast.makeText(getBaseContext(), R.string.sip_answering_call_text, Toast.LENGTH_SHORT).show();
+
+                    AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+                    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 } catch (Exception e) {
                     Log.e("AIS", e.getMessage());
                 }
@@ -244,7 +253,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
 
                 try {
                     EasyLinphone.hangUp();
-                    //mMediaPlayer.setVolume(mMediaPlayerVloume);
                 } catch (Exception se) {
                     Log.d(TAG, "Error ending call.", se);
                 }
@@ -451,7 +459,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                     // end call
                     AisCoreUtils.mAisSipActiveCall = null;
                     mRingsActive = false;
-                    //mMediaPlayer.setVolume(mMediaPlayerVloume);
                 } else if (mAisSipStatus.equals("incomingCall")) {
                     // start call
                 }
@@ -499,6 +506,21 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             mMediaPlayer.setAspectRatio(mConfig.getSipAspectRatio());
         } else {
             mMediaPlayer.setAspectRatio("2:1");
+        }
+
+        // switch to selected speaker
+        try {
+            EasyLinphone.switchSpeaker(mConfig.getSipAudioDeviceId());
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+
+        // set mic gain
+        try {
+            float micGain = Float.parseFloat(mConfig.getSipMicGain());
+            EasyLinphone.getLC().setMicGainDb(micGain);
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
         }
 
 
@@ -565,21 +587,11 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getApplicationContext());
             bm.sendBroadcast(ttsIntent);
 
+
             // ring
             try {
                 // ring start time
                 mRingStartTime.setToNow();
-
-                // switch to sip ring
-//                android.media.MediaPlayer mediaPlayer = new android.media.MediaPlayer();
-//                AssetFileDescriptor descriptor = getApplicationContext().getAssets().openFd("find_my_phone.mp3");
-//                mediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
-//                descriptor.close();
-//                mediaPlayer.prepare();
-//                mediaPlayer.setVolume(1f, 1f);
-//                mediaPlayer.setLooping(false);
-
-
                 mRingsActive = true;
 
                 Runnable myRunnable = new Runnable() {
@@ -597,7 +609,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                                     Log.i(TAG, "ringingTime hangUp after " + ringingTime);
                                     try {
                                         EasyLinphone.hangUp();
-                                        //mMediaPlayer.setVolume(mMediaPlayerVloume);
                                     } catch (Exception se) {
                                         Log.e(TAG, "Error ending call.", se);
                                     }
@@ -607,8 +618,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                                 e.printStackTrace();
                             }
                         }
-                        // mediaPlayer.stop();
-
                     };
                 };
                 Thread myThread = new Thread(myRunnable);
@@ -743,6 +752,13 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
 
                     if (mAisSipStatus.equals("incomingCall")) {
                         statusDisp = "-> " + AisCoreUtils.mAisSipActiveCall.getRemoteAddress().getUsername();
+                    }
+
+                    if (mAisSipStatus.equals("Ready")){
+                        statusDisp = "AIS " + mAisSipStatus;
+
+
+                        EasyLinphone.switchSpeaker("");
                     }
 
                     TextView labelView = findViewById(R.id.sipServerStatusLabel);

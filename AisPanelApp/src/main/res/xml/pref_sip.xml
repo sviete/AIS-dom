@@ -1,54 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <EditTextPreference
         android:name="@string/setting_local_sip_client_name_text"
         android:summary="@string/setting_local_sip_client_summary_text"
         android:defaultValue="@string/default_setting_local_sip_client_name"
         android:title="@string/setting_local_sip_client_title_text"
-        android:key="setting_local_sip_client_name" />
+        android:key="setting_local_sip_client_name"
+        android:icon="@drawable/ais_sip_username"/>
     <EditTextPreference
         android:name="@string/setting_local_sip_pass_name_text"
         android:summary="@string/setting_local_sip_pass_summary_text"
         android:defaultValue="@string/default_setting_local_sip_client_password"
         android:title="@string/setting_local_sip_pass_title_text"
-        android:key="setting_local_sip_client_password"/>
+        android:key="setting_local_sip_client_password"
+        android:icon="@drawable/ais_sip_password"/>
     <EditTextPreference
         android:name="@string/setting_local_sip_domain_name_text"
         android:summary="@string/setting_local_sip_domain_summary_text"
         android:defaultValue="@string/default_setting_local_gate_ip"
         android:title="@string/setting_local_sip_domain_title_text"
-        android:key="@string/key_setting_local_gate_ip" />
+        android:key="@string/key_setting_local_gate_ip"
+        android:icon="@drawable/ais_sip_domain"/>
     <EditTextPreference
         android:name="@string/setting_local_sip_cam_url_summary_text"
         android:summary="@string/setting_local_sip_cam_url_summary_text"
         android:defaultValue="@string/default_setting_local_sip_cam_url"
         android:title="@string/setting_local_sip_cam_url_title_text"
-        android:key="@string/key_setting_local_sip_cam_url" />
+        android:key="@string/key_setting_local_sip_cam_url"
+        android:icon="@drawable/ais_sip_camera"/>
     <EditTextPreference
         android:name="@string/setting_local_sip_gate_1_open_url_name_text"
         android:summary="@string/setting_local_sip_gate_1_open_url_summary_text"
         android:defaultValue=""
         android:title="@string/setting_local_sip_gate_1_open_url_title_text"
-        android:key="@string/key_setting_local_sip_gate_1_open_url" />
+        android:key="@string/key_setting_local_sip_gate_1_open_url"
+        android:icon="@drawable/ais_sip_relay_1"/>
     <EditTextPreference
         android:name="@string/setting_local_sip_gate_2_open_url_name_text"
         android:summary="@string/setting_local_sip_gate_2_open_url_summary_text"
         android:defaultValue=""
         android:title="@string/setting_local_sip_gate_2_open_url_title_text"
-        android:key="@string/key_setting_local_sip_gate_2_open_url" />
+        android:key="@string/key_setting_local_sip_gate_2_open_url"
+        android:icon="@drawable/ais_sip_relay_1"/>
     <EditTextPreference
         android:name="@string/setting_local_sip_pick_up_tim_name_text"
         android:summary="@string/setting_local_sip_pick_up_tim_summary_text"
         android:defaultValue="60"
         android:inputType="number"
         android:title="@string/setting_local_sip_pick_up_tim_title_text"
-        android:key="@string/key_setting_local_sip_pick_up_time" />
+        android:key="@string/key_setting_local_sip_pick_up_time"
+        android:icon="@drawable/ais_sip_time_to_pick_up"
+        />
 
     <EditTextPreference
         android:name="@string/setting_local_sip_cam_aspect_ratio_name_text"
         android:summary="@string/setting_local_sip_cam_aspect_ratio_summary_text"
         android:defaultValue="2:1"
         android:title="@string/setting_local_sip_cam_aspect_ratio_title_text"
-        android:key="@string/key_setting_local_sip_cam_aspect_ratio" />
+        android:key="@string/key_setting_local_sip_cam_aspect_ratio"
+        android:icon="@drawable/ais_sip_video_aspect_ratio"/>
+
+    <ListPreference
+        android:key="@string/key_setting_local_sip_speaker_device"
+        android:title="@string/setting_local_sip_speaker_device_title_text"
+        android:summary="@string/setting_local_sip_speaker_device_summary_text"
+        android:icon="@drawable/ais_sip_speaker_devices"
+        />
+
+    <EditTextPreference
+        android:name="@string/setting_local_sip_mic_gain_name_text"
+        android:summary="@string/setting_local_sip_mic_gain_summary_text"
+        android:defaultValue="0.0"
+        android:inputType="numberDecimal|numberSigned"
+        android:title="@string/setting_local_sip_mic_gain_title_text"
+        android:key="@string/key_setting_local_sip_mic_gain"
+        android:icon="@drawable/ais_sip_mic_gain"
+        />
 </PreferenceScreen>

@@ -3,9 +3,6 @@ package com.xuchongyang.easyphone.linphone;
 import android.content.Context;
 import android.util.Log;
 
-import com.xuchongyang.easyphone.EasyLinphone;
-
-import org.linphone.core.AVPFMode;
 import org.linphone.core.Account;
 import org.linphone.core.AccountParams;
 import org.linphone.core.Address;
@@ -13,12 +10,11 @@ import org.linphone.core.AudioDevice;
 import org.linphone.core.AuthInfo;
 import org.linphone.core.Call;
 import org.linphone.core.CallParams;
+import org.linphone.core.Config;
 import org.linphone.core.Core;
 import org.linphone.core.CoreException;
 import org.linphone.core.Factory;
 import org.linphone.core.MediaEncryption;
-import org.linphone.core.ProxyConfig;
-import org.linphone.core.Config;
 import org.linphone.core.TransportType;
 
 import java.io.File;
@@ -26,10 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by Mark Xu on 17/3/13.
- * 语音通话工具类
- */
 
 public class LinphoneUtils {
     private static final String TAG = "LinphoneUtils";
@@ -57,16 +49,8 @@ public class LinphoneUtils {
 
         mLinphoneCore.enableEchoCancellation(true);
         mLinphoneCore.enableEchoLimiter(true);
-        enableSpeaker();
     }
 
-    /**
-     * 注册到服务器
-     * @param name
-     * @param password
-     * @param host
-     * @throws CoreException
-     */
     public void registerUserAuth(String name, String password, String host) throws CoreException {
         Log.e(TAG, "registerUserAuth name = " + name);
         Log.e(TAG, "registerUserAuth pw = " + password);
@@ -137,9 +121,7 @@ public class LinphoneUtils {
         return call;
     }
 
-    /**
-     * 挂断电话
-     */
+
     public void hangUp() {
         if (mLinphoneCore.getCallsNb() == 0) {
             return;
@@ -152,30 +134,27 @@ public class LinphoneUtils {
         }
     }
 
-    /**
-     * 是否静音
-     * @param isMicMuted
-     */
+
     public void toggleMicro(boolean isMicMuted) {
         mLinphoneCore.enableMic(isMicMuted);
     }
 
-     public void enableSpeaker() {
-         // TODO
+     public void switchSpeaker(String speakerId) {
          AudioDevice defaultOutputAudioDevice = mLinphoneCore.getDefaultOutputAudioDevice();
-         Log.i(TAG, "defaultOutputAudioDevice " + defaultOutputAudioDevice.getDeviceName() + " type: " + defaultOutputAudioDevice.getType() );
+         Log.i(TAG, "defaultOutputAudioDevice on start " + defaultOutputAudioDevice.getId() );
+
          // We can get a list of all available audio devices using
          // Note that on tablets for example, there may be no Earpiece device
-         for (AudioDevice audioDevice : mLinphoneCore.getAudioDevices()) {
-             Log.i(TAG, "defaultOutputAudioDevice audioDevice " + audioDevice.getDeviceName() + " type: " + defaultOutputAudioDevice.getType());
-              if (audioDevice.getType() == AudioDevice.Type.Speaker) {
+         for (AudioDevice audioDevice : mLinphoneCore.getExtendedAudioDevices()) {
+             Log.i(TAG, "defaultOutputAudioDevice audioDevice " + audioDevice.getId());
+              if (audioDevice.getId().equals(speakerId) ) {
                  mLinphoneCore.setDefaultOutputAudioDevice(audioDevice);
              }
          }
 
          //
          defaultOutputAudioDevice = mLinphoneCore.getDefaultOutputAudioDevice();
-         Log.i(TAG, "defaultOutputAudioDevice " + defaultOutputAudioDevice.getDeviceName() + " type: " + defaultOutputAudioDevice.getType());
+         Log.i(TAG, "defaultOutputAudioDevice on end " + defaultOutputAudioDevice.getId());
 
      }
 

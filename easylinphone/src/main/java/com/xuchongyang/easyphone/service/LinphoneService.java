@@ -15,7 +15,6 @@ import com.xuchongyang.easyphone.linphone.KeepAliveHandler;
 import com.xuchongyang.easyphone.linphone.LinphoneManager;
 
 import org.linphone.core.Account;
-import org.linphone.core.Address;
 import org.linphone.core.AudioDevice;
 import org.linphone.core.AuthInfo;
 import org.linphone.core.AuthMethod;
@@ -28,10 +27,10 @@ import org.linphone.core.Conference;
 import org.linphone.core.ConfiguringState;
 import org.linphone.core.Content;
 import org.linphone.core.Core;
-import org.linphone.core.EcCalibratorStatus;
-import org.linphone.core.Factory;
 import org.linphone.core.CoreListener;
+import org.linphone.core.EcCalibratorStatus;
 import org.linphone.core.Event;
+import org.linphone.core.Factory;
 import org.linphone.core.Friend;
 import org.linphone.core.FriendList;
 import org.linphone.core.GlobalState;
@@ -43,13 +42,7 @@ import org.linphone.core.RegistrationState;
 import org.linphone.core.SubscriptionState;
 import org.linphone.core.VersionUpdateCheckResult;
 
-import java.nio.ByteBuffer;
 
-
-/**
- * Created by Mark Xu on 17/3/13.
- * LinphoneService
- */
 
 public class LinphoneService extends Service implements CoreListener {
     private static final String TAG = "LinphoneService";

@@ -498,4 +498,14 @@ public class Config {
         return aspectRatio;
     }
 
+    public String getSipAudioDeviceId() {
+        String audioDeviceId = getStringPref(R.string.key_setting_local_sip_speaker_device, R.string.default_setting_local_sip_speaker_device);
+        return audioDeviceId;
+    }
+
+    public String getSipMicGain() {
+        String micGain = getStringPref(R.string.key_setting_local_sip_mic_gain, R.string.default_setting_local_sip_mic_gain);
+        return micGain;
+    }
+
 }

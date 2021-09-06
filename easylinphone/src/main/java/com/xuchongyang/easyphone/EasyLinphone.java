@@ -1,5 +1,7 @@
 package com.xuchongyang.easyphone;
 
+import static java.lang.Thread.sleep;
+
 import android.content.Context;
 import android.content.Intent;
 
@@ -12,8 +14,6 @@ import com.xuchongyang.easyphone.service.LinphoneService;
 
 import org.linphone.core.Call;
 import org.linphone.core.Core;
-
-import static java.lang.Thread.sleep;
 
 
 public class EasyLinphone {
@@ -107,8 +107,8 @@ public class EasyLinphone {
         LinphoneUtils.getInstance().toggleMicro(isMicMuted);
     }
 
-    public static void enableSpeaker() {
-        LinphoneUtils.getInstance().enableSpeaker();
+    public static void switchSpeaker(String speakerId) {
+        LinphoneUtils.getInstance().switchSpeaker(speakerId);
     }
 
     private static class ServiceWaitThread extends Thread {
