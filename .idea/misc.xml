@@ -8,9 +8,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="AisPanelApp/src/main/res/drawable/ais_echo_on.xml" value="0.16822916666666668" />
+        <entry key="AisPanelApp/src/main/res/drawable/ais_echo_onss.xml" value="0.378125" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_audio_devices.xml" value="0.21822916666666667" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_camera.xml" value="0.21822916666666667" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_domain.xml" value="0.21822916666666667" />
+        <entry key="AisPanelApp/src/main/res/drawable/ais_sip_mic_device.xml" value="0.2640625" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_mic_gain.xml" value="0.1609375" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_microphone_devices.xml" value="0.21822916666666667" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_password.xml" value="0.21822916666666667" />

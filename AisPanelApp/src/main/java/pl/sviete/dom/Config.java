@@ -503,9 +503,19 @@ public class Config {
         return audioDeviceId;
     }
 
+    public String getSipMicDeviceId() {
+        String micDeviceId = getStringPref(R.string.key_setting_local_sip_mic_device, R.string.default_setting_local_sip_mic_device);
+        return micDeviceId;
+    }
+
     public String getSipMicGain() {
         String micGain = getStringPref(R.string.key_setting_local_sip_mic_gain, R.string.default_setting_local_sip_mic_gain);
         return micGain;
+    }
+
+    public String getSipSpeakerGain() {
+        String speakerGain = getStringPref(R.string.key_setting_local_sip_speaker_gain, R.string.default_setting_local_sip_speaker_gain);
+        return speakerGain;
     }
 
 }

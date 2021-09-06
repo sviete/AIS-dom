@@ -14,7 +14,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -145,6 +144,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         echoOnButton.setOnClickListener(v -> {
             Core core = EasyLinphone.getLC();
             if (core != null) {
+                core.enableEchoCancellation(false);
                 core.addListener(
                         new CoreListenerStub() {
                             @Override
@@ -153,6 +153,8 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                                 Log.d(TAG, "startEchoCancellerCalibration status " + status + ", delay " + delayMs);
                                 if (status == EcCalibratorStatus.InProgress) return;
                                 core.removeListener(this);
+                                core.enableEchoCancellation(true);
+                                Toast.makeText(getBaseContext(), "Start Echo Canceller, delay " + delayMs, Toast.LENGTH_SHORT).show();
                             }
                         });
                 int ec = core.startEchoCancellerCalibration();
@@ -200,9 +202,6 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                     // Answer the current call
                     EasyLinphone.acceptCall();
                     Toast.makeText(getBaseContext(), R.string.sip_answering_call_text, Toast.LENGTH_SHORT).show();
-
-                    AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-                    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 } catch (Exception e) {
                     Log.e("AIS", e.getMessage());
                 }
@@ -515,6 +514,13 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             Log.e(TAG, e.toString());
         }
 
+        // switch to selected microphone
+        try {
+            EasyLinphone.switchMicrophone(mConfig.getSipMicDeviceId());
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+
         // set mic gain
         try {
             float micGain = Float.parseFloat(mConfig.getSipMicGain());
@@ -523,6 +529,13 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             Log.e(TAG, e.toString());
         }
 
+        // set speaker gain
+        try {
+            float speakerGain = Float.parseFloat(mConfig.getSipSpeakerGain());
+            EasyLinphone.getLC().setPlaybackGainDb(speakerGain);
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
 
         // open 2
         Button openGate2CamButton = findViewById(R.id.cam_activity_open_gate2);

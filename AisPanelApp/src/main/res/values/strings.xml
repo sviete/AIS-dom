@@ -439,11 +439,23 @@
     <string name="setting_local_sip_speaker_device_title_text">Set default Audio output</string>
     <string name="default_setting_local_sip_speaker_device"></string>
 
+    <string name="key_setting_local_sip_mic_device">setting_local_sip_mic_device</string>
+    <string name="setting_local_sip_mic_device_name_text">Audio imput</string>
+    <string name="setting_local_sip_mic_device_summary_text">Audio imput</string>
+    <string name="setting_local_sip_mic_device_title_text">Set default Audio imput</string>
+    <string name="default_setting_local_sip_mic_device"></string>
+
     <string name="key_setting_local_sip_mic_gain">setting_local_sip_mic_gain</string>
     <string name="setting_local_sip_mic_gain_name_text">Microphone gain</string>
     <string name="setting_local_sip_mic_gain_summary_text">Microphone gain</string>
     <string name="setting_local_sip_mic_gain_title_text">Set Microphone gain in decibels</string>
     <string name="default_setting_local_sip_mic_gain">0.0</string>
+
+    <string name="key_setting_local_sip_speaker_gain">setting_local_sip_speaker_gain</string>
+    <string name="setting_local_sip_speaker_gain_name_text">Speaker gain</string>
+    <string name="setting_local_sip_speaker_gain_summary_text">Speaker gain</string>
+    <string name="setting_local_sip_speaker_gain_title_text">Set Speaker gain in decibels</string>
+    <string name="default_setting_local_sip_speaker_gain">0.0</string>
 
 
     <string name="sip_button_photo">Photo</string>

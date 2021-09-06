@@ -31,38 +31,50 @@ public class SipSettings extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_sip);
 
-        // get speaker list
-        for (AudioDevice audioDevice : EasyLinphone.getLC().getExtendedAudioDevices()) {
-            Log.i(TAG, "defaultOutputAudioDevice audioDevice " + audioDevice.getId());
+        //
+        Config config = new Config(getApplicationContext());
 
-        }
         ListPreference audioLp = (ListPreference) findPreference("setting_local_sip_speaker_device");
+        ListPreference micLp = (ListPreference) findPreference("setting_local_sip_mic_device");
 
         List<String> audioDevicesList = new ArrayList<String>();
+        List<String> micDevicesList = new ArrayList<String>();
 
         for (AudioDevice audioDevice : EasyLinphone.getLC().getExtendedAudioDevices()) {
             Log.i(TAG, "defaultOutputAudioDevice audioDevice " + audioDevice.getId());
             if (audioDevice.getType() != Microphone) {
                 audioDevicesList.add(audioDevice.getId());
+            } else {
+                micDevicesList.add(audioDevice.getId());
             }
         }
 
         String[] audioDevices = new String[ audioDevicesList.size() ];
+        String[] micDevices = new String[ micDevicesList.size() ];
         audioDevicesList.toArray( audioDevices );
+        micDevicesList.toArray( micDevices );
 
         AudioDevice defaultOutputAudioDevice = EasyLinphone.getLC().getDefaultOutputAudioDevice();
+        AudioDevice defaultInputAudioDevice = EasyLinphone.getLC().getDefaultInputAudioDevice();
 
         audioLp.setEntries(audioDevices);
-        Config config = new Config(getApplicationContext());
+        micLp.setEntries(micDevices);
 
-
-        audioLp.setDefaultValue(defaultOutputAudioDevice.getId());
+        //
         if (audioDevicesList.contains(config.getSipAudioDeviceId())) {
             audioLp.setValue(config.getSipAudioDeviceId());
         } else {
             audioLp.setValue(defaultOutputAudioDevice.getId());
         }
+
+        if (micDevicesList.contains(config.getSipMicDeviceId())) {
+            micLp.setValue(config.getSipMicDeviceId());
+        } else {
+            micLp.setValue(defaultInputAudioDevice.getId());
+        }
+
         audioLp.setEntryValues(audioDevices);
+        micLp.setEntryValues(micDevices);
 
     }
 }

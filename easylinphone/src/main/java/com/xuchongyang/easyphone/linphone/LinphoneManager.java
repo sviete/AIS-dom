@@ -147,9 +147,6 @@ public class LinphoneManager implements CoreListener {
         mLc.setNetworkReachable(true);
 
         //
-        mLc.enableEchoCancellation(true);
-
-        //
         mLc.enableAdaptiveRateControl(true);
 
         //audio

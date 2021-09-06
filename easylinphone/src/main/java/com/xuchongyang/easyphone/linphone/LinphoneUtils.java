@@ -47,8 +47,8 @@ public class LinphoneUtils {
             Log.i(TAG, "hasBuiltinEchoCanceller TRUE");
         }
 
-        mLinphoneCore.enableEchoCancellation(true);
-        mLinphoneCore.enableEchoLimiter(true);
+        // mLinphoneCore.enableEchoCancellation(true);
+        // mLinphoneCore.enableEchoLimiter(true);
     }
 
     public void registerUserAuth(String name, String password, String host) throws CoreException {
@@ -135,8 +135,22 @@ public class LinphoneUtils {
     }
 
 
-    public void toggleMicro(boolean isMicMuted) {
-        mLinphoneCore.enableMic(isMicMuted);
+    public void switchMicrophone(String microphoneId) {
+        AudioDevice defaultInputAudioDevice = mLinphoneCore.getDefaultInputAudioDevice();
+        Log.i(TAG, "defaultInputAudioDevice on start " + defaultInputAudioDevice.getId() );
+
+        // We can get a list of all available audio devices using
+        // Note that on tablets for example, there may be no Earpiece device
+        for (AudioDevice audioDevice : mLinphoneCore.getExtendedAudioDevices()) {
+            Log.i(TAG, "defaultInputAudioDevice audioDevice " + audioDevice.getId());
+            if (audioDevice.getId().equals(microphoneId) ) {
+                mLinphoneCore.setDefaultInputAudioDevice(audioDevice);
+            }
+        }
+
+        //
+        defaultInputAudioDevice = mLinphoneCore.getDefaultInputAudioDevice();
+        Log.i(TAG, "defaultInputAudioDevice on end " + defaultInputAudioDevice.getId());
     }
 
      public void switchSpeaker(String speakerId) {

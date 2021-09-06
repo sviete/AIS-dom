@@ -70,6 +70,23 @@
         />
 
     <EditTextPreference
+        android:name="@string/setting_local_sip_speaker_gain_name_text"
+        android:summary="@string/setting_local_sip_speaker_gain_summary_text"
+        android:defaultValue="0.0"
+        android:inputType="numberDecimal|numberSigned"
+        android:title="@string/setting_local_sip_speaker_gain_title_text"
+        android:key="@string/key_setting_local_sip_speaker_gain"
+        android:icon="@drawable/ais_sip_speaker_gain"
+        />
+
+    <ListPreference
+        android:key="@string/key_setting_local_sip_mic_device"
+        android:title="@string/setting_local_sip_mic_device_title_text"
+        android:summary="@string/setting_local_sip_mic_device_summary_text"
+        android:icon="@drawable/ais_sip_mic_devices"
+        />
+
+    <EditTextPreference
         android:name="@string/setting_local_sip_mic_gain_name_text"
         android:summary="@string/setting_local_sip_mic_gain_summary_text"
         android:defaultValue="0.0"

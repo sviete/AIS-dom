@@ -438,11 +438,24 @@
     <string name="setting_local_sip_speaker_device_title_text">Ustaw domyślne wyjście audio</string>
     <string name="default_setting_local_sip_speaker_device"></string>
 
+    <string name="key_setting_local_sip_mic_device">setting_local_sip_mic_device</string>
+    <string name="setting_local_sip_mic_device_name_text">Wejście audio</string>
+    <string name="setting_local_sip_mic_device_summary_text">Wejście audio</string>
+    <string name="setting_local_sip_mic_device_title_text">Ustaw domyślne wejście audio</string>
+    <string name="default_setting_local_sip_mic_device"></string>
+
+
     <string name="key_setting_local_sip_mic_gain">setting_local_sip_mic_gain</string>
     <string name="setting_local_sip_mic_gain_name_text">Wzmocnienie mikrofonu</string>
     <string name="setting_local_sip_mic_gain_summary_text">Wzmocnienie mikrofonu</string>
     <string name="setting_local_sip_mic_gain_title_text">Ustaw wzmocnienie mikrofonu w decybelach</string>
     <string name="default_setting_local_sip_mic_gain">0.0</string>
+
+    <string name="key_setting_local_sip_speaker_gain">setting_local_sip_speaker_gain</string>
+    <string name="setting_local_sip_speaker_gain_name_text">Wzmocnienie wyjścia audio</string>
+    <string name="setting_local_sip_speaker_gain_summary_text">Wzmocnienie wyjścia audio</string>
+    <string name="setting_local_sip_speaker_gain_title_text">Ustaw wzmocnienie głośnika w decybelach</string>
+    <string name="default_setting_local_sip_speaker_gain">0.0</string>
 
 
     <string name="sip_button_photo">Zdjęcie</string>

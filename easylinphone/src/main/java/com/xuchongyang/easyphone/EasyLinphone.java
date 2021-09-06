@@ -99,12 +99,9 @@ public class EasyLinphone {
         LinphoneUtils.getInstance().hangUp();
     }
 
-    /**
-     * 切换静音
-     * @param isMicMuted 是否静音
-     */
-    public static void toggleMicro(boolean isMicMuted) {
-        LinphoneUtils.getInstance().toggleMicro(isMicMuted);
+
+    public static void switchMicrophone(String microphoneId) {
+        LinphoneUtils.getInstance().switchMicrophone(microphoneId);
     }
 
     public static void switchSpeaker(String speakerId) {
