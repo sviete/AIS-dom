@@ -381,7 +381,7 @@
     <string name="key_setting_local_sip_client_password">setting_local_sip_client_password</string>
     <string name="default_setting_local_sip_client_password">*****</string>
     <string name="key_setting_local_sip_cam_url">setting_local_sip_cam_url</string>
-    <string name="default_setting_local_sip_cam_url">rtsp://10.10.10.10</string>
+    <string name="default_setting_local_sip_cam_url">rtsp://10.10.10.40</string>
 
     <string name="setting_local_sip_client_name_text">Nazwa użytkownika SIP</string>
     <string name="setting_local_sip_client_summary_text">Nazwa użytkownika dla twojego konta SIP</string>
