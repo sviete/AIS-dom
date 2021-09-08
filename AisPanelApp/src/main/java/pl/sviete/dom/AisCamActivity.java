@@ -142,6 +142,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         // echo on
         Button echoOnButton = findViewById(R.id.cam_activity_eho_on);
         echoOnButton.setOnClickListener(v -> {
+            Toast.makeText(getBaseContext(), "Start Echo Test", Toast.LENGTH_SHORT).show();
             Core core = EasyLinphone.getLC();
             if (core != null) {
                 core.enableEchoCancellation(false);

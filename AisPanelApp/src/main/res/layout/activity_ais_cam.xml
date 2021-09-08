@@ -19,18 +19,18 @@
         />
 
     <TextView
-            android:id="@+id/sipServerStatusLabel"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginLeft="45dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="45dp"
-            android:text="AIS"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/avatar1"
-            tools:ignore="RtlCompat" />
+        android:id="@+id/sipServerStatusLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginLeft="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp"
+        android:text="AIS"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/avatar1"
+        tools:ignore="RtlCompat" />
 
         <Button
             android:id="@+id/cam_activity_exit"
@@ -42,14 +42,13 @@
             android:background="@drawable/round_button"
             android:drawableTop="@drawable/cam_icon_exit_to_app_rotate"
             android:textSize="14sp" />
-
     <Button
         android:id="@+id/cam_activity_eho_on"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_gravity="left|top"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="10dp"
+        android:layout_gravity="right|top"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/round_button"
         android:drawableTop="@drawable/ais_echo_on"
         android:textSize="14sp" />

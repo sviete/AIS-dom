@@ -8,6 +8,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="AisPanelApp/src/main/res/drawable-hdpi/ic_service_notification.xml" value="0.1515625" />
+        <entry key="AisPanelApp/src/main/res/drawable/ais_echo_off.xml" value="0.1515625" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_echo_on.xml" value="0.16822916666666668" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_echo_onss.xml" value="0.378125" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_audio_devices.xml" value="0.21822916666666667" />
@@ -22,6 +24,7 @@
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_time_to_pick_up.xml" value="0.21822916666666667" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_username.xml" value="0.21822916666666667" />
         <entry key="AisPanelApp/src/main/res/drawable/ais_sip_video_aspect_ratio.xml" value="0.21822916666666667" />
+        <entry key="AisPanelApp/src/main/res/drawable/ic_ais_logo.xml" value="0.1515625" />
         <entry key="AisPanelApp/src/main/res/drawable/ic_tts_voice.xml" value="0.21822916666666667" />
         <entry key="AisPanelApp/src/main/res/layout/activity_ais_cam.xml" value="0.23333333333333334" />
         <entry key="AisPanelApp/src/main/res/layout/activity_browser.xml" value="0.209375" />
