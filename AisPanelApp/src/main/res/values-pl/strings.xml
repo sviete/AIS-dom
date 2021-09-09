@@ -265,7 +265,7 @@
     <string name="accessibility_service_description">Jeśli chcesz obsługiwać system AI-Speaker za pomocą pilota zdalnego sterowania to włącz ten dostęp.</string>
 
     <string name="ais_dom_app_name_server">Serwer AIS</string>
-    <string name="ais_dom_app_name_client">Klient AIS</string>
+    <string name="ais_dom_app_name_client">Klient AIS Tablet</string>
     <string name="scan_nfc_gate_id_from_settings_info_text">Dotknij telefonem kartę z identyfikatorem bramki żeby połączyć</string>
     <string name="scan_nfc_connect_with_gate_info_text_prefix">OK, łączę z bramką</string>
 
