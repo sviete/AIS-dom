@@ -691,7 +691,17 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop");
         super.onStop();
+
+        mMediaPlayer.stop();
+        mMediaPlayer.detachViews();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        super.onPause();
 
         mMediaPlayer.stop();
         mMediaPlayer.detachViews();
