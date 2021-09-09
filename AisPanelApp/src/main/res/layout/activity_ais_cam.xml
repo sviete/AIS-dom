@@ -42,16 +42,16 @@
             android:background="@drawable/round_button"
             android:drawableTop="@drawable/cam_icon_exit_to_app_rotate"
             android:textSize="14sp" />
-    <Button
-        android:id="@+id/cam_activity_eho_on"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="right|top"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/round_button"
-        android:drawableTop="@drawable/ais_echo_on"
-        android:textSize="14sp" />
+<!--    <Button-->
+<!--        android:id="@+id/cam_activity_eho_on"-->
+<!--        android:layout_width="30dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:layout_gravity="right|top"-->
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:layout_marginTop="50dp"-->
+<!--        android:background="@drawable/round_button"-->
+<!--        android:drawableTop="@drawable/ais_echo_on"-->
+<!--        android:textSize="14sp" />-->
 
     <Button
             android:id="@+id/cam_activity_settings"

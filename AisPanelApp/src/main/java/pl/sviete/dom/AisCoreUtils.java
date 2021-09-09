@@ -1,5 +1,7 @@
 package pl.sviete.dom;
 
+import static android.content.Context.BATTERY_SERVICE;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -16,14 +18,12 @@ import androidx.work.WorkManager;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import org.linphone.core.Call;
+
 import java.io.File;
 import java.text.DecimalFormat;
 
 import ai.picovoice.porcupine.PorcupineManager;
-
-import static android.content.Context.BATTERY_SERVICE;
-
-import org.linphone.core.Call;
 
 public class AisCoreUtils {
 

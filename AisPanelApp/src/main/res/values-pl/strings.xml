@@ -75,7 +75,8 @@
     <string name="permission_description">AI-Speaker:API potrzebuje następujących uprawnień:\n</string>
 
     <string name="title_activity_settings">USTAWIENIA APLIKACJI</string>
-    <string name="title_activity_settings_smart_panel">FUNKCJE EKSPERYMENTALNE</string>
+    <string name="title_activity_settings_smart_panel">FUNKCJE PANELU STEROWANIA</string>
+    <string name="title_activity_settings_experimental">EXPERIMENTAL FUNCTIONS</string>
     <string name="title_activity_other_apps">INTEGRACJE</string>
     <string name="title_activity_browser">AI-Speaker</string>
 

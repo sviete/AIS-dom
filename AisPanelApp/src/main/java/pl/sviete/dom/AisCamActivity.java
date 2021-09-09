@@ -51,9 +51,6 @@ import com.android.volley.toolbox.Volley;
 import com.xuchongyang.easyphone.EasyLinphone;
 
 import org.json.JSONObject;
-import org.linphone.core.Core;
-import org.linphone.core.CoreListenerStub;
-import org.linphone.core.EcCalibratorStatus;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
@@ -140,6 +137,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
 
 
         // echo on
+        /*
         Button echoOnButton = findViewById(R.id.cam_activity_eho_on);
         echoOnButton.setOnClickListener(v -> {
             Toast.makeText(getBaseContext(), "Start Echo Test", Toast.LENGTH_SHORT).show();
@@ -162,6 +160,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
                 Log.i(TAG, "startEchoCancellerCalibration " + ec);
             }
         });
+        */
 
 
         // picture

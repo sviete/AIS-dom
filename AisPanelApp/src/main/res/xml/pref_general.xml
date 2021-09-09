@@ -15,6 +15,32 @@
         <Preference android:layout="@layout/pref_connection_buttons"/>
     </PreferenceCategory>
     <PreferenceCategory
+        android:title="@string/title_activity_settings_smart_panel"
+        android:key="pref_category_panel_settings"
+        android:layout="@layout/preferences_category_black"
+        app:initialExpandedChildrenCount="3">
+        <SwitchPreference
+            android:defaultValue="@string/default_setting_app_discovery"
+            android:title="@string/title_setting_app_discovery"
+            android:summary="@string/summary_setting_app_discovery"
+            android:key="@string/key_setting_app_discovery"
+            android:icon="@drawable/ic_disco_player_in_network"/>
+        <SwitchPreference
+            android:dependency="setting_app_discovery"
+            android:defaultValue="@string/default_setting_doorbell"
+            android:title="@string/title_setting_doorbell"
+            android:summary="@string/summary_setting_doorbell"
+            android:key="@string/key_pref_ais_dom_doorbell"
+            android:icon="@drawable/ic_doorbell"/>
+        <PreferenceScreen
+            android:dependency="pref_ais_dom_doorbell"
+            android:key="@string/key_pref_ais_dom_sip"
+            android:title="@string/title_pref_ais_dom_sip"
+            android:summary="@string/summary_pref_ais_dom_sip"
+            android:icon="@drawable/doorbell_icon_settings">
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory
             android:title="@string/title_activity_settings"
             android:key="pref_category_app_settings"
             android:layout="@layout/preferences_category_black"
@@ -33,29 +59,9 @@
                 android:summary="@string/summary_list_gesture"
                 android:icon="@drawable/ic_gesture_icon">
             </PreferenceScreen>
-            <SwitchPreference
-                android:defaultValue="@string/default_setting_app_discovery"
-                android:title="@string/title_setting_app_discovery"
-                android:summary="@string/summary_setting_app_discovery"
-                android:key="@string/key_setting_app_discovery"
-                android:icon="@drawable/ic_disco_player_in_network"/>
-            <SwitchPreference
-                android:dependency="setting_app_discovery"
-                android:defaultValue="@string/default_setting_doorbell"
-                android:title="@string/title_setting_doorbell"
-                android:summary="@string/summary_setting_doorbell"
-                android:key="@string/key_pref_ais_dom_doorbell"
-                android:icon="@drawable/ic_doorbell"/>
-            <PreferenceScreen
-                android:dependency="pref_ais_dom_doorbell"
-                android:key="@string/key_pref_ais_dom_sip"
-                android:title="@string/title_pref_ais_dom_sip"
-                android:summary="@string/summary_pref_ais_dom_sip"
-                android:icon="@drawable/doorbell_icon_settings">
-            </PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory
-            android:title="@string/title_activity_settings_smart_panel"
+            android:title="@string/title_activity_settings_experimental"
         android:layout="@layout/preferences_category_black"
             android:key="pref_category_app_experimental"
             app:initialExpandedChildrenCount="0">
