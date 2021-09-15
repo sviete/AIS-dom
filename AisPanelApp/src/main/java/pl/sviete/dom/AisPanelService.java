@@ -180,6 +180,16 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public void startSip() {
         // Start service
         EasyLinphone.startService(getBaseContext());
+
+        //
+        // Configure sip account
+        // At least the 3 below values are required
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String username = prefs.getString("setting_local_sip_client_name", "tablet");
+        String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
+        String password = prefs.getString("setting_local_sip_client_password", "*****");
+        updateAisSipStatus("connecting " + domain);
+
         // Add callback
         EasyLinphone.addCallback(
                 new RegistrationCallback() {
@@ -223,15 +233,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     }
                 });
 
-        // Configure sip account
-        // At least the 3 below values are required
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String username = prefs.getString("setting_local_sip_client_name", "tablet");
-        String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
-        String password = prefs.getString("setting_local_sip_client_password", "*****");
-        if (domain.equals("ais_auto")) {
-            domain = mConfig.getAppLocalGateIp();
-        }
+
+//        if (domain.equals("ais_auto")) {
+//            domain = mConfig.getAppLocalGateIp();
+//        }
+
+        //
         EasyLinphone.setAccount(username, password, domain);
 
         // Register to sip server
@@ -240,6 +247,9 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     public void stopSip(boolean stopService){
         try {
+            //
+            updateAisSipStatus("stopSip");
+
             // To remove all accounts use
             EasyLinphone.getLC().clearAccounts();
 
@@ -267,13 +277,13 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean sipCommand = false;
+        boolean sipCommandExists = false;
         if (intent != null) {
-            sipCommand = intent.hasExtra(BROADCAST_SIP_COMMAND);
+            sipCommandExists = intent.hasExtra(BROADCAST_SIP_COMMAND);
         }
 
         // only sip change return
-        if (!sipCommand) {
+        if (!sipCommandExists) {
             createNotificationChannel();
 
             IntentFilter intentFilter = new IntentFilter();

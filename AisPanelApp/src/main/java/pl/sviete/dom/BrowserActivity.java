@@ -1,5 +1,9 @@
 package pl.sviete.dom;
 
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -14,21 +18,15 @@ import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
-import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -38,7 +36,12 @@ import android.view.animation.ScaleAnimation;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.zagum.switchicon.SwitchIconView;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,12 +63,6 @@ import java.util.Locale;
 
 import ai.picovoice.hotword.PorcupineService;
 import pl.sviete.dom.views.RecognitionProgressView;
-
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ACTIVITY_SAY_IT;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_SIP_CALL;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
 
 
 abstract class BrowserActivity extends AppCompatActivity  implements GestureOverlayView.OnGesturePerformedListener, TextToSpeech.OnInitListener {
@@ -172,11 +169,10 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         if (mConfig.getDoorbellMode()) {
             mButtonGoToCam.setOnClickListener(v -> {
                 // go to cam view
-                Intent camActivity = new Intent(getApplicationContext(), AisCamActivity.class);
-                camActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                Config config = new Config(getApplicationContext());
-                camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, mConfig.getSipLocalCamUrl());
+                Intent camActivity = new Intent(this, AisCamActivity.class);
+                camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 getApplicationContext().startActivity(camActivity);
+                startActivity(camActivity);
             });
         } else {
             mButtonGoToCam.setVisibility(View.GONE);
