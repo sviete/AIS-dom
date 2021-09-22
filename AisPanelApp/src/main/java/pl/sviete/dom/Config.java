@@ -423,17 +423,6 @@ public class Config {
     }
 
 
-    public String getAppTtsVoice() {
-        return getStringPref(R.string.key_setting_app_tts_voice,
-                R.string.default_setting_app_tts_voice);
-    }
-
-    public void setAppTtsVoice(String voice) {
-        SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putString(myContext.getString(R.string.key_setting_app_tts_voice), voice);
-        ed.apply();
-    }
-
     // local gate ip
     public String getAppLocalGateIp() {
         return getStringPref(R.string.key_setting_local_gate_ip,

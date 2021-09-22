@@ -27,28 +27,6 @@
         <item>2.0</item>
     </string-array>
 
-    <string-array name="tts_voice_names">
-        <item>"Jola online"</item>
-        <item>"Jola lokalnie"</item>
-        <item>"Celina"</item>
-        <item>"Anżela"</item>
-        <item>"Asia"</item>
-        <item>"Sebastian"</item>
-        <item>"Bartek"</item>
-        <item>"Andrzej"</item>
-    </string-array>
-    <string-array name="tts_voice_values">
-        <item>"pl-pl-x-oda-network"</item>
-        <item>"pl-pl-x-oda-local"</item>
-        <item>"pl-pl-x-oda#female_1-local"</item>
-        <item>"pl-pl-x-oda#female_2-local"</item>
-        <item>"pl-pl-x-oda#female_3-local"</item>
-        <item>"pl-pl-x-oda#male_1-local"</item>
-        <item>"pl-pl-x-oda#male_2-local"</item>
-        <item>"pl-pl-x-oda#male_3-local"</item>
-    </string-array>
-
-
     <string-array name="hot_word_names">
         <item>"Alexa"</item>
         <item>"Computer"</item>
@@ -127,11 +105,6 @@
 
     <string name="title_recent_connections">Recent connections list</string>
     <string name="summary_recent_connections">you can pick position from list to reconnect</string>
-
-    <string name="key_setting_app_tts_voice">setting_app_tts_voice</string>
-    <string name="title_setting_app_tts_voice">TTS Voice</string>
-    <string name="summary_setting_app_tts_voice">choose a voice</string>
-    <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
 
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
     <string name="default_setting_app_hot_word">computer</string>

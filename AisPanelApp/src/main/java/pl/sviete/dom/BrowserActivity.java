@@ -26,7 +26,6 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -406,17 +405,7 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
         //
         if (mBrowserTts != null) {
-            if (mConfig == null){
-                mConfig = new Config(this.getApplicationContext());
-            }
-            String ttsVoice = mConfig.getAppTtsVoice();
-            Voice voiceobj = new Voice(
-                    ttsVoice, new Locale("pl_PL"),
-                    Voice.QUALITY_HIGH,
-                    Voice.LATENCY_NORMAL,
-                    false,
-                    null);
-            mBrowserTts.setVoice(voiceobj);
+            mBrowserTts.setLanguage(new Locale("pl_PL"));
             mBrowserTts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "123");
 
             Intent intent = new Intent(BROADCAST_ON_START_TEXT_TO_SPEECH);

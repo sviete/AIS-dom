@@ -1,5 +1,10 @@
 package ai.picovoice.hotword;
 
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -15,29 +20,23 @@ import android.os.IBinder;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.speech.tts.Voice;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.io.File;
 import java.util.Locale;
 
-import ai.picovoice.porcupine.PorcupineManager;
 import ai.picovoice.porcupine.PorcupineException;
-
+import ai.picovoice.porcupine.PorcupineManager;
 import pl.sviete.dom.AisCoreUtils;
 import pl.sviete.dom.AisPanelService;
 import pl.sviete.dom.AisRecognitionListener;
 import pl.sviete.dom.BrowserActivityNative;
 import pl.sviete.dom.Config;
 import pl.sviete.dom.R;
-
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_END_TEXT_TO_SPEECH;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_ON_START_TEXT_TO_SPEECH;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SAY_IT_TEXT;
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_SERVICE_SAY_IT;
 
 public class PorcupineService extends Service implements TextToSpeech.OnInitListener{
 
@@ -337,16 +336,8 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
             }
         }
 
-        // to get voice from config
-        Config config = new Config(this.getApplicationContext());
-        String ttsVoice = config.getAppTtsVoice();
-        Voice voiceobj = new Voice(
-                    ttsVoice, new Locale("pl_PL"),
-                    Voice.QUALITY_HIGH,
-                    Voice.LATENCY_NORMAL,
-                    false,
-                    null);
-        mTts.setVoice(voiceobj);
+
+        mTts.setLanguage(new Locale("pl_PL"));
 
 
         //textToSpeech can only cope with Strings with < 4000 characters

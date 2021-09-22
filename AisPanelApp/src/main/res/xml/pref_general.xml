@@ -45,14 +45,6 @@
             android:key="pref_category_app_settings"
             android:layout="@layout/preferences_category_black"
             app:initialExpandedChildrenCount="2">
-            <ListPreference
-                android:defaultValue="@string/default_setting_app_tts_voice"
-                android:entries="@array/tts_voice_names"
-                android:entryValues="@array/tts_voice_values"
-                android:title="@string/title_setting_app_tts_voice"
-                android:summary="@string/summary_setting_app_tts_voice"
-                android:key="@string/key_setting_app_tts_voice"
-                android:icon="@drawable/ic_tts_voice"/>
             <PreferenceScreen
                 android:key="pref_ais_dom_list_gesture"
                 android:title="@string/list_gesture"

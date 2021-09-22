@@ -1,5 +1,8 @@
 package pl.sviete.dom;
 
+import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
+import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,13 +13,12 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.Voice;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -30,9 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import ai.picovoice.hotword.PorcupineService;
-
-import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
-import static pl.sviete.dom.AisCoreUtils.isServiceRunning;
 
 /**
  * NOTE: There can only be one service in each app that receives FCM messages. If multiple
@@ -361,15 +360,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         try {
             if (initStatus == TextToSpeech.SUCCESS) {
                 mTts.setSpeechRate(1.0f);
-                Config mConfig = new Config(getApplicationContext());
-                String ttsVoice = mConfig.getAppTtsVoice();
-                Voice voiceobj = new Voice(
-                        ttsVoice, new Locale("pl_PL"),
-                        Voice.QUALITY_HIGH,
-                        Voice.LATENCY_NORMAL,
-                        false,
-                        null);
-                mTts.setVoice(voiceobj);
+                mTts.setLanguage(new Locale("pl_PL"));
                 if(this.textToSpeak.length() >= 4000) {
                     this.textToSpeak = this.textToSpeak.substring(0, 3999);
                 }
