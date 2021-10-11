@@ -27,28 +27,6 @@
         <item>2.0</item>
     </string-array>
 
-    <string-array name="tts_voice_names">
-        <item>"Jola online"</item>
-        <item>"Jola lokalnie"</item>
-        <item>"Celina"</item>
-        <item>"Anżela"</item>
-        <item>"Asia"</item>
-        <item>"Sebastian"</item>
-        <item>"Bartek"</item>
-        <item>"Andrzej"</item>
-    </string-array>
-    <string-array name="tts_voice_values">
-        <item>"pl-pl-x-oda-network"</item>
-        <item>"pl-pl-x-oda-local"</item>
-        <item>"pl-pl-x-oda#female_1-local"</item>
-        <item>"pl-pl-x-oda#female_2-local"</item>
-        <item>"pl-pl-x-oda#female_3-local"</item>
-        <item>"pl-pl-x-oda#male_1-local"</item>
-        <item>"pl-pl-x-oda#male_2-local"</item>
-        <item>"pl-pl-x-oda#male_3-local"</item>
-    </string-array>
-
-
     <string-array name="hot_word_names">
         <item>"Alexa"</item>
         <item>"Computer"</item>
@@ -74,7 +52,8 @@
     <string name="permission_description">AI-Speaker:API needs the following permission(s):\n</string>
 
     <string name="title_activity_settings">APPLICATION SETTINGS</string>
-    <string name="title_activity_settings_smart_panel">EXPERIMENTAL FUNCTIONS</string>
+    <string name="title_activity_settings_smart_panel">SMART PANEL FUNCTIONS</string>
+    <string name="title_activity_settings_experimental">EXPERIMENTAL FUNCTIONS</string>
     <string name="title_activity_other_apps">INTEGRATIONS</string>
     <string name="title_activity_browser">AI-Speaker</string>
 
@@ -126,11 +105,6 @@
 
     <string name="title_recent_connections">Recent connections list</string>
     <string name="summary_recent_connections">you can pick position from list to reconnect</string>
-
-    <string name="key_setting_app_tts_voice">setting_app_tts_voice</string>
-    <string name="title_setting_app_tts_voice">TTS Voice</string>
-    <string name="summary_setting_app_tts_voice">choose a voice</string>
-    <string name="default_setting_app_tts_voice">pl-pl-x-oda-local</string>
 
     <string name="key_setting_app_hot_word">setting_app_hot_word</string>
     <string name="default_setting_app_hot_word">computer</string>
@@ -382,7 +356,7 @@
     <string name="key_setting_local_sip_client_password">setting_local_sip_client_password</string>
     <string name="default_setting_local_sip_client_password">*****</string>
     <string name="key_setting_local_sip_cam_url">setting_local_sip_cam_url</string>
-    <string name="default_setting_local_sip_cam_url">rtsp://10.10.10.10</string>
+    <string name="default_setting_local_sip_cam_url">rtsp://10.10.10.40</string>
 
     <string name="setting_local_sip_client_name_text">SIP Username</string>
     <string name="setting_local_sip_client_summary_text">Username for your SIP Account</string>
@@ -432,6 +406,31 @@
     <string name="setting_local_sip_cam_aspect_ratio_summary_text">Aspect Ratio</string>
     <string name="setting_local_sip_cam_aspect_ratio_title_text">Set Aspect Ratio</string>
     <string name="default_setting_local_sip_cam_aspect_ratio">2:1</string>
+
+    <string name="key_setting_local_sip_speaker_device">setting_local_sip_speaker_device</string>
+    <string name="setting_local_sip_speaker_device_name_text">Audio output</string>
+    <string name="setting_local_sip_speaker_device_summary_text">Audio output</string>
+    <string name="setting_local_sip_speaker_device_title_text">Set default Audio output</string>
+    <string name="default_setting_local_sip_speaker_device"></string>
+
+    <string name="key_setting_local_sip_mic_device">setting_local_sip_mic_device</string>
+    <string name="setting_local_sip_mic_device_name_text">Audio imput</string>
+    <string name="setting_local_sip_mic_device_summary_text">Audio imput</string>
+    <string name="setting_local_sip_mic_device_title_text">Set default Audio imput</string>
+    <string name="default_setting_local_sip_mic_device"></string>
+
+    <string name="key_setting_local_sip_mic_gain">setting_local_sip_mic_gain</string>
+    <string name="setting_local_sip_mic_gain_name_text">Microphone gain</string>
+    <string name="setting_local_sip_mic_gain_summary_text">Microphone gain</string>
+    <string name="setting_local_sip_mic_gain_title_text">Set Microphone gain in decibels</string>
+    <string name="default_setting_local_sip_mic_gain">0.0</string>
+
+    <string name="key_setting_local_sip_speaker_gain">setting_local_sip_speaker_gain</string>
+    <string name="setting_local_sip_speaker_gain_name_text">Speaker gain</string>
+    <string name="setting_local_sip_speaker_gain_summary_text">Speaker gain</string>
+    <string name="setting_local_sip_speaker_gain_title_text">Set Speaker gain in decibels</string>
+    <string name="default_setting_local_sip_speaker_gain">0.0</string>
+
 
     <string name="sip_button_photo">Photo</string>
     <string name="sip_button_end">End</string>

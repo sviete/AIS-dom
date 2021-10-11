@@ -1,9 +1,9 @@
 package com.xuchongyang.easyphone;
 
+import static java.lang.Thread.sleep;
+
 import android.content.Context;
 import android.content.Intent;
-import android.opengl.GLSurfaceView;
-import android.view.SurfaceView;
 
 import com.xuchongyang.easyphone.callback.PhoneCallback;
 import com.xuchongyang.easyphone.callback.RegistrationCallback;
@@ -12,28 +12,15 @@ import com.xuchongyang.easyphone.linphone.LinphoneUtils;
 import com.xuchongyang.easyphone.linphone.PhoneBean;
 import com.xuchongyang.easyphone.service.LinphoneService;
 
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.mediastream.video.AndroidVideoWindowImpl;
+import org.linphone.core.Call;
+import org.linphone.core.Core;
 
-import static java.lang.Thread.sleep;
-
-/**
- * Created by Mark Xu on 2017/9/20.
- * Site: http://xuchongyang.com
- */
 
 public class EasyLinphone {
     private static ServiceWaitThread mServiceWaitThread;
     private static String mUsername, mPassword, mServerIP;
-    private static AndroidVideoWindowImpl mAndroidVideoWindow;
-    private static SurfaceView mRenderingView, mPreviewView;
 
-    /**
-     * 开启服务
-     * @param context 上下文
-     */
+
     public static void startService(Context context) {
         if (!LinphoneService.isReady()) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -42,23 +29,13 @@ public class EasyLinphone {
         }
     }
 
-    /**
-     * 设置 sip 账户信息
-     * @param username sip 账户
-     * @param password 密码
-     * @param serverIP sip 服务器
-     */
     public static void setAccount(String username, String password, String serverIP) {
         mUsername = username;
         mPassword = password;
         mServerIP = serverIP;
     }
 
-    /**
-     * 添加注册状态、通话状态回调
-     * @param phoneCallback 通话回调
-     * @param registrationCallback 注册状态回调
-     */
+
     public static void addCallback(RegistrationCallback registrationCallback,
                                    PhoneCallback phoneCallback) {
         if (LinphoneService.isReady()) {
@@ -89,20 +66,19 @@ public class EasyLinphone {
         }).start();
     }
 
-    /**
-     * 呼叫指定号码
-     * @param num 呼叫号码
-     */
-    public static void callTo(String num, boolean isVideoCall) {
+
+    public static Call callTo(String num, boolean isVideoCall) {
+        Call call = null;
         if (!LinphoneService.isReady() || !LinphoneManager.isInstanceiated()) {
-            return;
+            return call;
         }
         if (!num.equals("")) {
             PhoneBean phone = new PhoneBean();
             phone.setUserName(num);
             phone.setHost(mServerIP);
-            LinphoneUtils.getInstance().startSingleCallingTo(phone, isVideoCall);
+             call = LinphoneUtils.getInstance().startSingleCallingTo(phone, isVideoCall);
         }
+        return call;
     }
 
     /**
@@ -110,8 +86,8 @@ public class EasyLinphone {
      */
     public static void acceptCall() {
         try {
-            LinphoneManager.getLc().acceptCall(LinphoneManager.getLc().getCurrentCall());
-        } catch (LinphoneCoreException e) {
+            LinphoneManager.getLc().getCurrentCall().accept();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -123,20 +99,13 @@ public class EasyLinphone {
         LinphoneUtils.getInstance().hangUp();
     }
 
-    /**
-     * 切换静音
-     * @param isMicMuted 是否静音
-     */
-    public static void toggleMicro(boolean isMicMuted) {
-        LinphoneUtils.getInstance().toggleMicro(isMicMuted);
+
+    public static void switchMicrophone(String microphoneId) {
+        LinphoneUtils.getInstance().switchMicrophone(microphoneId);
     }
 
-    /**
-     * 切换免提
-     * @param isSpeakerEnabled 是否免提
-     */
-    public static void toggleSpeaker(boolean isSpeakerEnabled) {
-        LinphoneUtils.getInstance().toggleSpeaker(isSpeakerEnabled);
+    public static void switchSpeaker(String speakerId) {
+        LinphoneUtils.getInstance().switchSpeaker(speakerId);
     }
 
     private static class ServiceWaitThread extends Thread {
@@ -173,123 +142,32 @@ public class EasyLinphone {
                 throw new RuntimeException("The sip account is not configured.");
             }
             LinphoneUtils.getInstance().registerUserAuth(mUsername, mPassword, mServerIP);
-        } catch (LinphoneCoreException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static boolean getVideoEnabled() {
-        LinphoneCallParams remoteParams = LinphoneManager.getLc().getCurrentCall().getRemoteParams();
-        return remoteParams != null && remoteParams.getVideoEnabled();
-    }
-
-    /**
-     * 设置 SurfaceView
-     * @param renderingView 远程 SurfaceView
-     * @param previewView 本地 SurfaceView
-     */
-    public static void setAndroidVideoWindow(final SurfaceView[] renderingView, final SurfaceView[] previewView) {
-        mRenderingView = renderingView[0];
-        mPreviewView = previewView[0];
-        fixZOrder(mRenderingView, mPreviewView);
-        mAndroidVideoWindow = new AndroidVideoWindowImpl(renderingView[0], previewView[0], new AndroidVideoWindowImpl.VideoWindowListener() {
-            @Override
-            public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl androidVideoWindow, SurfaceView surfaceView) {
-                setVideoWindow(androidVideoWindow);
-                renderingView[0] = surfaceView;
-            }
-
-            @Override
-            public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl androidVideoWindow) {
-                removeVideoWindow();
-            }
-
-            @Override
-            public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl androidVideoWindow, SurfaceView surfaceView) {
-                mPreviewView = surfaceView;
-                setPreviewWindow(mPreviewView);
-            }
-
-            @Override
-            public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl androidVideoWindow) {
-                removePreviewWindow();
-            }
-        });
-    }
 
     /**
      * onResume
      */
-    public static void onResume() {
-        if (mRenderingView != null) {
-            ((GLSurfaceView) mRenderingView).onResume();
-        }
-
-        if (mAndroidVideoWindow != null) {
-            synchronized (mAndroidVideoWindow) {
-                LinphoneManager.getLc().setVideoWindow(mAndroidVideoWindow);
-            }
-        }
-    }
+    public static void onResume() { }
 
     /**
      * onPause
      */
-    public static void onPause() {
-        if (mAndroidVideoWindow != null) {
-            synchronized (mAndroidVideoWindow) {
-                LinphoneManager.getLc().setVideoWindow(null);
-            }
-        }
-
-        if (mRenderingView != null) {
-            ((GLSurfaceView) mRenderingView).onPause();
-        }
-    }
+    public static void onPause() { }
 
     /**
      * onDestroy
      */
-    public static void onDestroy() {
-        mPreviewView = null;
-        mRenderingView = null;
-
-        if (mAndroidVideoWindow != null) {
-            mAndroidVideoWindow.release();
-            mAndroidVideoWindow = null;
-        }
-    }
-
-    private static void fixZOrder(SurfaceView rendering, SurfaceView preview) {
-        rendering.setZOrderOnTop(false);
-        preview.setZOrderOnTop(true);
-        preview.setZOrderMediaOverlay(true); // Needed to be able to display control layout over
-    }
-
-    private static void setVideoWindow(Object o) {
-        LinphoneManager.getLc().setVideoWindow(o);
-    }
-
-    private static void removeVideoWindow() {
-        LinphoneCore linphoneCore = LinphoneManager.getLc();
-        if (linphoneCore != null) {
-            linphoneCore.setVideoWindow(null);
-        }
-    }
-
-    private static void setPreviewWindow(Object o) {
-        LinphoneManager.getLc().setPreviewWindow(o);
-    }
-
-    private static void removePreviewWindow() {
-        LinphoneManager.getLc().setPreviewWindow(null);
-    }
+    public static void onDestroy() { }
 
     /**
      * 获取 LinphoneCore
      * @return LinphoneCore
      */
-    public static LinphoneCore getLC() {
+    public static Core getLC() {
         return LinphoneManager.getLc();
     }
 }

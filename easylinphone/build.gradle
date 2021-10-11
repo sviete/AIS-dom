@@ -21,18 +21,26 @@ android {
         flatDir {
             dirs 'libs' //this way we can find the .aar file in libs folder
         }
+        maven {
+            url "https://linphone.org/maven_repository/"
+        }
     }
     android {
         lintOptions {
             abortOnError false
         }
     }
+
+    task wrapper(type: Wrapper){
+        gradleVersion = '2.14.1'
+    }
 }
 
 dependencies {
+    implementation 'org.linphone.no-video:linphone-sdk-android:5.0.17'
     api fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.annotation:annotation:1.2.0'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    api(name:'liblinphone-android-sdk', ext:'aar')
 }

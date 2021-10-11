@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: artifacts:porcupine:unspecified">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../porcupine/build/.transforms/dad56d3af09ce06a94f5f198539601c7/transformed/jetified-porcupine-release/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../porcupine/build/.transforms/dad56d3af09ce06a94f5f198539601c7/transformed/jetified-porcupine-release/res" />
+      <root url="file://$PROJECT_DIR$/../porcupine/build/.transforms/dad56d3af09ce06a94f5f198539601c7/transformed/jetified-porcupine-release/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

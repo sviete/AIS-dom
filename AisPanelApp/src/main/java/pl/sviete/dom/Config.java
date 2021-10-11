@@ -423,17 +423,6 @@ public class Config {
     }
 
 
-    public String getAppTtsVoice() {
-        return getStringPref(R.string.key_setting_app_tts_voice,
-                R.string.default_setting_app_tts_voice);
-    }
-
-    public void setAppTtsVoice(String voice) {
-        SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putString(myContext.getString(R.string.key_setting_app_tts_voice), voice);
-        ed.apply();
-    }
-
     // local gate ip
     public String getAppLocalGateIp() {
         return getStringPref(R.string.key_setting_local_gate_ip,
@@ -496,6 +485,26 @@ public class Config {
     public String getSipAspectRatio() {
         String aspectRatio = getStringPref(R.string.key_setting_local_sip_cam_aspect_ratio, R.string.default_setting_local_sip_cam_aspect_ratio);
         return aspectRatio;
+    }
+
+    public String getSipAudioDeviceId() {
+        String audioDeviceId = getStringPref(R.string.key_setting_local_sip_speaker_device, R.string.default_setting_local_sip_speaker_device);
+        return audioDeviceId;
+    }
+
+    public String getSipMicDeviceId() {
+        String micDeviceId = getStringPref(R.string.key_setting_local_sip_mic_device, R.string.default_setting_local_sip_mic_device);
+        return micDeviceId;
+    }
+
+    public String getSipMicGain() {
+        String micGain = getStringPref(R.string.key_setting_local_sip_mic_gain, R.string.default_setting_local_sip_mic_gain);
+        return micGain;
+    }
+
+    public String getSipSpeakerGain() {
+        String speakerGain = getStringPref(R.string.key_setting_local_sip_speaker_gain, R.string.default_setting_local_sip_speaker_gain);
+        return speakerGain;
     }
 
 }

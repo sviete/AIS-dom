@@ -1,5 +1,7 @@
 package pl.sviete.dom;
 
+import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
+
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -9,18 +11,16 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.SwitchPreference;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceManager;
-import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
 
 import ai.picovoice.hotword.PorcupineService;
-
-import static pl.sviete.dom.AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -124,18 +124,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 PreferenceCategory prefCategoryConnUrl = (PreferenceCategory) findPreference("ais_dom_con_url");
                 preferenceMainScreen.removePreference(prefCategoryConnUrl);
 
-                // pref_ais_dom_list_gesture  abd remove select tts voice
+                // pref_ais_dom_list_gesture  and remove select tts voice
                 preferenceMainScreen.removePreference(prefCategorySettings);
-                //
                 PreferenceCategory prefCategoryExperimental = (PreferenceCategory) findPreference("pref_category_app_experimental");
+
+                /*
                 Preference preferenceAudioDisco = findPreference("setting_app_discovery");
                 prefCategoryExperimental.removePreference(preferenceAudioDisco);
-
-                //
                 Preference preferenceDoorbell = findPreference("pref_ais_dom_doorbell");
                 prefCategoryExperimental.removePreference(preferenceDoorbell);
                 Preference preferenceSip = findPreference("pref_ais_dom_sip");
                 prefCategoryExperimental.removePreference(preferenceSip);
+                */
+
 
                 //
                 Preference preferenceReportLocation = findPreference("setting_report_location");
@@ -313,18 +314,53 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             preferenceHotWordSensitivity.setOnPreferenceChangeListener(preferenceChangeListener);
 
             //
+            //
+            Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
+            preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
+
+            //
+            Preference preferenceDoorBell = findPreference("pref_ais_dom_doorbell");
+            preferenceDoorBell.setOnPreferenceChangeListener(preferenceChangeListener);
+
+            // pref_ais_dom_sip
+            PreferenceScreen preSip = (PreferenceScreen) findPreference("pref_ais_dom_sip");
+            preSip.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    // check the permission
+                    int permissionSip = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.USE_SIP);
+                    if (permissionSip != PackageManager.PERMISSION_GRANTED) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            requestPermissions(
+                                    new String[] { Manifest.permission.USE_SIP },
+                                    AisCoreUtils.REQUEST_SIP_PERMISSION);
+                        }
+                    } else {
+                        //Check if permission has been granted
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(preference.getContext())) {
+//                                //Request permission if not authorized
+//                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+//                                intent.setData(Uri.parse("package:" + preference.getContext().getPackageName()));
+//                                startActivityForResult(intent, 0);
+//                            } else {
+                        Intent camActivity = new Intent(preference.getContext(), AisCamActivity.class);
+                        camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
+                        camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(camActivity);
+                        //}
+                    }
+                    return false;
+                }
+            });
+
+
             if (!AisCoreUtils.onBox()) {
                 //
                 Preference preferenceReportLocationMode = findPreference("setting_report_location");
                 preferenceReportLocationMode.setOnPreferenceChangeListener(preferenceChangeListener);
 
-                //
-                Preference preferenceMediaPlayer = findPreference("setting_app_discovery");
-                preferenceMediaPlayer.setOnPreferenceChangeListener(preferenceChangeListener);
 
-                //
-                Preference preferenceDoorBell = findPreference("pref_ais_dom_doorbell");
-                preferenceDoorBell.setOnPreferenceChangeListener(preferenceChangeListener);
 
 
                 // pref_ais_dom_list_gesture
@@ -336,38 +372,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
                         intent.setClassName(BuildConfig.APPLICATION_ID, "pl.sviete.dom.gesture.GestureListActivity");
                         startActivity(intent);
-                        return false;
-                    }
-                });
-
-                // pref_ais_dom_sip
-                PreferenceScreen preSip = (PreferenceScreen) findPreference("pref_ais_dom_sip");
-                preSip.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        // check the permission
-                        int permissionSip = ActivityCompat.checkSelfPermission(preference.getContext(), Manifest.permission.USE_SIP);
-                        if (permissionSip != PackageManager.PERMISSION_GRANTED) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                requestPermissions(
-                                        new String[] { Manifest.permission.USE_SIP },
-                                        AisCoreUtils.REQUEST_SIP_PERMISSION);
-                            }
-                        } else {
-                            //Check if permission has been granted
-//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(preference.getContext())) {
-//                                //Request permission if not authorized
-//                                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-//                                intent.setData(Uri.parse("package:" + preference.getContext().getPackageName()));
-//                                startActivityForResult(intent, 0);
-//                            } else {
-                         Intent camActivity = new Intent(preference.getContext(), AisCamActivity.class);
-                         camActivity.putExtra(BROADCAST_CAMERA_COMMAND_URL, config.getSipLocalCamUrl());
-                         camActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                         startActivity(camActivity);
-                            //}
-                        }
                         return false;
                     }
                 });

@@ -42,7 +42,6 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.speech.tts.Voice;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -57,15 +56,16 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
+import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
+import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
+import com.koushikdutta.async.http.server.HttpServerRequestCallback;
 import com.xuchongyang.easyphone.EasyLinphone;
 import com.xuchongyang.easyphone.callback.PhoneCallback;
 import com.xuchongyang.easyphone.callback.RegistrationCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.linphone.core.LinphoneAuthInfo;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.Call;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -182,6 +182,16 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
     public void startSip() {
         // Start service
         EasyLinphone.startService(getBaseContext());
+
+        //
+        // Configure sip account
+        // At least the 3 below values are required
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String username = prefs.getString("setting_local_sip_client_name", "tablet");
+        String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
+        String password = prefs.getString("setting_local_sip_client_password", "*****");
+        updateAisSipStatus("connecting " + domain);
+
         // Add callback
         EasyLinphone.addCallback(
                 new RegistrationCallback() {
@@ -194,27 +204,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     @Override
                     public void registrationFailed() {
                         super.registrationFailed();
-                        updateAisSipStatus("...");
+                        updateAisSipStatus("registrationFailed");
                     }
                 }, new PhoneCallback() {
                     @Override
-                    public void incomingCall(LinphoneCall linphoneCall) {
-
-                        //
-                        // EasyLinphone.getLC().stopRinging();
-                        // if (EasyLinphone.getLC().hasBuiltInEchoCanceler()) {
-
-                        EasyLinphone.getLC().enableEchoCancellation(true);
-                        EasyLinphone.getLC().enableEchoLimiter(true);
-
-                        // }
-
-                        EasyLinphone.getLC().muteMic(false);
-                        // EasyLinphone.getLC().enableSpeaker(true);
-
+                    public void incomingCall(Call linphoneCall) {
                         super.incomingCall(linphoneCall);
 
-                        AisCoreUtils.mAisSipIncomingCall = linphoneCall;
+                        AisCoreUtils.mAisSipActiveCall = linphoneCall;
                         updateAisSipStatus("incomingCall");
 
                         Intent camActivity = new Intent(getApplicationContext(), AisCamActivity.class);
@@ -238,15 +235,12 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     }
                 });
 
-        // Configure sip account
-        // At least the 3 below values are required
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        String username = prefs.getString("setting_local_sip_client_name", "tablet");
-        String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
-        String password = prefs.getString("setting_local_sip_client_password", "*****");
-        if (domain.equals("ais_auto")) {
-            domain = mConfig.getAppLocalGateIp();
-        }
+
+//        if (domain.equals("ais_auto")) {
+//            domain = mConfig.getAppLocalGateIp();
+//        }
+
+        //
         EasyLinphone.setAccount(username, password, domain);
 
         // Register to sip server
@@ -255,24 +249,20 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     public void stopSip(boolean stopService){
         try {
-            LinphoneProxyConfig[] proxyConfigs = EasyLinphone.getLC().getProxyConfigList();
-            for (int i = 0; i < proxyConfigs.length; i++) {
-                EasyLinphone.getLC().removeProxyConfig(proxyConfigs[i]);
-            }
-            LinphoneAuthInfo[] authInfos = EasyLinphone.getLC().getAuthInfosList();
-            for (int i = 0; i < authInfos.length; i++) {
-                EasyLinphone.getLC().removeAuthInfo(authInfos[i]);
-            }
+            //
+            updateAisSipStatus("stopSip");
+
+            // To remove all accounts use
+            EasyLinphone.getLC().clearAccounts();
+
+            // Same for auth info
+            EasyLinphone.getLC().clearAllAuthInfo();
+
+            //
             EasyLinphone.onDestroy();
         } catch (Exception e){
             Log.e(TAG, e.toString());
         }
-        // this can crash app...
-        //        if (stopService) {
-        //            Intent sipService = new Intent(getBaseContext(), LinphoneService.class);
-        //            getBaseContext().stopService(sipService);
-        //        }
-
     }
 
     /**
@@ -289,13 +279,13 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean sipCommand = false;
+        boolean sipCommandExists = false;
         if (intent != null) {
-            sipCommand = intent.hasExtra(BROADCAST_SIP_COMMAND);
+            sipCommandExists = intent.hasExtra(BROADCAST_SIP_COMMAND);
         }
 
         // only sip change return
-        if (!sipCommand) {
+        if (!sipCommandExists) {
             createNotificationChannel();
 
             IntentFilter intentFilter = new IntentFilter();
@@ -705,49 +695,47 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             JSONObject body = ((JSONObjectBody)request.getBody()).get();
             processTTS(body);
             response.send("ok");
-            response.end();
+            // response.end();
         });
 
-        mHttpServer.get("/text_to_speech", (request, response) -> {
-            String text;
-            try {
-                Log.d(TAG, "text_to_speech: " + request.getQuery().toString());
-                text = request.getQuery().getString("text");
-                JSONObject json = new JSONObject();
-                if (text == null){
-                    text = "Nie wiem co mam powiedzieć";
+        mHttpServer.get("/text_to_speech", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                String text = "text_to_speech";
+                try {
+                    Log.d(TAG, "text_to_speech: " + request.getQuery().toString());
+                    text = request.getQuery().getString("text");
+                    JSONObject json = new JSONObject();
+                    if (text == null){
+                        text = "Nie wiem co mam powiedzieć";
+                    } else json.put("text", text);
+                    String pitch = request.getQuery().getString("pitch");
+                    if (pitch != null){
+                        json.put("pitch", pitch);
+                    }
+                    String rate = request.getQuery().getString("rate");
+                    if (pitch != null){
+                        json.put("rate", rate);
+                    }
+                    String language = request.getQuery().getString("language");
+                    if (language != null){
+                        json.put("language", language);
+                    }
+                    String path = request.getQuery().getString("path");
+                    if (path != null){
+                        json.put("path", path);
+                    }
+                    String format = request.getQuery().getString("format");
+                    if (format != null){
+                        json.put("format", format);
+                    }
+                    processTTS(json);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                json.put("text", text);
-                String pitch = request.getQuery().getString("pitch");
-                if (pitch != null){
-                    json.put("pitch", pitch);
-                }
-                String rate = request.getQuery().getString("rate");
-                if (pitch != null){
-                    json.put("rate", rate);
-                }
-                String language = request.getQuery().getString("language");
-                if (language != null){
-                    json.put("language", language);
-                }
-                String voice = request.getQuery().getString("voice");
-                if (voice != null){
-                    json.put("voice", voice);
-                }
-                String path = request.getQuery().getString("format");
-                if (path != null){
-                    json.put("path", path);
-                }
-                String format = request.getQuery().getString("format");
-                if (format != null){
-                    json.put("format", format);
-                }
-                processTTS(json);
-            } catch (Exception e) {
-                e.printStackTrace();
+                response.send("ok");
+                // response.end();
             }
-            response.send("ok");
-            response.end();
         });
 
         // show cast media player info
@@ -917,71 +905,14 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         }
     }
 
-    private String getVoiceForName(String voice) {
-        if (voice.toLowerCase().equals("jola")) {
-            return "pl-pl-x-oda-local";
-        }
-        if (voice.toLowerCase().equals("jola online")) {
-            return "pl-pl-x-oda-network";
-        }
-        if (voice.toLowerCase().equals("celina")) {
-            return "pl-pl-x-oda#female_1-local";
-        }
-        if (voice.toLowerCase().equals("anżela")) {
-            return "pl-pl-x-oda#female_2-local";
-        }
-        if (voice.toLowerCase().equals("asia")) {
-            return "pl-pl-x-oda#female_3-local";
-        }
-        if (voice.toLowerCase().equals("sebastian")) {
-            return "pl-pl-x-oda#male_1-local";
-        }
-        if (voice.toLowerCase().equals("bartek")) {
-            return "pl-pl-x-oda#male_2-local";
-        }
-        if (voice.toLowerCase().equals("andrzej")) {
-            return "pl-pl-x-oda#male_3-local";
-        }
-
-        // US
-        if (voice.toLowerCase().equals("sophia")) {
-            return "en-us-x-sfg#female_2-local";
-        }
-        if (voice.toLowerCase().equals("sam")) {
-            return "en-us-x-sfg#male_2-local";
-        }
-
-        // GB
-        if (voice.toLowerCase().equals("allison")) {
-            return "en-GB-language";
-        }
-        if (voice.toLowerCase().equals("jon")) {
-            return "en-gb-x-fis#male_2-local";
-        }
-
-
-        // UK
-        if (voice.toLowerCase().equals("mariya")) {
-            return "uk-UA-language";
-        }
-
-        return voice;
-    }
 
     // New json way
     private boolean processTTS(JSONObject message) {
         String textForReading;
         String lang = "pl_PL";
-        String voice = "pl-pl-x-oda-local";
         float pitch = 1;
         float rate = 1;
 
-
-        // to get voice from config
-        if (mConfig == null){
-            mConfig = new Config(this.getApplicationContext());
-        }
-        //
         try {
             textForReading = message.getString("text");
 
@@ -996,16 +927,10 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             if  (message.has("language")) {
                 lang = message.getString("language");
             }
-            if (message.has("voice")) {
-                voice = getVoiceForName(message.getString("voice"));
+            int result = mTts.setLanguage(new Locale(lang));
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e(TAG, "Language is not available.");
             }
-            Voice voiceobj = new Voice(
-                    voice, new Locale(lang),
-                    Voice.QUALITY_HIGH,
-                    Voice.LATENCY_NORMAL,
-                    false,
-                    null);
-            mTts.setVoice(voiceobj);
         }
         catch (Exception ex) {
             Log.e(TAG, "Exception: " + ex.toString());
@@ -1052,19 +977,7 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
             }
         }
 
-        // to get voice from config
-        if (mConfig == null){
-            mConfig = new Config(this.getApplicationContext());
-        }
-
-        String ttsVoice = mConfig.getAppTtsVoice();
-        Voice voiceObj = new Voice(
-                    ttsVoice, new Locale("pl_PL"),
-                    Voice.QUALITY_HIGH,
-                    Voice.LATENCY_NORMAL,
-                    false,
-                    null);
-        mTts.setVoice(voiceObj);
+        mTts.setLanguage(new Locale("pl_PL"));
 
 
         //textToSpeech can only cope with Strings with < 4000 characters
