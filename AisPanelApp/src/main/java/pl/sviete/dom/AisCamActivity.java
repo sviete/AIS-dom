@@ -135,6 +135,22 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             finish();
         });
 
+        // swipe
+        mSurface.setOnTouchListener(new AisCamSwipeTouchListener(getBaseContext()) {
+            public void onSwipeTop() {
+                Toast.makeText(getBaseContext(), "top", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeRight() {
+                Toast.makeText(getBaseContext(), "right", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeLeft() {
+                Toast.makeText(getBaseContext(), "left", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeBottom() {
+                Toast.makeText(getBaseContext(), "bottom", Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
         // echo on
         /*
