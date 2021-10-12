@@ -309,18 +309,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         mSwitchIconModeGesture.setIconEnabled(false);
 
 
-        //
-        try {
-            copyResourceFile(R.raw.params, "porcupine_params.pv");
-            copyResourceFile(R.raw.alexa, "alexa.ppn");
-            copyResourceFile(R.raw.computer, "computer.ppn");
-            copyResourceFile(R.raw.hey_google, "hey_google.ppn");
-            copyResourceFile(R.raw.hey_siri, "hey_siri.ppn");
-            copyResourceFile(R.raw.ok_google, "ok_google.ppn");
-        } catch (IOException e) {
-            Toast.makeText(this, "Failed to copy resource files.", Toast.LENGTH_SHORT).show();
-        }
-
         // [START retrieve_current_token for cloud messaging]
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override

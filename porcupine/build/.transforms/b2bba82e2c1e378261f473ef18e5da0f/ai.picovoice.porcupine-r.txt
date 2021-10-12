@@ -1,2 +1,0 @@
-ai.picovoice.porcupine
-raw porcupine_params

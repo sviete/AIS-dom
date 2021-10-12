@@ -26,9 +26,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import java.io.File;
 import java.util.Locale;
 
+import ai.picovoice.porcupine.Porcupine;
 import ai.picovoice.porcupine.PorcupineException;
 import ai.picovoice.porcupine.PorcupineManager;
 import pl.sviete.dom.AisCoreUtils;
@@ -133,24 +133,31 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
     }
 
     private void startHotWordListening() {
-        String modelFilePath = new File(this.getFilesDir(), "porcupine_params.pv").getAbsolutePath();
-
         Config config = new Config(this.getApplicationContext());
         String hotword = config.getSelectedHotWord();
         int hotWordSensitivity = config.getSelectedHotWordSensitivity();
-        String keywordFileName = hotword + ".ppn";
-        String keywordFilePath = new File(this.getFilesDir(), keywordFileName).getAbsolutePath();
-
+        Porcupine.BuiltInKeyword selectedKeyword = Porcupine.BuiltInKeyword.ALEXA;
+        if (hotword.equals("computer")) {
+            selectedKeyword = Porcupine.BuiltInKeyword.COMPUTER;
+        } else if (hotword.equals("hey_google")) {
+            selectedKeyword = Porcupine.BuiltInKeyword.HEY_GOOGLE;
+        } else if (hotword.equals("hey_siri")) {
+            selectedKeyword = Porcupine.BuiltInKeyword.HEY_SIRI;
+        } else if (hotword.equals("ok_google")) {
+            selectedKeyword = Porcupine.BuiltInKeyword.OK_GOOGLE;
+        }
+        //
         if (AisCoreUtils.mPorcupineManager == null) {
             try {
-                AisCoreUtils.mPorcupineManager = new PorcupineManager(
-                        modelFilePath,
-                        keywordFilePath,
-                        (float) hotWordSensitivity / 100,
-                        (keywordIndex) -> {
-                            startTheSpeechToText();
-                        });
+                AisCoreUtils.mPorcupineManager = new PorcupineManager.Builder()
+                        .setKeyword(selectedKeyword)
+                        .setSensitivity((float) hotWordSensitivity / 100).build(
+                                getApplicationContext(),
+                                (keywordIndex) -> {
+                                    startTheSpeechToText();
+                                });
                 AisCoreUtils.mPorcupineManager.start();
+                // modelFilePath,
             }
 
             catch(PorcupineException e){
