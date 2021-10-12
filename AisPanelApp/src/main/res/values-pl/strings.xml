@@ -372,7 +372,7 @@
 
     <string name="setting_local_sip_cam_url_name_text">Adres URL kamery SIP</string>
     <string name="setting_local_sip_cam_url_summary_text">Adres URL kamery do dzwonka wideo</string>
-    <string name="setting_local_sip_cam_url_title_text">Wpisz lokalny adres URL kamery</string>
+    <string name="setting_local_sip_cam_url_title_text">Wpisz adresy kamer rozdzielone spacją</string>
 
     <string name="sip_call_someone_text">Zadzwoń do kogoś</string>
     <string name="sip_ending_call_text">Kończę połączenie</string>
@@ -436,6 +436,6 @@
     <string name="sip_button_photo">Zdjęcie</string>
     <string name="sip_button_end">Zakończ</string>
     <string name="sip_button_answer">Odbierz</string>
-    <string name="sip_button_open1">Frurtka</string>
+    <string name="sip_button_open1">Bramka</string>
     <string name="sip_button_open2">Brama</string>
 </resources>
