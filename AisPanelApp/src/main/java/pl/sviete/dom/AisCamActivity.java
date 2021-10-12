@@ -60,6 +60,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -73,6 +74,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
     private MediaPlayer mMediaPlayer = null;
 
     public String mUrl = null;
+    public String[] myCamerasUrls = null;
     public String mHaCamId = null;
 
     // SIP
@@ -138,16 +140,58 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         // swipe
         mSurface.setOnTouchListener(new AisCamSwipeTouchListener(getBaseContext()) {
             public void onSwipeTop() {
-                Toast.makeText(getBaseContext(), "top", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "top-todo", Toast.LENGTH_SHORT).show();
             }
             public void onSwipeRight() {
-                Toast.makeText(getBaseContext(), "right", Toast.LENGTH_SHORT).show();
+                try {
+                    myCamerasUrls = mConfig.getSipLocalCamUrl().split(" ");
+                    int newCamIdx = 0;
+                    if (myCamerasUrls.length > 1) {
+                        // get the prev one
+                        int curCamIdx = Arrays.asList(myCamerasUrls).indexOf(mUrl);
+                        if (curCamIdx == 0) {
+                            newCamIdx = myCamerasUrls.length-1;
+                        } else {
+                            newCamIdx = curCamIdx-1;
+                        }
+                    }
+                    mUrl = myCamerasUrls[newCamIdx];
+                    int camIdxToShow = newCamIdx + 1;
+                    Toast.makeText(getBaseContext(), "cam" + camIdxToShow, Toast.LENGTH_SHORT).show();
+                    final Media media = new Media(mLibVLC, Uri.parse(mUrl));
+                    mMediaPlayer.setMedia(media);
+                    media.release();
+                    mMediaPlayer.play();
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
             public void onSwipeLeft() {
-                Toast.makeText(getBaseContext(), "left", Toast.LENGTH_SHORT).show();
+                try {
+                    myCamerasUrls = mConfig.getSipLocalCamUrl().split(" ");
+                    int newCamIdx = 0;
+                    if (myCamerasUrls.length > 1) {
+                        // get the prev one
+                        int curCamIdx = Arrays.asList(myCamerasUrls).indexOf(mUrl);
+                        if (curCamIdx == myCamerasUrls.length-1) {
+                            newCamIdx = 0;
+                        } else {
+                            newCamIdx = curCamIdx+1;
+                        }
+                    }
+                    mUrl = myCamerasUrls[newCamIdx];
+                    int camIdxToShow = newCamIdx + 1;
+                    Toast.makeText(getBaseContext(), "cam" + camIdxToShow, Toast.LENGTH_SHORT).show();
+                    final Media media = new Media(mLibVLC, Uri.parse(mUrl));
+                    mMediaPlayer.setMedia(media);
+                    media.release();
+                    mMediaPlayer.play();
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
             public void onSwipeBottom() {
-                Toast.makeText(getBaseContext(), "bottom", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "bottom - todo", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -569,8 +613,8 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
         boolean sipCall = false;
         Intent intent = getIntent();
 
-        // get url from settings
-        mUrl = mConfig.getSipLocalCamUrl();
+        // get url from settings - play the first cam stream
+        mUrl = mConfig.getSipLocalCamUrl().split(" ")[0];
         if (mUrl.equals("") && intent.hasExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL)) {
             mUrl = intent.getStringExtra(AisCoreUtils.BROADCAST_CAMERA_COMMAND_URL);
         }
@@ -693,7 +737,7 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
             Button answerSipCamButton = findViewById(R.id.cam_activity_answer_call);
             answerSipCamButton.startAnimation(animShake);
         } else {
-            Toast.makeText(getBaseContext(), "CAM url: " + mUrl, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), "cam1", Toast.LENGTH_SHORT).show();
             // SIP when we get back from the preference setting Activity, assume
             // settings have changed, and re-login with new auth info.
             Intent sipIntent = new Intent(getBaseContext(), AisPanelService.class);
