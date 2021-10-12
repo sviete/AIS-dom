@@ -13,7 +13,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 182
-        versionName '2.4.1.SIP'
+        versionName '2.5.0.SwipeCams'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
