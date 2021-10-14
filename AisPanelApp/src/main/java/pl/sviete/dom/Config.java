@@ -173,6 +173,12 @@ public class Config {
                                                     String localUrlToGo = "http://" + localGateIpFromCloud[0] + goToHaView;
                                                     // SUCCESS
                                                     setAppLocalGateIp(localGateIpFromCloud[0]);
+                                                    // SET SIP DOMAIN ONLY IF NOT SET
+                                                    String sip_domain_form_pref = sharedPreferences.getString(myContext.getString(R.string.key_setting_local_sip_domain_name), "");
+                                                    if (sip_domain_form_pref.length() == 0) {
+                                                        setSipLocalDomain(localGateIpFromCloud[0]);
+                                                    }
+
                                                     redirectToNewGateUrl(localUrlToGo, forceRefreshWeb);
                                                     return;
                                                 }
@@ -437,6 +443,19 @@ public class Config {
 
     //
     // -- SIP --
+
+    // local gate ip
+    public String getSipLocalDomain() {
+        return getStringPref(R.string.key_setting_local_sip_domain_name,
+                R.string.default_setting_local_sip_domain_name);
+    }
+
+    public void setSipLocalDomain(String sipLocalDomain) {
+        SharedPreferences.Editor ed = sharedPreferences.edit();
+        ed.putString(myContext.getString(R.string.key_setting_local_sip_domain_name), sipLocalDomain);
+        ed.apply();
+    }
+
     public void setSipLocalClientName(String sipLocalClientName) {
         SharedPreferences.Editor ed = sharedPreferences.edit();
         ed.putString(myContext.getString(R.string.key_setting_local_sip_client_name), sipLocalClientName);

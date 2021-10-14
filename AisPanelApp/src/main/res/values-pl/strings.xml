@@ -351,6 +351,9 @@
     <string name="default_setting_local_gate_ip">10.10.10.10</string>
 
     <!-- SIP-->
+    <string name="key_setting_local_sip_domain_name">setting_local_sip_domain_name</string>
+    <string name="default_setting_local_sip_domain_name">10.10.10.10</string>
+
     <string name="key_setting_local_sip_client_name">setting_local_sip_client_name</string>
     <string name="default_setting_local_sip_client_name"></string>
     <string name="key_setting_local_sip_client_password">setting_local_sip_client_password</string>

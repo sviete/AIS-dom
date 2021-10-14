@@ -19,9 +19,9 @@
     <EditTextPreference
         android:name="@string/setting_local_sip_domain_name_text"
         android:summary="@string/setting_local_sip_domain_summary_text"
-        android:defaultValue="@string/default_setting_local_gate_ip"
+        android:defaultValue="@string/default_setting_local_sip_domain_name"
         android:title="@string/setting_local_sip_domain_title_text"
-        android:key="@string/key_setting_local_gate_ip"
+        android:key="@string/key_setting_local_sip_domain_name"
         android:icon="@drawable/ais_sip_domain"/>
     <EditTextPreference
         android:name="@string/setting_local_sip_cam_url_summary_text"
@@ -44,6 +44,7 @@
         android:title="@string/setting_local_sip_gate_2_open_url_title_text"
         android:key="@string/key_setting_local_sip_gate_2_open_url"
         android:icon="@drawable/ais_sip_relay_1"/>
+
     <EditTextPreference
         android:name="@string/setting_local_sip_pick_up_tim_name_text"
         android:summary="@string/setting_local_sip_pick_up_tim_summary_text"

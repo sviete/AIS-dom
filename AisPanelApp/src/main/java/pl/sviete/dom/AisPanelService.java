@@ -235,11 +235,6 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
                     }
                 });
 
-
-//        if (domain.equals("ais_auto")) {
-//            domain = mConfig.getAppLocalGateIp();
-//        }
-
         //
         EasyLinphone.setAccount(username, password, domain);
 
