@@ -205,21 +205,26 @@ public class PorcupineService extends Service implements TextToSpeech.OnInitList
                 }, 6000);
             }
             else if (action.equals(AisCoreUtils.BROADCAST_ON_END_HOT_WORD_LISTENING)){
-                Log.d(TAG, "HWL stopHotWordListening");
+                Log.i(TAG, "HWL stopHotWordListening");
                 stopHotWordListening();
                 if (!AisCoreUtils.mSpeechIsRecording) {
-                    //stopHotWordListening();
+                    Log.i(TAG, "HWL mSpeechIsRecording if false");
                     if (AisCoreUtils.mSpeech == null) {
+                        Log.i(TAG, "HWL mSpeech == null");
                         AisCoreUtils.mSpeech = SpeechRecognizer.createSpeechRecognizer(context);
                         AisRecognitionListener listener = new AisRecognitionListener(context, AisCoreUtils.mSpeech);
                         AisCoreUtils.mSpeech.setRecognitionListener(listener);
                     }
+                    Log.i(TAG, "HWL stopTextToSpeech");
                     stopTextToSpeech();
                     try {
+                        Log.i(TAG, "HWL stopTextToSpeech");
                         AisCoreUtils.mSpeech.startListening(AisCoreUtils.mRecognizerIntent);
                     } catch (Exception e){
-                        Log.e(TAG, e.getMessage());
+                        Log.i(TAG, e.getMessage());
                     }
+                } else {
+                    Log.i(TAG, "HWL mSpeechIsRecording if true");
                 }
 
                 // check if started after 20 seconds
