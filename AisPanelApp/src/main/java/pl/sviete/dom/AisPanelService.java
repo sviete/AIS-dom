@@ -188,7 +188,8 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         // At least the 3 below values are required
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         String username = prefs.getString("setting_local_sip_client_name", "tablet");
-        String domain = prefs.getString("setting_local_gate_ip", "10.10.10.10");
+        Config config = new Config(getApplicationContext());
+        String domain = config.getSipLocalDomain();
         String password = prefs.getString("setting_local_sip_client_password", "*****");
         updateAisSipStatus("connecting " + domain);
 
