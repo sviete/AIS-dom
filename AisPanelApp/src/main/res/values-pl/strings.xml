@@ -1,33 +1,6 @@
 <!--suppress CheckTagEmptyBody, CheckTagEmptyBody -->
 <resources>
 
-    <string-array name="zoom_level_names">
-        <item>"50%"</item>
-        <item>"60%"</item>
-        <item>"70%"</item>
-        <item>"80%"</item>
-        <item>"90%"</item>
-        <item>"100%"</item>
-        <item>"110%"</item>
-        <item>"120%"</item>
-        <item>"130%"</item>
-        <item>"150%"</item>
-        <item>"200%"</item>
-    </string-array>
-    <string-array name="zoom_level_values">
-        <item>0.5</item>
-        <item>0.6</item>
-        <item>0.7</item>
-        <item>0.8</item>
-        <item>0.9</item>
-        <item>1.0</item>
-        <item>1.1</item>
-        <item>1.2</item>
-        <item>1.3</item>
-        <item>1.5</item>
-        <item>2.0</item>
-    </string-array>
-
     <string-array name="hot_word_names">
         <item>"Alexa"</item>
         <item>"Computer"</item>
@@ -43,7 +16,6 @@
         <item>"ok_google"</item>
     </string-array>
 
-
     <string name="app_name">AIS</string>
 
     <string name="aispanel_service_notification_title">Powiedz.co</string>
@@ -55,7 +27,7 @@
 
     <string name="title_activity_settings">USTAWIENIA APLIKACJI</string>
     <string name="title_activity_settings_smart_panel">FUNKCJE PANELU STEROWANIA</string>
-    <string name="title_activity_settings_experimental">EXPERIMENTAL FUNCTIONS</string>
+    <string name="title_activity_settings_experimental">FUNKCJE EKSPERYMENTALNE</string>
     <string name="title_activity_other_apps">INTEGRACJE</string>
     <string name="title_activity_browser">AI-Speaker</string>
 
@@ -119,10 +91,8 @@
     <string name="title_setting_android_browsertype">Silnik przeglądarki</string>
     <string name="default_setting_android_browsertype">Native</string>
 
-    <string name="key_setting_test_zoomlevel">setting_test_zoomlevel</string>
-    <string name="title_setting_test_zoomlevel">Powiększenie aplikacji</string>
-    <string name="summary_setting_test_zoomlevel">wybierz skalę powiększenia panelu aplikacji</string>
-    <string name="default_setting_test_zoomlevel">1.0</string>
+    <string name="title_setting_zoom_level">Powiększenie aplikacji</string>
+    <string name="summary_setting_zoom_level">wybierz skalę powiększenia panelu aplikacji, 0 oznacza domyślną wartość - brak skalowania</string>
 
     <string name="key_setting_android_ext_storage_write">setting_android_ext_storage_write</string>
     <string name="title_setting_android_ext_storage_write">Serwer FTP (port 1024)</string>

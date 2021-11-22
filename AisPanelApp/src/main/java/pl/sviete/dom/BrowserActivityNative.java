@@ -16,11 +16,14 @@ import android.net.Uri;
 import android.net.http.SslError;;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -100,6 +103,9 @@ public class BrowserActivityNative extends BrowserActivity {
     private Boolean exoMute = true;
     private Toast volumeToast = null;
 
+    //
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
     /**
      * More info this method can be found at
      * http://developer.android.com/training/camera/photobasics.html
@@ -143,7 +149,9 @@ public class BrowserActivityNative extends BrowserActivity {
         AisCoreUtils.mWebView.setHorizontalScrollBarEnabled(true);
         AisCoreUtils.mWebView.setVerticalScrollBarEnabled(true);
         AisCoreUtils.mWebView.setScrollContainer(true);
-
+        //AisCoreUtils.mWebView.getSettings().setSupportZoom(true);
+        //AisCoreUtils.mWebView.getSettings().setBuiltInZoomControls(true);
+        //AisCoreUtils.mWebView.getSettings().setDisplayZoomControls(true);
 
         // exo view
         exoPlayerView = findViewById(R.id.exoplayerView);
@@ -438,6 +446,14 @@ public class BrowserActivityNative extends BrowserActivity {
         // WebView.setWebContentsDebuggingEnabled(true);
         Log.i(TAG, "xxx" + webSettings.getUserAgentString());
 
+        // swipe down to refresh
+        mSwipeRefreshLayout = this.findViewById(R.id.swipeContainer);
+        mSwipeRefreshLayout.setOnRefreshListener(
+                () -> {
+                    AisCoreUtils.mWebView.reload();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+        );
         super.onCreate(savedInstanceState);
     }
 
@@ -535,7 +551,10 @@ public class BrowserActivityNative extends BrowserActivity {
 
     @Override
     protected void loadUrl(final String url, Boolean syncIcon, String goToHaView) {
-        if (zoomLevel != 1.0) { AisCoreUtils.mWebView.setInitialScale((int)(zoomLevel * 100)); }
+        int zoomLevel = mConfig.getZoomLevel();
+        if (zoomLevel != 100) {
+            AisCoreUtils.mWebView.setInitialScale(zoomLevel);
+        }
         if (url.equals("")) {
             // go to settings
             Intent intent = new Intent(BrowserActivityNative.this, WelcomeActivity.class);

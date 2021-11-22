@@ -1,32 +1,5 @@
 <!--suppress CheckTagEmptyBody, CheckTagEmptyBody -->
 <resources>
-    <string-array name="zoom_level_names">
-        <item>"50%"</item>
-        <item>"60%"</item>
-        <item>"70%"</item>
-        <item>"80%"</item>
-        <item>"90%"</item>
-        <item>"100%"</item>
-        <item>"110%"</item>
-        <item>"120%"</item>
-        <item>"130%"</item>
-        <item>"150%"</item>
-        <item>"200%"</item>
-    </string-array>
-    <string-array name="zoom_level_values">
-        <item>0.5</item>
-        <item>0.6</item>
-        <item>0.7</item>
-        <item>0.8</item>
-        <item>0.9</item>
-        <item>1.0</item>
-        <item>1.1</item>
-        <item>1.2</item>
-        <item>1.3</item>
-        <item>1.5</item>
-        <item>2.0</item>
-    </string-array>
-
     <string-array name="hot_word_names">
         <item>"Alexa"</item>
         <item>"Computer"</item>
@@ -117,10 +90,10 @@
     <string name="key_setting_android_browsertype">setting_android_browsertype</string>
     <string name="title_setting_android_browsertype">Browser engine</string>
     <string name="default_setting_android_browsertype">Native</string>
-    <string name="key_setting_test_zoomlevel">setting_test_zoomlevel</string>
-    <string name="title_setting_test_zoomlevel">Zoom in app</string>
-    <string name="summary_setting_test_zoomlevel">choose the magnification scale of the application panel</string>
-    <string name="default_setting_test_zoomlevel">1.0</string>
+
+    <string name="title_setting_zoom_level">Zoom in app</string>
+    <string name="summary_setting_zoom_level">choose the magnification scale of the application panel (0 means default)</string>
+
     <string name="key_setting_android_ext_storage_write">setting_android_ext_storage_write</string>
     <string name="title_setting_android_ext_storage_write">Server FTP (port 1024)</string>
     <string name="default_setting_android_ext_storage_write">false</string>
