@@ -6,12 +6,12 @@ def apikeyProperties = new Properties()
 apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "pl.sviete.dom"
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 185
         versionName '2.5.2.Refresh'
         renderscriptTargetApi 16
@@ -39,7 +39,7 @@ android {
         market {
             dimension "version"
             applicationIdSuffix ""
-            targetSdkVersion 29
+            targetSdkVersion 30
         }
 
         gate {
