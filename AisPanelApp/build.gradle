@@ -12,8 +12,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 184
-        versionName '2.5.1.SwipeCams'
+        versionCode 185
+        versionName '2.5.2.Refresh'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
