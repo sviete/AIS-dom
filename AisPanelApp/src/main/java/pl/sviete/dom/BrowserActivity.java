@@ -73,7 +73,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
 
     final String TAG = BrowserActivity.class.getName();
     private View decorView;
-    float zoomLevel = 1.0f;
     private ToggleButton btnSpeak;
     private SwitchIconView btnGoToSettings;
     private LocalBroadcastManager localBroadcastManager;
@@ -278,10 +277,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
             intent.putExtra(WelcomeActivity.BROADCAST_STAY_ON_SETTNGS_ACTIVITY_VALUE, true);
             startActivity(intent);
         });
-
-
-        //
-        zoomLevel = mConfig.getTestZoomLevel();
 
 
         decorView = getWindow().getDecorView();

@@ -63,14 +63,14 @@
                 android:summary="@string/summary_setting_report_location"
                 android:key="@string/key_setting_report_location"
                 android:icon="@drawable/ic_report_location_to_ais_gate"/>
-            <ListPreference
-                android:defaultValue="@string/default_setting_test_zoomlevel"
-                android:entries="@array/zoom_level_names"
-                android:entryValues="@array/zoom_level_values"
-                android:title="@string/title_setting_test_zoomlevel"
-                android:summary="@string/summary_setting_test_zoomlevel"
-                android:key="@string/key_setting_test_zoomlevel"
-                android:icon="@drawable/ic_zoom_in_browser"/>
+            <SeekBarPreference
+                android:min="@integer/zoom_bar_min"
+                android:max="@integer/zoom_bar_max"
+                android:defaultValue="@integer/zoom_bar_default"
+                android:key="setting_frame_zoom_level"
+                app:showSeekBarValue="true"
+                android:title="@string/title_setting_zoom_level"
+                android:summary="@string/summary_setting_zoom_level"/>
             <SwitchPreference
                 android:defaultValue="@string/default_setting_hot_word_mode"
                 android:title="@string/title_setting_hot_word_mode"
@@ -89,6 +89,7 @@
                 android:min="@integer/sensitivity_bar_min"
                 android:max="@integer/sensitivity_bar_max"
                 android:defaultValue="@integer/sensitivity_bar_default"
+                app:showSeekBarValue="true"
                 android:key="setting_app_hot_word_sensitivity"
                 android:title="@string/title_setting_app_hot_word_sensitivity"
                 android:summary="@string/summary_setting_app_hot_word_sensitivity"

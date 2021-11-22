@@ -422,10 +422,13 @@ public class Config {
     }
 
 
-
-
-    public float getTestZoomLevel() {
-        return Float.valueOf(getStringPref(R.string.key_setting_test_zoomlevel, R.string.default_setting_test_zoomlevel));
+    public int getZoomLevel() {
+        try {
+            int zoom = sharedPreferences.getInt("setting_frame_zoom_level", 0);
+            return zoom;
+        } catch (Exception ex) {
+            return 0;
+        }
     }
 
 

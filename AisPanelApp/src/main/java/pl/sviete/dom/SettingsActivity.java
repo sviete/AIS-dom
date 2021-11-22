@@ -167,10 +167,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                 }
             });
+            // set info about Zoom
+            Preference preferenceZoomLevel = findPreference("setting_frame_zoom_level");
+            Config config = new Config(preferenceZoomLevel.getContext());
+            int zoomLevel = config.getZoomLevel();
+            preferenceZoomLevel.setTitle(getString(R.string.title_setting_zoom_level) + String.format(" : %d", zoomLevel) + "%");
 
             // set info about HotWordSensitivity
             Preference preferenceHotWordSensitivity = findPreference("setting_app_hot_word_sensitivity");
-            Config config = new Config(preferenceHotWordSensitivity.getContext());
             int sensitivity = config.getSelectedHotWordSensitivity();
             preferenceHotWordSensitivity.setTitle(getString(R.string.title_setting_app_hot_word_sensitivity) + String.format(" : %d", sensitivity));
 
@@ -301,14 +305,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             final String hotWord = String.valueOf(newValue);
                             preference.setTitle(getString(R.string.title_setting_app_hot_word) + ": " + hotWord);
                         }
+                    } else if (prefKey.equals("setting_frame_zoom_level")) {
+                        // zoom level
+                        final int zoom = Integer.valueOf(String.valueOf(newValue));
+                        preference.setTitle(getString(R.string.title_setting_zoom_level) + String.format(" : %d", zoom) + "%");
+
                     }
 
                     return true;
                 }
             };
+            //
 
             Preference preferenceHotWordMode = findPreference("setting_hot_word_mode");
             preferenceHotWordMode.setOnPreferenceChangeListener(preferenceChangeListener);
+
+            // zoom
+            preferenceZoomLevel.setOnPreferenceChangeListener(preferenceChangeListener);
 
             preferenceHotWord.setOnPreferenceChangeListener(preferenceChangeListener);
             preferenceHotWordSensitivity.setOnPreferenceChangeListener(preferenceChangeListener);
