@@ -553,7 +553,8 @@ public class BrowserActivityNative extends BrowserActivity {
     protected void loadUrl(final String url, Boolean syncIcon, String goToHaView) {
         int zoomLevel = mConfig.getZoomLevel();
         if (zoomLevel != 100) {
-            AisCoreUtils.mWebView.setInitialScale(zoomLevel);
+            int zoomToSet = Math.round(getResources().getDisplayMetrics().density * zoomLevel);
+            AisCoreUtils.mWebView.setInitialScale(zoomToSet);
         }
         if (url.equals("")) {
             // go to settings

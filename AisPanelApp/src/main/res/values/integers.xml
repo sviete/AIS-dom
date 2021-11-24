@@ -3,7 +3,7 @@
     <integer name="sensitivity_bar_max">100</integer>
     <integer name="sensitivity_bar_min">10</integer>
 
-    <integer name="zoom_bar_default">0</integer>
-    <integer name="zoom_bar_max">500</integer>
-    <integer name="zoom_bar_min">0</integer>
+    <integer name="zoom_bar_default">100</integer>
+    <integer name="zoom_bar_max">200</integer>
+    <integer name="zoom_bar_min">30</integer>
 </resources>
