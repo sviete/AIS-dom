@@ -13,7 +13,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 185
-        versionName '2.5.2.Refresh'
+        versionName '2.5.4.Refresh'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true

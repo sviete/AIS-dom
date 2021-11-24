@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="pl.sviete.dom"
     android:installLocation="internalOnly"
-    android:sharedUserId="pl.sviete.dom">
+    >
 
     <meta-data
         android:name="com.google.firebase.messaging.default_notification_channel_id"

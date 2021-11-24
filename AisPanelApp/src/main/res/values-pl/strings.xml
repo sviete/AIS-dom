@@ -91,8 +91,8 @@
     <string name="title_setting_android_browsertype">Silnik przeglądarki</string>
     <string name="default_setting_android_browsertype">Native</string>
 
-    <string name="title_setting_zoom_level">Powiększenie aplikacji</string>
-    <string name="summary_setting_zoom_level">wybierz skalę powiększenia panelu aplikacji, 0 oznacza domyślną wartość - brak skalowania</string>
+    <string name="title_setting_zoom_level">Skalowanie aplikacji</string>
+    <string name="summary_setting_zoom_level">dopasuj skalę wyświetlania panelu aplikacji, 0 oznacza domyślną wartość - brak skalowania</string>
 
     <string name="key_setting_android_ext_storage_write">setting_android_ext_storage_write</string>
     <string name="title_setting_android_ext_storage_write">Serwer FTP (port 1024)</string>
