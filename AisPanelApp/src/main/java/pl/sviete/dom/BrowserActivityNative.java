@@ -1,5 +1,8 @@
 package pl.sviete.dom;
 
+import static java.lang.Math.max;
+import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -13,18 +16,12 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.net.http.SslError;;
+import android.net.http.SslError;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,20 +38,17 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.os.Bundle;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.github.zagum.switchicon.SwitchIconView;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
@@ -65,8 +59,11 @@ import com.google.android.exoplayer2.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static java.lang.Math.max;
-import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 public class BrowserActivityNative extends BrowserActivity {
@@ -447,13 +444,13 @@ public class BrowserActivityNative extends BrowserActivity {
         Log.i(TAG, "xxx" + webSettings.getUserAgentString());
 
         // swipe down to refresh
-        mSwipeRefreshLayout = this.findViewById(R.id.swipeContainer);
-        mSwipeRefreshLayout.setOnRefreshListener(
-                () -> {
-                    AisCoreUtils.mWebView.reload();
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-        );
+        //        mSwipeRefreshLayout = this.findViewById(R.id.swipeContainer);
+        //        mSwipeRefreshLayout.setOnRefreshListener(
+        //                () -> {
+        //                    AisCoreUtils.mWebView.reload();
+        //                    mSwipeRefreshLayout.setRefreshing(false);
+        //                }
+        //        );
         super.onCreate(savedInstanceState);
     }
 

@@ -11,26 +11,18 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/black_overlay">
-
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipeContainer"
+        <WebView
+            android:id="@+id/activity_browser_webview_native"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="30dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-            <WebView
-                android:id="@+id/activity_browser_webview_native"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="50dp"
-                android:focusable="true"
-                android:nextFocusLeft="@+id/btnSpeak"
-                android:nextFocusRight="@+id/btnSpeak"
-                android:nextFocusUp="@+id/btnSpeak"
-                android:nextFocusDown="@+id/btnSpeak"
-                android:scrollbars="none"
-                android:visibility="gone" />
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:focusable="true"
+            android:nextFocusLeft="@+id/btnSpeak"
+            android:nextFocusRight="@+id/btnSpeak"
+            android:nextFocusUp="@+id/btnSpeak"
+            android:nextFocusDown="@+id/btnSpeak"
+            android:scrollbars="none"
+            android:visibility="gone" />
 
             <android.gesture.GestureOverlayView
                 android:id="@+id/gesturesOverlay"
@@ -171,6 +163,7 @@
                 android:layout_height="70dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
+                android:layout_marginBottom="-6dp"
                 android:background="@drawable/ic_floating_mic_button_toggle_bg"
                 android:contentDescription="@string/ais_dom_button_mic"
                 android:focusable="true"
@@ -178,7 +171,6 @@
                 android:nextFocusRight="@+id/ais_recognition_view"
                 android:nextFocusUp="@+id/ais_recognition_view"
                 android:nextFocusDown="@+id/btnGoToSettings"
-                android:layout_marginBottom="-6dp"
                 android:textOff=""
                 android:textOn="" />
 

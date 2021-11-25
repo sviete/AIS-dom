@@ -42,7 +42,7 @@
     <string name="summary_setting_app_discovery">enable an additional control panel feature. Thanks to this, it will be possible to redirect multimedia from the gateway to this device and the video with audio from cameras. The functionality works on the Cast principle - the gateway sends the media address to the player. All devices (gateway, player and cameras) must be accessible in the same network.</string>
 
     <string name="key_pref_ais_dom_doorbell">pref_ais_dom_doorbell</string>
-    <string name="default_setting_doorbell">true</string>
+    <string name="default_setting_doorbell">false</string>
     <string name="title_setting_doorbell">Video doorbell</string>
     <string name="summary_setting_doorbell">Two-way audio communication and view from the camera in the intercom (SIP server required on the AIS gateway)/</string>
 

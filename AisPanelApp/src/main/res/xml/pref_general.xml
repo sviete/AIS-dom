@@ -39,6 +39,14 @@
             android:summary="@string/summary_pref_ais_dom_sip"
             android:icon="@drawable/doorbell_icon_settings">
         </PreferenceScreen>
+        <SeekBarPreference
+            android:min="@integer/zoom_bar_min"
+            android:max="@integer/zoom_bar_max"
+            android:defaultValue="@integer/zoom_bar_default"
+            android:key="setting_frame_zoom_level"
+            app:showSeekBarValue="true"
+            android:title="@string/title_setting_zoom_level"
+            android:summary="@string/summary_setting_zoom_level"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/title_activity_settings"
@@ -63,14 +71,6 @@
                 android:summary="@string/summary_setting_report_location"
                 android:key="@string/key_setting_report_location"
                 android:icon="@drawable/ic_report_location_to_ais_gate"/>
-            <SeekBarPreference
-                android:min="@integer/zoom_bar_min"
-                android:max="@integer/zoom_bar_max"
-                android:defaultValue="@integer/zoom_bar_default"
-                android:key="setting_frame_zoom_level"
-                app:showSeekBarValue="true"
-                android:title="@string/title_setting_zoom_level"
-                android:summary="@string/summary_setting_zoom_level"/>
             <SwitchPreference
                 android:defaultValue="@string/default_setting_hot_word_mode"
                 android:title="@string/title_setting_hot_word_mode"
