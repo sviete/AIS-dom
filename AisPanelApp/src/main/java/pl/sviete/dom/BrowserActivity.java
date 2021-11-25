@@ -28,6 +28,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
@@ -99,9 +100,13 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
     //
     private BroadcastReceiver mWifiBroadcastReceiver;
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint({"SetJavaScriptEnabled", "WrongConstant"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        }
 
         //
         mConfig = new Config(this.getApplicationContext());
