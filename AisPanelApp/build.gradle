@@ -45,7 +45,7 @@ android {
         gate {
             dimension "version"
             applicationIdSuffix "client"
-            targetSdkVersion 30
+            targetSdkVersion 24
         }
     }
     signingConfigs {
