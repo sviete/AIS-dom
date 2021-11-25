@@ -24,19 +24,19 @@
             android:scrollbars="none"
             android:visibility="gone" />
 
-            <android.gesture.GestureOverlayView
-                android:id="@+id/gesturesOverlay"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="0dp"
-                android:fadeEnabled="true"
-                android:fadeOffset="1000"
-                android:gestureColor="@color/color1"
-                android:gestureStrokeType="multiple"
-                android:uncertainGestureColor="@color/color3" />
+        <android.gesture.GestureOverlayView
+            android:id="@+id/gesturesOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:fadeEnabled="true"
+            android:fadeOffset="1000"
+            android:gestureColor="@color/color1"
+            android:gestureStrokeType="multiple"
+            android:uncertainGestureColor="@color/color3" />
 
             <FrameLayout
                 android:id="@+id/exoviewGroup"
@@ -177,11 +177,12 @@
             <pl.sviete.dom.views.RecognitionProgressView
                 android:id="@+id/ais_recognition_view"
                 android:layout_width="80dp"
-                android:layout_height="30dp"
+                android:layout_height="60dp"
                 android:layout_alignStart="@+id/btnSpeak"
                 android:layout_alignParentBottom="true"
                 android:layout_gravity="center"
                 android:layout_marginStart="85dp"
+                android:layout_marginBottom="-15dp"
                 android:background="@drawable/ic_recognition_progress_view_bg"
                 android:focusable="true"
                 android:nextFocusLeft="@+id/btnSpeak"
