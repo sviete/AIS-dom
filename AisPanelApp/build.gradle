@@ -12,8 +12,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 187
-        versionName '2.5.5.Refresh'
+        versionCode 188
+        versionName '2.5.6.Android_11'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
@@ -45,7 +45,7 @@ android {
         gate {
             dimension "version"
             applicationIdSuffix "client"
-            targetSdkVersion 24
+            targetSdkVersion 30
         }
     }
     signingConfigs {

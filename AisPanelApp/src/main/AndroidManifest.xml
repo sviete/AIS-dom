@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="pl.sviete.dom"
-    android:installLocation="internalOnly"
-    >
+    android:installLocation="internalOnly">
 
     <meta-data
         android:name="com.google.firebase.messaging.default_notification_channel_id"
@@ -238,5 +237,16 @@
         </receiver>
 
     </application>
+
+    <queries>
+        <intent>
+            <action
+                android:name="android.speech.RecognitionService" />
+        </intent>
+        <intent>
+            <action
+                android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
 
 </manifest>
