@@ -44,10 +44,6 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.zagum.switchicon.SwitchIconView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -307,26 +303,6 @@ abstract class BrowserActivity extends AppCompatActivity  implements GestureOver
         gestureOverlayView = findViewById(R.id.gesturesOverlay);
         gestureOverlayView.setVisibility(View.INVISIBLE);
         mSwitchIconModeGesture.setIconEnabled(false);
-
-
-        // [START retrieve_current_token for cloud messaging]
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "getInstanceId failed", task.getException());
-                    return;
-                }
-
-                // Get new Instance ID token
-                String token = task.getResult().getToken();
-
-                // Log and save
-                Log.d(TAG, "FCM Token: " + token);
-                AisCoreUtils.AIS_PUSH_NOTIFICATION_KEY = token;
-            }
-        });
-        // [END retrieve_current_token]
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.NavigationBarColor));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
