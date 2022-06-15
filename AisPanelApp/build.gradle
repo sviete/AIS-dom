@@ -12,8 +12,8 @@ android {
         applicationId "pl.sviete.dom"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 190
-        versionName '2.5.7'
+        versionCode 191
+        versionName '2.5.8'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true
@@ -50,16 +50,16 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('../ais-dom-keystore.jks')
-            storePassword apikeyProperties['RELEASE_STORE_PASSWORD']
+            storeFile file('/home/andrzej/Projects/AIS-dom/ais-dom-keystore.jks')
+            storePassword '###'
             keyAlias 'key0'
-            keyPassword apikeyProperties['RELEASE_STORE_PASSWORD']
+            keyPassword '###'
         }
         release {
-            storeFile file('../ais-dom-keystore.jks')
-            storePassword apikeyProperties['RELEASE_STORE_PASSWORD']
+            storeFile file('/home/andrzej/Projects/AIS-dom/ais-dom-keystore.jks')
+            storePassword '###'
             keyAlias 'key0'
-            keyPassword apikeyProperties['RELEASE_STORE_PASSWORD']
+            keyPassword '###'
         }
     }
 }
@@ -80,10 +80,10 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation "androidx.work:work-runtime:2.8.0-alpha01"
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation "androidx.work:work-runtime:2.8.0-alpha02"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.koushikdutta.async:androidasync:3.0.8'
 
     implementation 'com.google.android.exoplayer:exoplayer-core:2.14.0'
@@ -93,13 +93,13 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zbar:1.9.13'
     implementation 'com.redbooth:WelcomeCoordinator:1.0.1'
     implementation project(path: ':easylinphone')
-    implementation 'com.google.firebase:firebase-analytics:20.1.0'
-    implementation 'com.google.firebase:firebase-messaging:21.0.1'
-    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.firebase:firebase-analytics:21.0.0'
+    implementation 'com.google.firebase:firebase-messaging:23.0.5'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'org.videolan.android:libvlc-all:3.4.3'
-    implementation 'org.linphone.no-video:linphone-sdk-android:5.0.17'
+    implementation 'org.linphone.no-video:linphone-sdk-android:5.1.42'
     implementation 'ai.picovoice:picovoice-android:1.1.0'
 }
 
