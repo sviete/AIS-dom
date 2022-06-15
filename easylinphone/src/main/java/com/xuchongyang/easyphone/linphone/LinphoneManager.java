@@ -147,7 +147,7 @@ public class LinphoneManager implements CoreListener {
         mLc.setNetworkReachable(true);
 
         //
-        mLc.enableAdaptiveRateControl(true);
+        //mLc.enableAdaptiveRateControl(true);
 
         //audio
         LinphoneUtils.getConfig(mServiceContext).setInt("audio", "codec_bitrate_limit", 36);
