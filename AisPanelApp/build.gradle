@@ -100,6 +100,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'org.videolan.android:libvlc-all:3.4.3'
     implementation 'org.linphone.no-video:linphone-sdk-android:5.1.42'
+    implementation 'androidx.media:media:1.6.0'
     implementation 'ai.picovoice:picovoice-android:1.1.0'
 }
 

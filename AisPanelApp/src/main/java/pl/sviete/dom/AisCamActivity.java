@@ -486,11 +486,11 @@ public class AisCamActivity extends AppCompatActivity implements SurfaceHolder.C
     private void screenshotCamButton() {
 
         //takeScreenShot(mVideoLayout);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            getBitMapFromSurfaceView(mSurface);
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            getBitMapFromSurfaceView(mSurface);
+//        } else {
             takeScreenShot(mSurface);
-        }
+//        }
 
         try {
             // send camera button event
