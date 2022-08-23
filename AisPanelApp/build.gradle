@@ -13,7 +13,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 192
-        versionName '2.6.0'
+        versionName '3.6.0'
         renderscriptTargetApi 16
         renderscriptSupportModeEnabled true
         multiDexEnabled true

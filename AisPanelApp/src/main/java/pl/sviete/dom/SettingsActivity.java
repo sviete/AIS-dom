@@ -155,7 +155,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     if (AisCoreUtils.onBox()){
                         Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.setComponent(new ComponentName("pl.sviete.dom","pl.sviete.dom.SplashScreenActivityMenu"));
+                        intent.setComponent(new ComponentName("com.termux","pl.sviete.dom.SplashScreenActivityMenu"));
                         startActivity(intent);
                         return true;
                     } else {

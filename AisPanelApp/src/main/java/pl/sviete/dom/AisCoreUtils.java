@@ -143,7 +143,17 @@ public class AisCoreUtils {
     public static Call mAisSipActiveCall;
     public static String mLastCallingSipAddress = "domofon";
 
-
+    // executes a command on the system
+    private static boolean canExecuteCommand(String command) {
+        boolean executedSuccesfully;
+        try {
+            Runtime.getRuntime().exec(command);
+            executedSuccesfully = true;
+        } catch (Exception e) {
+            executedSuccesfully = false;
+        }
+        return executedSuccesfully;
+    }
     /*
      * Check if we are on gate or phone
      *
@@ -151,21 +161,12 @@ public class AisCoreUtils {
      */
     public static boolean onBox() {
         // default for box and phone
-        File conf = new File("/data/data/pl.sviete.dom/files/home/AIS/configuration.yaml");
+        File conf = new File("/sdcard/dom/informacja.txt");
         if (conf.exists()){
             return true;
         }
-        // during the first start on box only bootstrap exists
-        File bootstrap = new File("/data/data/pl.sviete.dom/files.tar.7z");
-        if (bootstrap.exists()){
-            return true;
-        }
-        // test on phone
-        File test_file = new File("/sdcard/test_ais_dom_iot_on_phone_on");
-        if (test_file.exists()){
-            return true;
-        }
-        return false;
+        return canExecuteCommand("/system/xbin/which su")
+                || canExecuteCommand("/system/bin/which su") || canExecuteCommand("which su");
     }
 
     public static boolean onTv() {
