@@ -165,8 +165,7 @@ public class AisCoreUtils {
         if (conf.exists()){
             return true;
         }
-        return canExecuteCommand("/system/xbin/which su")
-                || canExecuteCommand("/system/bin/which su") || canExecuteCommand("which su");
+        return canExecuteCommand("su");
     }
 
     public static boolean onTv() {
