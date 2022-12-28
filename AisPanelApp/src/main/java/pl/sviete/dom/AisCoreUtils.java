@@ -165,7 +165,7 @@ public class AisCoreUtils {
         if (conf.exists()){
             return true;
         }
-        return canExecuteCommand("su");
+        return false;
     }
 
     public static boolean onTv() {
