@@ -446,18 +446,43 @@ public class AisPanelService extends Service implements TextToSpeech.OnInitListe
         int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
         goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, "/aisaudio");
         goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mGoToAisPendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.S) {
+            mGoToAisPendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            mGoToAisPendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         // notification buttons
         Intent intentAisStop = new Intent("ais_stop").setPackage(AisPanelService.this.getPackageName());
-        mPendingIntentAisStop = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisStop, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.S) {
+            mPendingIntentAisStop = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisStop, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            mPendingIntentAisStop = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisStop, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         Intent intentAisNext = new Intent("ais_next").setPackage(AisPanelService.this.getPackageName());
-        mPendingIntentAisNext = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisNext, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.S) {
+            mPendingIntentAisNext = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisNext, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            mPendingIntentAisNext = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisNext, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         Intent intentAisPause = new Intent("ais_play_pause").setPackage(AisPanelService.this.getPackageName());
-        mPendingIntentAisPause = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisPause, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.S) {
+            mPendingIntentAisPause = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisPause, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            mPendingIntentAisPause = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisPause, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         Intent intentAisPrev = new Intent("ais_prev").setPackage(AisPanelService.this.getPackageName());
-        mPendingIntentAisPrev = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisPrev, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.S) {
+            mPendingIntentAisPrev = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisPrev, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            mPendingIntentAisPrev = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisPrev, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         Intent intentAisMic = new Intent("ais_mic").setPackage(AisPanelService.this.getPackageName());
-        mPendingIntentAisMic = PendingIntent.getBroadcast(AisPanelService.this,1, intentAisMic, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.S) {
+            mPendingIntentAisMic = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisMic, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            mPendingIntentAisMic = PendingIntent.getBroadcast(AisPanelService.this, 1, intentAisMic, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
     }
 

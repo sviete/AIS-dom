@@ -1,5 +1,7 @@
 package pl.sviete.dom;
 
+import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -47,8 +49,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
-import static pl.sviete.dom.AisCoreUtils.GO_TO_HA_APP_VIEW_INTENT_EXTRA;
 
 
 public class AisFuseLocationService extends Service{
@@ -116,8 +116,13 @@ public class AisFuseLocationService extends Service{
         int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
         goToAppView.putExtra(GO_TO_HA_APP_VIEW_INTENT_EXTRA, "/map");
         goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent pendingIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_MUTABLE);
+        }
+        else {
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(), iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         // Report action button - button to report location now
         Intent reportIntent = new Intent(getApplicationContext(), AisFuseLocationService.class);
         reportIntent.putExtra("getLastKnownLocation", true);

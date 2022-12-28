@@ -9,14 +9,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,7 +29,6 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
-import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
@@ -336,52 +333,6 @@ public class BrowserActivityNative extends BrowserActivity {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 AisCoreUtils.mWebView.loadUrl("file:///android_asset/web/ais_loading.html");
-            }
-
-            //
-            @Override
-            public void onReceivedSslError(final WebView view, final SslErrorHandler handler, SslError error) {
-                Log.d(TAG, "onReceivedSslError");
-                Log.d(TAG, "error.getUrl(): " + error.getUrl());
-
-                // we are using self sign certificate on localhost / 127.0.0.1 / ais-dom:8123 (ais-dom is a local hostname)
-                if (error.getUrl().startsWith("https://localhost:8123/") || error.getUrl().startsWith("https://127.0.0.1:8123/") || error.getUrl().startsWith("https://ais-dom:8123/")){
-                    handler.proceed();
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(BrowserActivityNative.this);
-                    String message = "Certificate error.";
-                    switch (error.getPrimaryError()) {
-                        case SslError.SSL_UNTRUSTED:
-                            message = "The certificate authority is not trusted.";
-                            break;
-                        case SslError.SSL_EXPIRED:
-                            message = "The certificate has expired.";
-                            break;
-                        case SslError.SSL_IDMISMATCH:
-                            message = "The certificate Hostname mismatch.";
-                            break;
-                        case SslError.SSL_NOTYETVALID:
-                            message = "The certificate is not yet valid.";
-                            break;
-                    }
-                    message += " Do you want to continue anyway?";
-                    builder.setTitle("SSL Certificate Error");
-                    builder.setMessage(message);
-                    builder.setPositiveButton("continue", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            handler.proceed();
-                        }
-                    });
-                    builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            handler.cancel();
-                        }
-                    });
-                    final AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
             }
         });
 

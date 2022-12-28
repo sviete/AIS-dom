@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -173,8 +174,12 @@ public class AisMediaPlayerActivity extends AppCompatActivity {
             Intent goToAppView = new Intent(AisMediaPlayerActivity.this, AisMediaPlayerActivity.class);
             int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
             goToAppView.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent contentPendingIntent = PendingIntent.getActivity(AisMediaPlayerActivity.this, iUniqueId, goToAppView,PendingIntent.FLAG_UPDATE_CURRENT);
-
+            PendingIntent contentPendingIntent = null;
+            if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.S) {
+                contentPendingIntent = PendingIntent.getActivity(AisMediaPlayerActivity.this, iUniqueId, goToAppView, PendingIntent.FLAG_IMMUTABLE);
+            } else {
+                contentPendingIntent = PendingIntent.getActivity(AisMediaPlayerActivity.this, iUniqueId, goToAppView, PendingIntent.FLAG_UPDATE_CURRENT);
+            }
             return contentPendingIntent;
         }
 
